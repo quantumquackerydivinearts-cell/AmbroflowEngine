@@ -13,6 +13,14 @@ from .flags import KoFlag, FlagState, KO_FLAGS, KO_FLAG_BY_ID
 from .breath import BreathOfKo
 from .render import render, render_to_file, render_grid_ascii
 from .dialogue_render import render_ko_portrait, render_dialogue_screen, render_calibration_screens
+from .dream_scene import (
+    render_arrival_screen,
+    render_phase_screen,
+    render_vitriol_screen,
+    render_closing_screen,
+    render_dream_sequence,
+)
+from .calibration import get_assignment_line
 
 __all__ = [
     "DreamCalibration",
@@ -38,4 +46,10 @@ __all__ = [
     "render_ko_portrait",
     "render_dialogue_screen",
     "render_calibration_screens",
+    "render_arrival_screen",
+    "render_phase_screen",
+    "render_vitriol_screen",
+    "render_closing_screen",
+    "render_dream_sequence",
+    "get_assignment_line",
 ]

@@ -744,7 +744,7 @@ def render_dream_sequence(
     # VITRIOL assignment — accumulate revealed stats progressively
     revealed: dict[str, int] = {}
     for sname in VITRIOL_STATS:
-        v    = vitriol_profile.get(sname, 1)
+        v    = vitriol_profile.get(sname, 1) if isinstance(vitriol_profile, dict) else getattr(vitriol_profile, sname, 1)
         line = assignment_lines.get(sname, f"{sname.capitalize()}: {v}.")
         revealed[sname] = v
         _add(render_vitriol_screen(sname, v, line, dict(revealed), size=size))
