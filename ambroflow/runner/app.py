@@ -39,9 +39,18 @@ except ImportError:
 from .session import Session
 from .persistence import auto_backend
 from .registry import GAMES
+from .game_flow import GameFlow, FlowPhase
 from .screens.title      import render_title_screen
 from .screens.game_select import render_game_select
 from .screens.name_entry  import render_name_entry
+from .screens.common import _load_font, text_size, to_png, draw_starfield
+from .screens import palette as P
+
+try:
+    from PIL import Image, ImageDraw
+    _PIL = True
+except ImportError:
+    _PIL = False
 
 
 # ── Constants ─────────────────────────────────────────────────────────────────
@@ -55,6 +64,24 @@ _DEFAULT_PLAYER_ID_FILE = os.path.expanduser("~/.ambroflow/last_player_id")
 
 
 # ── PIL bytes -> pygame surface ───────────────────────────────────────────────
+
+def _render_loading_screen(width: int, height: int) -> Optional[bytes]:
+    """Full-screen 'The veil thins...' frame shown during dream pre-render."""
+    if not _PIL:
+        return None
+    img  = Image.new("RGB", (width, height), P.VOID)
+    draw = ImageDraw.Draw(img)
+    draw_starfield(img, seed=0xDECA, density=0.0006)
+    font = _load_font(18)
+    msg  = "The veil thins\u2026"
+    w, _ = text_size(draw, msg, font)
+    draw.text(((width - w) // 2, height // 2 - 10), msg, fill=P.KO_GOLD, font=font)
+    hint_font = _load_font(11)
+    hint = "reading in progress"
+    hw, _ = text_size(draw, hint, hint_font)
+    draw.text(((width - hw) // 2, height // 2 + 22), hint, fill=P.TEXT_DIM, font=hint_font)
+    return to_png(img)
+
 
 def _png_to_surface(data: bytes) -> "pygame.Surface":
     return pygame.image.load(io.BytesIO(data))
@@ -117,6 +144,9 @@ class AmbroflowApp:
         # Game select state
         self._sel_idx = 6     # default: game 7
 
+        # In-game flow
+        self._game_flow: Optional[GameFlow] = None
+
     # ── Persistence helpers ───────────────────────────────────────────────────
 
     @staticmethod
@@ -165,6 +195,13 @@ class AmbroflowApp:
                 statuses, self._sel_idx, pname,
                 width=W, height=H,
             )
+
+        if self._screen_name == "IN_GAME":
+            if self._game_flow is not None:
+                frame = self._game_flow.current_frame()
+                if frame is not None:
+                    return frame
+            return _render_loading_screen(W, H)
 
         return None
 
@@ -226,18 +263,26 @@ class AmbroflowApp:
     def _launch_selected(self) -> None:
         game = GAMES[self._sel_idx]
         if not game.built:
-            # Not yet playable — show a brief indicator (just flash dirty for now)
-            # A proper "not yet built" overlay can be added later
+            # Not yet playable — flash dirty to show the selection, no transition
+            self._dirty = True
             return
         status = self._session.game_status(game.slug)
         if status == "in_progress":
             self._session.resume_game(game.slug)
         else:
             self._session.start_game(game.slug)
-        # Hand off to in-game screens — for now, print to console
-        # The full in-game flow (dream → chargen → waking) will be wired here
-        print(f"[app] launching {game.slug} — {game.title}")
-        # TODO: transition to IN_GAME screen stack
+        self._game_flow = GameFlow(game.slug, self._W, self._H)
+        self._go("IN_GAME")
+
+    def _handle_in_game(self, event: "pygame.event.Event") -> None:
+        if self._game_flow is None:
+            return
+        if event.type == pygame.KEYDOWN:
+            self._game_flow.on_key(event.key, event.unicode or "")
+            self._dirty = True
+            if self._game_flow.is_done():
+                self._game_flow = None
+                self._go("GAME_SELECT")
 
     # ── Main loop ─────────────────────────────────────────────────────────────
 
@@ -277,6 +322,12 @@ class AmbroflowApp:
                     return
                 if event.type == pygame.VIDEORESIZE:
                     self._W, self._H = event.w, event.h
+                    # Resize during IN_GAME: recreate flow with new dimensions
+                    if self._screen_name == "IN_GAME" and self._game_flow is not None:
+                        old_flow = self._game_flow
+                        new_flow = GameFlow(old_flow.game_slug, self._W, self._H)
+                        new_flow.chargen = old_flow.chargen
+                        self._game_flow = new_flow
                     self._dirty = True
 
                 if self._screen_name == "TITLE":
@@ -285,6 +336,8 @@ class AmbroflowApp:
                     self._handle_name_entry(event)
                 elif self._screen_name == "GAME_SELECT":
                     self._handle_game_select(event)
+                elif self._screen_name == "IN_GAME":
+                    self._handle_in_game(event)
 
             # Re-render if needed
             if self._dirty or surface is None:
