@@ -54,8 +54,9 @@ _GOLD_BRIGHT  = (255, 220, 100)
 _WAKING_BG    = ( 14,  10,  20)
 _PANEL_BG     = ( 18,  12,  26)
 _PANEL_EDGE   = ( 55,  40,  70)
-_SELECTED_BG  = ( 35,  26,   8)
-_SELECTED     = (200, 140,  40)
+_SELECTED_BG  = ( 58,  40,   8)   # warm amber — clearly distinct from _PANEL_BG
+_SELECTED_BDR = (160, 110,  30)   # left-bar border colour
+_SELECTED     = (230, 170,  55)   # bright gold text for selected item
 _UNSELECTED   = (130, 110, 150)
 _WHITE        = (230, 225, 235)
 _DIM          = ( 80,  65,  90)
@@ -64,6 +65,7 @@ _STAT_PLAYER  = (200, 140,  40)
 _STAT_OVER    = (180,  80,  40)
 _BUDGET_OK    = ( 60, 130,  60)
 _BUDGET_SPENT = (150,  80,  30)
+_ACTIVE_ROW   = ( 40,  28,  55)   # VITRIOL active-row background
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -138,8 +140,8 @@ def render_ko_gender_question(
     img  = Image.new("RGB", (size, size), _VOID)
     draw = ImageDraw.Draw(img)
 
-    # Ko portrait (top 40 %)
-    portrait_size = int(size * 0.40)
+    # Ko portrait (top 28 %)
+    portrait_size = int(size * 0.28)
     portrait_y    = int(size * 0.02)
     portrait_img  = _portrait_image(portrait_size)
     img.paste(portrait_img, ((size - portrait_size) // 2, portrait_y))
@@ -153,7 +155,7 @@ def render_ko_gender_question(
 
     # Options panel
     PANEL_TOP    = prompt_y + int(size * 0.06)
-    PANEL_BOT    = size - int(size * 0.030)
+    PANEL_BOT    = size - int(size * 0.020)
     PANEL_LEFT   = int(size * 0.08)
     PANEL_RIGHT  = size - int(size * 0.08)
     PANEL_H      = PANEL_BOT - PANEL_TOP
@@ -170,9 +172,9 @@ def render_ko_gender_question(
         if is_sel:
             draw.rectangle([PANEL_LEFT+1, ry, PANEL_RIGHT-1, ry+ROW_H-1],
                            fill=_SELECTED_BG)
-            # Gold mark
-            draw.rectangle([PANEL_LEFT+1, ry+2, PANEL_LEFT+4, ry+ROW_H-3],
-                           fill=_SELECTED)
+            # Accent bar
+            draw.rectangle([PANEL_LEFT+1, ry+1, PANEL_LEFT+7, ry+ROW_H-1],
+                           fill=_SELECTED_BDR)
 
         col = _SELECTED if is_sel else _UNSELECTED
         tw, th = _text_size(draw, opt.label, font_opt)
@@ -315,7 +317,7 @@ def render_lineage_screen(
 
         if is_sel:
             draw.rectangle([LIST_X0+1, ry, LIST_X1-1, ry+ROW_H-1], fill=_SELECTED_BG)
-            draw.rectangle([LIST_X0+1, ry+2, LIST_X0+4, ry+ROW_H-3], fill=_SELECTED)
+            draw.rectangle([LIST_X0+1, ry+1, LIST_X0+7, ry+ROW_H-1], fill=_SELECTED_BDR)
 
         col = _SELECTED if is_sel else _UNSELECTED
         draw.text((LIST_X0 + 10, ry + 6), lin.name, fill=col, font=font_name)
@@ -447,7 +449,7 @@ def render_vitriol_assignment_sheet(
         # Row background if active
         if is_active:
             draw.rectangle([int(size*0.02), ry, size-int(size*0.02), ry+ROW_H-2],
-                           fill=(22, 16, 32))
+                           fill=_ACTIVE_ROW)
 
         # Stat label
         draw.text((COL_LABEL_X, ry+2), _STAT_LABELS[stat],

@@ -45,6 +45,7 @@ from .screens.game_select import render_game_select
 from .screens.name_entry  import render_name_entry
 from .screens.common import _load_font, text_size, to_png, draw_starfield
 from .screens import palette as P
+from ..world import WorldPlay, build_game7_world
 
 try:
     from PIL import Image, ImageDraw
@@ -146,6 +147,9 @@ class AmbroflowApp:
 
         # In-game flow
         self._game_flow: Optional[GameFlow] = None
+
+        # Waking play (world navigation, post-chargen)
+        self._world_play: Optional[WorldPlay] = None
 
     # ── Persistence helpers ───────────────────────────────────────────────────
 
@@ -281,8 +285,21 @@ class AmbroflowApp:
             self._game_flow.on_key(event.key, event.unicode or "")
             self._dirty = True
             if self._game_flow.is_done():
+                chargen = self._game_flow.chargen
                 self._game_flow = None
-                self._go("GAME_SELECT")
+                # Transition into waking play (world navigation)
+                try:
+                    world_map = build_game7_world()
+                    self._world_play = WorldPlay(
+                        chargen=chargen,
+                        world_map=world_map,
+                        width=self._W,
+                        height=self._H,
+                    )
+                    self._go("WORLD_PLAY")
+                except Exception:
+                    self._world_play = None
+                    self._go("GAME_SELECT")
 
     # ── Main loop ─────────────────────────────────────────────────────────────
 
@@ -313,6 +330,24 @@ class AmbroflowApp:
             # Title re-renders every frame for animation
             if self._screen_name == "TITLE":
                 self._dirty = True
+
+            # ── WORLD_PLAY: direct pygame render, bypass PIL pipeline ──────────
+            if self._screen_name == "WORLD_PLAY" and self._world_play is not None:
+                events = pygame.event.get()
+                for event in events:
+                    if event.type == pygame.QUIT:
+                        self._session.save()
+                        pygame.quit()
+                        return
+                self._world_play.tick(dt, events)
+                if self._world_play.is_done():
+                    self._world_play = None
+                    self._go("GAME_SELECT")
+                else:
+                    screen.fill((0, 0, 0))
+                    self._world_play.render(screen)
+                    pygame.display.flip()
+                continue
 
             # Event processing
             for event in pygame.event.get():

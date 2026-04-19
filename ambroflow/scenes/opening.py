@@ -66,6 +66,12 @@ HYPATIA_LETTER_LINES: list[str] = [
     "I suggest arriving prepared to be uncertain",
     "about most things you believed you knew.",
     "",
+    "You are expected at Castle Azoth before sundown on the day",
+    "this letter is received. Failure to present yourself by that",
+    "hour will result in forfeiture of your first month's stipend",
+    "and formal notice of penalty. Your apprenticeship is not",
+    "under review — only your punctuality.",
+    "",
     "                                    — H.",
 ]
 
