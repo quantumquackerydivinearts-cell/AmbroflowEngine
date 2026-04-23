@@ -173,6 +173,10 @@ class WorldRenderer:
 
     # ── Cleanup ───────────────────────────────────────────────────────────────
 
+    def update_lighting(self, updates: dict) -> None:
+        """Merge lighting uniform overrides into the current lighting dict."""
+        self._lighting.update(updates)
+
     def delete(self) -> None:
         self._vbo_tile.delete()
         self._ebo.delete()

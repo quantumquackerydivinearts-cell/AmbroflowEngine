@@ -80,13 +80,15 @@ class PostProcessor:
         near:        float = 0.1,
         far:         float = 500.0,
     ) -> None:
-        self._width       = width
-        self._height      = height
-        self._focus_dist  = focus_dist
-        self._focus_range = focus_range
-        self._max_blur    = max_blur
-        self._near        = near
-        self._far         = far
+        self._width              = width
+        self._height             = height
+        self._focus_dist         = focus_dist
+        self._focus_range        = focus_range
+        self._max_blur           = max_blur
+        self._near               = near
+        self._far                = far
+        self._vignette_strength  = 0.45
+        self._saturation         = 0.88
 
         dof_frag = (_SHADERS_DIR / "post_dof.frag").read_text(encoding="utf-8")
 
@@ -185,6 +187,24 @@ class PostProcessor:
         GL.glActiveTexture(GL.GL_TEXTURE0)
         GL.glBindTexture(GL.GL_TEXTURE_2D, self._fbo_out.color_texture)
         self._fullscreen_draw()
+
+    def set_grade_params(
+        self,
+        vignette_strength: float = 0.45,
+        saturation: float = 0.88,
+    ) -> None:
+        self._vignette_strength = vignette_strength
+        self._saturation        = saturation
+
+    def set_dof_params(
+        self,
+        focus_dist:  float | None = None,
+        focus_range: float | None = None,
+        max_blur:    float | None = None,
+    ) -> None:
+        if focus_dist  is not None: self._focus_dist  = focus_dist
+        if focus_range is not None: self._focus_range = focus_range
+        if max_blur    is not None: self._max_blur    = max_blur
 
     @property
     def output_fbo(self) -> Framebuffer:
