@@ -164,8 +164,8 @@ class PostProcessor:
         self._sh_grade.use()
         self._sh_grade["u_color"]             = 0
         self._sh_grade["u_time"]              = time
-        self._sh_grade["u_vignette_strength"] = 0.45
-        self._sh_grade["u_saturation"]        = 0.88
+        self._sh_grade["u_vignette_strength"] = self._vignette_strength
+        self._sh_grade["u_saturation"]        = self._saturation
         GL.glActiveTexture(GL.GL_TEXTURE0)
         GL.glBindTexture(GL.GL_TEXTURE_2D, self._fbo_v.color_texture)
         self._fullscreen_draw()
