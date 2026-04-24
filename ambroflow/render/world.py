@@ -64,13 +64,15 @@ _SHADERS_DIR = Path(__file__).parent.parent / "engine" / "shaders"
 # ── Realm lighting presets ─────────────────────────────────────────────────────
 
 LAPIDUS_LIGHTING = {
-    "u_sun_dir"   : (0.6,  1.0, -0.4),
-    "u_sun_color" : (1.00, 0.92, 0.70),
-    "u_ambient"   : (0.14, 0.12, 0.22),
-    "u_rim_color" : (0.55, 0.60, 0.75),
-    "u_fog_near"  : 18.0,
-    "u_fog_far"   : 60.0,
-    "u_fog_color" : (0.36, 0.33, 0.44),
+    "u_sun_dir"       : (0.6,  1.0, -0.4),
+    "u_sun_color"     : (1.00, 0.92, 0.70),
+    "u_ambient"       : (0.14, 0.12, 0.22),
+    "u_rim_color"     : (0.55, 0.60, 0.75),
+    "u_fog_near"      : 18.0,
+    "u_fog_far"       : 60.0,
+    "u_fog_color"     : (0.36, 0.33, 0.44),
+    "u_seam_width"    : 0.06,   # shadow band width in tile-space (0..0.5)
+    "u_seam_strength" : 0.45,   # peak shadow opacity at seam edge
 }
 
 
