@@ -57,6 +57,19 @@ _KEY_MAP: dict[int, str] = {
     glfw.KEY_TAB:    InputEvent.MENU,
 }
 
+# Movement events that participate in held-key continuous repeat
+_MOVE_EVENTS = frozenset({
+    InputEvent.MOVE_NORTH,
+    InputEvent.MOVE_SOUTH,
+    InputEvent.MOVE_EAST,
+    InputEvent.MOVE_WEST,
+})
+
+# Seconds before the first auto-repeat fires after initial press
+_MOVE_INITIAL_DELAY: float = 0.20
+# Seconds between each subsequent repeat step
+_MOVE_REPEAT_INTERVAL: float = 0.10
+
 
 class Window:
     """
@@ -93,11 +106,14 @@ class Window:
             glfw.terminate()
             raise RuntimeError("glfw.create_window() failed — no OpenGL 4.1 context available")
 
-        self._width   = width
-        self._height  = height
+        self._width     = width
+        self._height    = height
         self._on_resize = on_resize
-        self._events: list[str] = []
-        self._t_last  = time.monotonic()
+        self._events:   list[str]         = []
+        self._t_last    = time.monotonic()
+
+        # Held movement keys: event → seconds until next repeat fires
+        self._held_move: dict[str, float] = {}
 
         glfw.set_key_callback(self._handle, self._key_cb)
         glfw.set_framebuffer_size_callback(self._handle, self._resize_cb)
@@ -114,12 +130,20 @@ class Window:
     # ── Frame timing ──────────────────────────────────────────────────────────
 
     def begin_frame(self) -> float:
-        """Poll events and return dt (seconds since last frame)."""
+        """Poll events, tick held-key repeats, and return dt in seconds."""
         self._events.clear()
         glfw.poll_events()
         now = time.monotonic()
         dt  = min(now - self._t_last, 0.1)   # cap at 100ms (e.g. debugger pause)
         self._t_last = now
+
+        # Continuous movement: decrement timers and emit when they expire
+        for ev in list(self._held_move):
+            self._held_move[ev] -= dt
+            while self._held_move[ev] <= 0.0:
+                self._events.append(ev)
+                self._held_move[ev] += _MOVE_REPEAT_INTERVAL
+
         return dt
 
     def end_frame(self) -> None:
@@ -155,11 +179,21 @@ class Window:
     # ── Callbacks ─────────────────────────────────────────────────────────────
 
     def _key_cb(self, window, key: int, scancode: int, action: int, mods: int) -> None:
-        if action not in (glfw.PRESS, glfw.REPEAT):
-            return
         ev = _KEY_MAP.get(key)
-        if ev:
-            self._events.append(ev)
+        if not ev:
+            return
+        if ev in _MOVE_EVENTS:
+            if action == glfw.PRESS:
+                # Emit immediately, then arm the repeat timer
+                self._events.append(ev)
+                self._held_move[ev] = _MOVE_INITIAL_DELAY
+            elif action == glfw.RELEASE:
+                self._held_move.pop(ev, None)
+            # REPEAT action is ignored — begin_frame() handles the cadence
+        else:
+            # Non-movement events fire once on PRESS only
+            if action == glfw.PRESS:
+                self._events.append(ev)
 
     def _resize_cb(self, window, width: int, height: int) -> None:
         self._width  = width

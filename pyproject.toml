@@ -1,6 +1,6 @@
 [build-system]
 requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.backends.legacy:build"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "ambroflow"
@@ -16,6 +16,7 @@ dependencies = [
     "numpy>=1.26",
     "PyOpenGL>=3.1",
     "PyOpenGL_accelerate>=3.1",
+    "moderngl>=5.10",
 ]
 
 [project.optional-dependencies]

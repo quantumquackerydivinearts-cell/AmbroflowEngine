@@ -1,5 +1,5 @@
 """
 python -m ambroflow
 """
-from ambroflow.runner.app import run
+from ambroflow.runner.gl_app import run
 run()
