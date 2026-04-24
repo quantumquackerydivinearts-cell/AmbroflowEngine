@@ -41,6 +41,10 @@ except ImportError:
 
 from ambroflow.scenes.location import render_bedroom, render_foyer
 from ambroflow.dialogue.render import render_character_dialogue
+from ambroflow.scenes.player_home import (
+    PLAYER_HOME_GROUND, PLAYER_HOME_WORLD,
+    FurniturePlacement, GROUND_FURNITURE,
+)
 
 
 # ── Canonical text ────────────────────────────────────────────────────────────
@@ -315,3 +319,78 @@ def render_fate_knocks_sequence(
     _add(render_hypatia_letter(width=screen_size, height=screen_size))
 
     return frames
+
+
+# ── FateKnocksScene — free-motion replacement ─────────────────────────────────
+
+class FateKnocksScene:
+    """
+    Quest 0001_KLST "Fate Knocks" as a free-motion walkable scene.
+
+    The player begins in the bedroom and can move through the home freely.
+    Narrative beats fire when the player enters key tile positions:
+
+      "bedroom_wake"  — fired once at scene start (player wakes in bedroom)
+      "door_knock"    — fired when player first reaches tile (22, 10) or (22, 11)
+                        (approaching the front door from inside)
+      "courier_meet"  — fired when player steps on the door tile (22, 12)
+      "letter_read"   — fired automatically after courier dialogue completes
+
+    Beat payloads
+    -------------
+      "bedroom_wake"  → None  (internal scene state only)
+      "door_knock"    → DOOR_KNOCK_TEXT  (render as stage direction)
+      "courier_meet"  → (COURIER_LINE, "Royal Courier", "SOLD")
+      "letter_read"   → HYPATIA_LETTER_LINES
+
+    Usage
+    -----
+        scene = FateKnocksScene()
+        zone, (px, py), furniture = scene.initial_state()
+        beat = scene.check_beat(px, py)  # call after each player move
+    """
+
+    # Tile that fires the knock — player approaching the front door
+    KNOCK_TILES: frozenset[tuple[int, int]] = frozenset({(22, 10), (22, 11)})
+    # Tile that fires the courier meeting — standing on the door tile
+    COURIER_TILE: tuple[int, int] = (22, 12)
+    # Player wakes in the bedroom, near the bed
+    SPAWN: tuple[int, int] = (17, 3)
+
+    def __init__(self) -> None:
+        self._fired: set[str] = set()
+
+    def initial_state(self):
+        """
+        Return (zone, player_spawn, furniture) for scene initialisation.
+
+        zone      — PLAYER_HOME_GROUND Zone object
+        spawn     — (x, y) tuple; player starts by the bed in the bedroom
+        furniture — GROUND_FURNITURE list for WorldRenderer.load_furniture()
+        """
+        return PLAYER_HOME_GROUND, self.SPAWN, list(GROUND_FURNITURE)
+
+    def check_beat(self, x: int, y: int) -> "Optional[tuple[str, object]]":
+        """
+        Check whether the player's position fires a narrative beat.
+
+        Returns (beat_id, payload) if a new beat fires, else None.
+        Beats fire at most once per scene instance.
+        """
+        if (x, y) in self.KNOCK_TILES and "door_knock" not in self._fired:
+            self._fired.add("door_knock")
+            return ("door_knock", DOOR_KNOCK_TEXT)
+
+        if (x, y) == self.COURIER_TILE and "courier_meet" not in self._fired:
+            self._fired.add("courier_meet")
+            return ("courier_meet", (COURIER_LINE, "Royal Courier", "SOLD"))
+
+        if "courier_meet" in self._fired and "letter_read" not in self._fired:
+            self._fired.add("letter_read")
+            return ("letter_read", HYPATIA_LETTER_LINES)
+
+        return None
+
+    def reset(self) -> None:
+        """Reset all fired beats — allows replaying the sequence."""
+        self._fired.clear()

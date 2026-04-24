@@ -110,6 +110,11 @@ class WorldRenderer:
         self._vbo_inst: Optional[Buffer] = None
         self._instance_count = 0
 
+        # Furniture instance buffer — allocated on load_furniture
+        self._vbo_furn: Optional[Buffer] = None
+        self._furn_count = 0
+        self._vao_furn = VertexArray()
+
         self._vao = VertexArray()
         self._setup_vao()
 
@@ -143,6 +148,56 @@ class WorldRenderer:
         self._vao.unbind()
         self._vbo_inst.unbind()
 
+    # ── Furniture loading ──────────────────────────────────────────────────────
+
+    def load_furniture(self, placements: "list") -> None:
+        """
+        Upload furniture instances.
+
+        placements — list of FurniturePlacement objects.  Each placement
+        contributes one instance at (x, y_elevation, z, tile_id, height).
+        The furniture VAO shares the same static tile quad as the zone VAO.
+        """
+        if not placements:
+            self._furn_count = 0
+            return
+
+        rows: list[float] = []
+        for p in placements:
+            rows.extend([
+                float(p.x),
+                float(p.y),      # elevation (not always 0)
+                float(p.z),
+                float(p.tile_id),
+                float(p.height),
+            ])
+
+        data = np.array(rows, dtype=np.float32)
+        self._furn_count = len(placements)
+
+        if self._vbo_furn is None:
+            self._vbo_furn = Buffer(data, GL.GL_DYNAMIC_DRAW)
+        else:
+            self._vbo_furn.upload(data, GL.GL_DYNAMIC_DRAW)
+
+        self._vao_furn.bind()
+        self._vbo_tile.bind()
+        self._ebo.bind()
+        s = _STRIDE_TILE
+        self._vao_furn.attrib(0, size=3, stride=s, offset=0)   # a_pos
+        self._vao_furn.attrib(1, size=2, stride=s, offset=12)  # a_uv
+        self._vao_furn.attrib(2, size=3, stride=s, offset=20)  # a_normal
+        self._vbo_furn.bind()
+        stride = _STRIDE_INST
+        self._vao_furn.attrib(3, size=3, stride=stride, offset=0)
+        self._vao_furn.attrib(4, size=1, stride=stride, offset=12)
+        self._vao_furn.attrib(5, size=1, stride=stride, offset=16)
+        self._vao_furn.attrib_divisor(3, 1)
+        self._vao_furn.attrib_divisor(4, 1)
+        self._vao_furn.attrib_divisor(5, 1)
+        self._vao_furn.unbind()
+        self._vbo_furn.unbind()
+
     # ── Draw ──────────────────────────────────────────────────────────────────
 
     def draw(self, camera: Camera, time: float = 0.0) -> None:
@@ -169,6 +224,16 @@ class WorldRenderer:
             ctypes.c_void_p(0), self._instance_count,
         )
         self._vao.unbind()
+
+        # Draw furniture layer on top
+        if self._furn_count > 0:
+            self._vao_furn.bind()
+            GL.glDrawElementsInstanced(
+                GL.GL_TRIANGLES, 6, GL.GL_UNSIGNED_INT,
+                ctypes.c_void_p(0), self._furn_count,
+            )
+            self._vao_furn.unbind()
+
         self._atlas.unbind(unit=0)
 
     # ── Cleanup ───────────────────────────────────────────────────────────────
@@ -182,7 +247,10 @@ class WorldRenderer:
         self._ebo.delete()
         if self._vbo_inst:
             self._vbo_inst.delete()
+        if self._vbo_furn:
+            self._vbo_furn.delete()
         self._vao.delete()
+        self._vao_furn.delete()
 
     # ── Internal ──────────────────────────────────────────────────────────────
 

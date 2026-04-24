@@ -1,6 +1,7 @@
 from .location import (
     HomeRoom,
     render_wiltoll_lane_interior,
+    render_player_home_interior,
     render_foyer,
     render_workbench_area,
     render_kitchen,
@@ -13,14 +14,27 @@ from .opening import (
     render_hypatia_letter,
     render_stage_direction,
     render_fate_knocks_sequence,
+    FateKnocksScene,
     COURIER_LINE,
     HYPATIA_LETTER_LINES,
     DOOR_KNOCK_TEXT,
+)
+from .player_home import (
+    FurnitureTile,
+    FurniturePlacement,
+    PLAYER_HOME_GROUND,
+    PLAYER_HOME_UPPER,
+    PLAYER_HOME_WORLD,
+    GROUND_FURNITURE,
+    UPPER_FURNITURE,
+    altar_placements,
+    get_player_home_furniture,
 )
 
 __all__ = [
     "HomeRoom",
     "render_wiltoll_lane_interior",
+    "render_player_home_interior",
     "render_foyer",
     "render_workbench_area",
     "render_kitchen",
@@ -31,7 +45,17 @@ __all__ = [
     "render_hypatia_letter",
     "render_stage_direction",
     "render_fate_knocks_sequence",
+    "FateKnocksScene",
     "COURIER_LINE",
     "HYPATIA_LETTER_LINES",
     "DOOR_KNOCK_TEXT",
+    "FurnitureTile",
+    "FurniturePlacement",
+    "PLAYER_HOME_GROUND",
+    "PLAYER_HOME_UPPER",
+    "PLAYER_HOME_WORLD",
+    "GROUND_FURNITURE",
+    "UPPER_FURNITURE",
+    "altar_placements",
+    "get_player_home_furniture",
 ]

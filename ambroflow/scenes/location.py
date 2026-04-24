@@ -1236,3 +1236,25 @@ def render_wiltoll_lane_interior(
     return render_workbench_area(
         time_of_day=time_of_day, width=width, height=height,
     )
+
+
+def render_player_home_interior(
+    *,
+    room:        str = "foyer",
+    time_of_day: str = "late_afternoon",
+    width:  int = 512,
+    height: int = 384,
+) -> Optional[bytes]:
+    """
+    Canonical alias for the Player Home Interior still renders.
+
+    Dispatches to the appropriate room renderer by name.
+    For interactive walkable scenes, use FateKnocksScene (opening.py)
+    or load PLAYER_HOME_GROUND / PLAYER_HOME_UPPER directly from player_home.py.
+    """
+    return render_home_room(
+        room=HomeRoom(room),
+        time_of_day=time_of_day,
+        width=width,
+        height=height,
+    )
