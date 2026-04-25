@@ -10,7 +10,7 @@ Modes
 -----
   WORLD     Free navigation — tile grid rendered every frame.
   DIALOGUE  Talking to an NPC — world frozen, PIL dialogue panel overlaid.
-            freeze happens on the first render() call in DIALOGUE mode.
+            Freeze happens on the first render() call in DIALOGUE mode.
   DUNGEON   Inside a DungeonRuntime session (future: full dungeon renderer).
   DONE      Session complete — app returns to GAME_SELECT.
 
@@ -24,8 +24,9 @@ Dialogue ends via Space / Enter / Escape; the frozen copy is discarded.
 
 from __future__ import annotations
 
+import random
 from enum import Enum
-from typing import Optional, TYPE_CHECKING
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ..chargen.data import ChargenState
@@ -39,9 +40,40 @@ except ImportError:
 from .map import WorldMap, Zone
 from .player import WorldPlayer, Direction
 from .renderer import WorldRenderer
+from .loaders import EncounterDef, AudioTrack, select_audio
+
+# ── qqva quest engine (graceful fallback) ────────────────────────────────────
+
+try:
+    from qqva.quest_engine import WitnessTracker  # type: ignore
+    _HAS_QQVA = True
+except Exception:
+    WitnessTracker = None  # type: ignore
+    _HAS_QQVA = False
+
+# ── Dialogue selector (graceful fallback) ────────────────────────────────────
+
+try:
+    from ..dialogue.selector import select as _dialogue_select, DialogueScreen
+    _HAS_DIALOGUE = True
+except Exception:
+    _dialogue_select = None  # type: ignore
+    DialogueScreen = None    # type: ignore
+    _HAS_DIALOGUE = False
+
+# ── DungeonRuntime (graceful fallback) ───────────────────────────────────────
+
+try:
+    from ..dungeon.runtime import DungeonRuntime, PlayerState as DungeonPlayerState
+    _HAS_DUNGEON = True
+except Exception:
+    DungeonRuntime = None         # type: ignore
+    DungeonPlayerState = None     # type: ignore
+    _HAS_DUNGEON = False
 
 
-# Pygame-ce (SDL2) key constants
+# ── Pygame-ce (SDL2) key constants ───────────────────────────────────────────
+
 _K_UP     = 1073741906
 _K_DOWN   = 1073741905
 _K_LEFT   = 1073741904
@@ -57,7 +89,6 @@ _DIR_KEYS: dict[int, Direction] = {
     _K_RIGHT: Direction.EAST,
 }
 
-# WASD aliases
 _WASD: dict[int, Direction] = {
     ord('w'): Direction.NORTH,
     ord('s'): Direction.SOUTH,
@@ -79,14 +110,26 @@ class WorldPlay:
 
     Constructed by app.py once GameFlow signals DONE; destroyed when
     is_done() returns True (player quits or session ends).
+
+    Optional parameters wire in the dialogue, encounter, audio, and
+    dungeon systems.  Any omitted system degrades gracefully (dialogue
+    shows a blank panel, encounters are skipped, etc.).
     """
 
     def __init__(
         self,
-        chargen:   "ChargenState",
-        world_map: WorldMap,
-        width:  int = 1280,
-        height: int = 800,
+        chargen:          "ChargenState",
+        world_map:        WorldMap,
+        width:            int  = 1280,
+        height:           int  = 800,
+        *,
+        bundle:           object                          = None,  # GameDataBundle
+        paths_by_char:    Optional[Dict[str, list]]       = None,
+        quest_state:      Optional[Dict[str, Any]]        = None,
+        encounter_defs:   Optional[List[EncounterDef]]    = None,
+        audio_tracks:     Optional[List[AudioTrack]]      = None,
+        dungeon_registry: Optional[Dict[str, object]]     = None,  # dungeon_id → DungeonDef
+        orrery:           object                          = None,  # OrreryClient
     ) -> None:
         self.width     = width
         self.height    = height
@@ -101,14 +144,31 @@ class WorldPlay:
             x=sx, y=sy,
             name=chargen.name or "Apprentice",
         )
-        self._zone: Zone = starting
+        self._zone:    Zone         = starting
+        self._chargen: "ChargenState" = chargen
 
-        # Dialogue state
-        self._frozen_bg:       object          = None  # pygame.Surface
-        self._dialogue_bytes:  Optional[bytes] = None  # PIL dialogue frame
-        self._dialogue_needs_snapshot: bool    = False
+        # Dialogue system
+        self._bundle         = bundle
+        self._paths_by_char  = paths_by_char or {}
+        self._frozen_bg:     object          = None
+        self._dialogue_bytes: Optional[bytes] = None
+        self._dialogue_needs_snapshot: bool   = False
 
-        # Dungeon state (future)
+        # Quest state
+        self._quest_state: Dict[str, Any] = quest_state or {
+            "quest_id": "", "game_id": "", "entries": {},
+            "soa_artifacts": [], "current_frame": "frame_0",
+        }
+        self._witness_tracker = WitnessTracker() if _HAS_QQVA else None
+
+        # Encounter + audio
+        self._encounter_defs    = encounter_defs  or []
+        self._audio_tracks      = audio_tracks    or []
+        self._active_track: Optional[AudioTrack]  = None
+
+        # Dungeon
+        self._dungeon_registry  = dungeon_registry or {}
+        self._orrery            = orrery
         self._dungeon_runtime: object = None
 
         # HUD hint text
@@ -139,7 +199,6 @@ class WorldPlay:
 
         if self._mode == WorldMode.DIALOGUE:
             if self._dialogue_needs_snapshot:
-                # Render world once to capture the frozen background
                 self._renderer.render(screen, zone, self._player)
                 self._frozen_bg = self._renderer.snapshot(screen)
                 self._dialogue_needs_snapshot = False
@@ -150,9 +209,32 @@ class WorldPlay:
             self._renderer.render(screen, zone, self._player, hint=self._hint)
 
         elif self._mode == WorldMode.DUNGEON:
-            # Placeholder: render frozen world + dungeon overlay (future)
             if self._frozen_bg is not None:
                 screen.blit(self._frozen_bg, (0, 0))
+
+    def advance_quest(self, entry_id: str, candidate: str) -> None:
+        """
+        Witness a quest entry with the given candidate choice.
+
+        Delegates to WitnessTracker.advance() when qqva is available;
+        applies a structural fallback update to the quest_state dict otherwise.
+        """
+        if self._witness_tracker is not None:
+            event = {
+                "event_type": "witness",
+                "entry_id":   entry_id,
+                "candidate":  candidate,
+            }
+            self._quest_state = self._witness_tracker.advance(
+                self._quest_state, event)
+        else:
+            entries = dict(self._quest_state.get("entries") or {})
+            if entry_id in entries:
+                entry = dict(entries[entry_id])
+                entry["witness_state"]      = "witnessed"
+                entry["witnessed_candidate"] = candidate
+                entries[entry_id] = entry
+            self._quest_state = {**self._quest_state, "entries": entries}
 
     # ── Key handling ──────────────────────────────────────────────────────────
 
@@ -192,19 +274,38 @@ class WorldPlay:
             self._transition_zone(exit_trig)
         elif portal_trig is not None:
             self._enter_dungeon(portal_trig)
+        elif moved:
+            self._check_encounters()
 
     # ── Zone transition ───────────────────────────────────────────────────────
 
     def _transition_zone(self, exit_trig) -> None:
         target = self._world.zones.get(exit_trig.target_zone)
         if target is None:
-            # Stub zone — quietly block; hint tells the player
             self._hint = "(nothing that way yet)"
             return
         self._player.zone_id = exit_trig.target_zone
         self._player.x       = exit_trig.target_x
         self._player.y       = exit_trig.target_y
         self._zone           = target
+        self._active_track   = self._select_audio_track()
+
+    # ── Encounter checking ────────────────────────────────────────────────────
+
+    def _check_encounters(self) -> None:
+        """Evaluate all encounter defs; trigger the first matching one."""
+        zone_id = self._player.zone_id
+        for enc in self._encounter_defs:
+            if enc.fires(self._quest_state, zone_id):
+                self._hint = f"[ encounter: {enc.name} ]"
+                return
+
+    # ── Audio track selection ─────────────────────────────────────────────────
+
+    def _select_audio_track(self) -> Optional[AudioTrack]:
+        """Pick the best audio track for current realm + quest state."""
+        realm_id = self._zone.realm.value if hasattr(self._zone.realm, "value") else str(self._zone.realm)
+        return select_audio(self._audio_tracks, self._quest_state, realm_id)
 
     # ── Interaction ───────────────────────────────────────────────────────────
 
@@ -240,7 +341,19 @@ class WorldPlay:
         self._dialogue_needs_snapshot = True
         self._frozen_bg               = None
         self._dialogue_bytes          = None
-        # TODO: fetch PIL dialogue bytes from dialogue system using npc.character_id
+
+        if _HAS_DIALOGUE and self._bundle is not None:
+            realm_id = (
+                self._zone.realm.value
+                if hasattr(self._zone.realm, "value")
+                else str(self._zone.realm)
+            )
+            paths = self._paths_by_char.get(npc.character_id) or []
+            screen: Optional[DialogueScreen] = _dialogue_select(
+                self._quest_state, realm_id, npc.character_id, paths, self._bundle
+            )
+            if screen is not None:
+                self._dialogue_bytes = screen.render()
 
     def _end_dialogue(self) -> None:
         self._frozen_bg               = None
@@ -251,11 +364,25 @@ class WorldPlay:
     # ── Dungeon ───────────────────────────────────────────────────────────────
 
     def _enter_dungeon(self, portal) -> None:
-        # Snapshot the world as background before entering
         self._mode = WorldMode.DUNGEON
-        # TODO: instantiate DungeonRuntime(dungeon_def, seed, orrery, player)
-        #       and implement a full dungeon render layer
-        #       For now: the dungeon portal is labelled in the HUD
+
+        if _HAS_DUNGEON and self._orrery is not None:
+            dungeon_def = self._dungeon_registry.get(portal.dungeon_id)
+            if dungeon_def is not None:
+                player_state = DungeonPlayerState(
+                    actor_id=getattr(self._chargen, "character_id", "0000_0451"),
+                    unlocked_perks=list(getattr(self._chargen, "unlocked_perks", []) or []),
+                    completed_quests=list(getattr(self._chargen, "completed_quests", []) or []),
+                    held_tokens=list(getattr(self._chargen, "held_tokens", []) or []),
+                    skill_ranks=dict(getattr(self._chargen, "skill_ranks", {}) or {}),
+                )
+                seed = random.randint(0, 0xFFFFFFFF)
+                self._dungeon_runtime = DungeonRuntime(
+                    dungeon_def, seed, self._orrery, player_state)
+                self._dungeon_runtime.start()
+                self._hint = f"[ {dungeon_def.name} ]"
+                return
+
         self._hint = f"[ {portal.dungeon_id} ]"
 
     def _exit_dungeon(self) -> None:

@@ -1,5 +1,12 @@
 from .loader import GameDataBundle, CharacterRecord, load_from_api, load_from_file
 from .render import render_character_dialogue, render_character_portrait_placeholder
+from .selector import (
+    DialogueScreen,
+    load_paths,
+    load_paths_dir,
+    select,
+    render_interaction,
+)
 
 __all__ = [
     "GameDataBundle",
@@ -8,4 +15,9 @@ __all__ = [
     "load_from_file",
     "render_character_dialogue",
     "render_character_portrait_placeholder",
+    "DialogueScreen",
+    "load_paths",
+    "load_paths_dir",
+    "select",
+    "render_interaction",
 ]

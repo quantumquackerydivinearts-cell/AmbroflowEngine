@@ -33,6 +33,14 @@ from .player   import WorldPlayer, Direction
 from .renderer import WorldRenderer
 from .play     import WorldPlay, WorldMode
 from .zones    import build_game7_world
+from .loaders  import (
+    EncounterDef,
+    AudioTrack,
+    load_encounter_defs,
+    load_audio_tracks,
+    load_quest_steps,
+    select_audio,
+)
 
 __all__ = [
     "WorldMap",
@@ -49,4 +57,10 @@ __all__ = [
     "WorldPlay",
     "WorldMode",
     "build_game7_world",
+    "EncounterDef",
+    "AudioTrack",
+    "load_encounter_defs",
+    "load_audio_tracks",
+    "load_quest_steps",
+    "select_audio",
 ]
