@@ -138,6 +138,67 @@ class Zone:
                 return n
         return None
 
+    @classmethod
+    def from_export_dict(cls, data: dict) -> "Zone":
+        """
+        Load a Zone from the JSON produced by the Atelier's
+        'Export → Ambroflow' button (exportTilesForAmbroflow).
+
+        Expected shape:
+          { zone_id, realm, name, width, height,
+            voxels: {"x,y": "kind", ...},
+            player_spawn: [x, y],
+            exits: [...], npc_spawns: [...], portals: [...] }
+        """
+        voxels: dict[tuple[int, int], WorldTileKind] = {}
+        for key, kind_str in (data.get("voxels") or {}).items():
+            x_str, _, y_str = key.partition(",")
+            try:
+                x, y = int(x_str), int(y_str)
+                voxels[(x, y)] = WorldTileKind(kind_str)
+            except (ValueError, KeyError):
+                continue
+
+        spawn_raw = data.get("player_spawn", [1, 1])
+        player_spawn = (int(spawn_raw[0]), int(spawn_raw[1]))
+
+        exits = [
+            ZoneExit(
+                x=int(e["x"]), y=int(e["y"]),
+                direction=e["direction"],
+                target_zone=e["target_zone"],
+                target_x=int(e["target_x"]), target_y=int(e["target_y"]),
+            )
+            for e in (data.get("exits") or [])
+        ]
+        npc_spawns = [
+            NPCSpawn(x=int(n["x"]), y=int(n["y"]), character_id=n["character_id"])
+            for n in (data.get("npc_spawns") or [])
+        ]
+        portals = [
+            DungeonPortal(x=int(p["x"]), y=int(p["y"]), dungeon_id=p["dungeon_id"])
+            for p in (data.get("portals") or [])
+        ]
+
+        realm_str = data.get("realm", "lapidus")
+        try:
+            realm = Realm(realm_str)
+        except ValueError:
+            realm = Realm.LAPIDUS
+
+        return cls(
+            zone_id=str(data.get("zone_id", "zone_export")),
+            realm=realm,
+            name=str(data.get("name", "Exported Zone")),
+            width=int(data.get("width", 48)),
+            height=int(data.get("height", 32)),
+            voxels=voxels,
+            player_spawn=player_spawn,
+            exits=exits,
+            npc_spawns=npc_spawns,
+            portals=portals,
+        )
+
 
 @dataclass
 class WorldMap:
@@ -219,3 +280,13 @@ def build_zone_from_ascii(
         npc_spawns=npc_spawns,
         portals=list(portals),
     )
+
+
+# ── Atelier export loader ─────────────────────────────────────────────────────
+
+def load_zone_export(path) -> Zone:
+    """Load a Zone from a JSON file exported by the Atelier's Export → Ambroflow."""
+    import json
+    from pathlib import Path
+    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    return Zone.from_export_dict(data)
