@@ -41,6 +41,7 @@ from .loaders  import (
     load_quest_steps,
     select_audio,
 )
+from .map_discovery import MapDiscoveryScreen, MapState
 
 __all__ = [
     "WorldMap",
@@ -63,4 +64,6 @@ __all__ = [
     "load_audio_tracks",
     "load_quest_steps",
     "select_audio",
+    "MapDiscoveryScreen",
+    "MapState",
 ]

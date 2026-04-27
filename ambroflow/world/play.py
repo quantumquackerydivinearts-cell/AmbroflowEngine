@@ -41,6 +41,7 @@ from .map import WorldMap, Zone
 from .player import WorldPlayer, Direction
 from .renderer import WorldRenderer
 from .loaders import EncounterDef, AudioTrack, select_audio
+from .map_discovery import MapDiscoveryScreen, MapState, ITEM_ID as _MAP_ITEM_ID, _JOURNAL_TITLE, _JOURNAL_BODY
 
 # ── qqva quest engine (graceful fallback) ────────────────────────────────────
 
@@ -98,10 +99,11 @@ _WASD: dict[int, Direction] = {
 
 
 class WorldMode(str, Enum):
-    WORLD    = "world"
-    DIALOGUE = "dialogue"
-    DUNGEON  = "dungeon"
-    DONE     = "done"
+    WORLD         = "world"
+    DIALOGUE      = "dialogue"
+    DUNGEON       = "dungeon"
+    MAP_DISCOVERY = "map_discovery"
+    DONE          = "done"
 
 
 class WorldPlay:
@@ -130,6 +132,8 @@ class WorldPlay:
         audio_tracks:     Optional[List[AudioTrack]]      = None,
         dungeon_registry: Optional[Dict[str, object]]     = None,  # dungeon_id → DungeonDef
         orrery:           object                          = None,  # OrreryClient
+        inventory:        object                          = None,  # Inventory instance
+        journal:          object                          = None,  # Journal instance
     ) -> None:
         self.width     = width
         self.height    = height
@@ -170,6 +174,16 @@ class WorldPlay:
         self._dungeon_registry  = dungeon_registry or {}
         self._orrery            = orrery
         self._dungeon_runtime: object = None
+
+        # Inventory + journal (optional — graceful no-ops when absent)
+        self._inventory = inventory
+        self._journal   = journal
+
+        # Map discovery
+        self._map_screen: Optional[MapDiscoveryScreen] = None
+        self._map_state:  MapState                     = MapState.FOLDED
+        self._map_bytes:  Optional[bytes]              = None
+        self._map_item_collected: bool                 = False
 
         # HUD hint text
         self._hint: str = ""
@@ -212,6 +226,18 @@ class WorldPlay:
             if self._frozen_bg is not None:
                 screen.blit(self._frozen_bg, (0, 0))
 
+        elif self._mode == WorldMode.MAP_DISCOVERY:
+            if self._map_bytes is not None:
+                import io
+                try:
+                    from PIL import Image
+                    pil_img = Image.open(io.BytesIO(self._map_bytes))
+                    surf    = pygame.image.fromstring(
+                        pil_img.tobytes(), pil_img.size, pil_img.mode)
+                    screen.blit(surf, (0, 0))
+                except Exception:
+                    pass
+
     def advance_quest(self, entry_id: str, candidate: str) -> None:
         """
         Witness a quest entry with the given candidate choice.
@@ -229,11 +255,10 @@ class WorldPlay:
                 self._quest_state, event)
         else:
             entries = dict(self._quest_state.get("entries") or {})
-            if entry_id in entries:
-                entry = dict(entries[entry_id])
-                entry["witness_state"]      = "witnessed"
-                entry["witnessed_candidate"] = candidate
-                entries[entry_id] = entry
+            entry = dict(entries.get(entry_id) or {})
+            entry["witness_state"]       = "witnessed"
+            entry["witnessed_candidate"] = candidate
+            entries[entry_id] = entry
             self._quest_state = {**self._quest_state, "entries": entries}
 
     # ── Key handling ──────────────────────────────────────────────────────────
@@ -244,8 +269,19 @@ class WorldPlay:
                 self._end_dialogue()
             elif self._mode == WorldMode.DUNGEON:
                 self._exit_dungeon()
+            elif self._mode == WorldMode.MAP_DISCOVERY:
+                self._close_map()
             else:
                 self._mode = WorldMode.DONE
+            return
+
+        if self._mode == WorldMode.MAP_DISCOVERY:
+            if key in (_K_RETURN, _K_SPACE):
+                if self._map_state == MapState.FOLDED:
+                    self._map_state = MapState.UNFOLDED
+                    self._refresh_map_bytes()
+                else:
+                    self._close_map()
             return
 
         if self._mode == WorldMode.DIALOGUE:
@@ -297,7 +333,10 @@ class WorldPlay:
         zone_id = self._player.zone_id
         for enc in self._encounter_defs:
             if enc.fires(self._quest_state, zone_id):
-                self._hint = f"[ encounter: {enc.name} ]"
+                if enc.name == "forest_journal_discovery":
+                    self._begin_map_discovery()
+                else:
+                    self._hint = f"[ encounter: {enc.name} ]"
                 return
 
     # ── Audio track selection ─────────────────────────────────────────────────
@@ -389,3 +428,49 @@ class WorldPlay:
         self._dungeon_runtime = None
         self._frozen_bg       = None
         self._mode            = WorldMode.WORLD
+
+    # ── Map discovery ─────────────────────────────────────────────────────────
+
+    def _begin_map_discovery(self) -> None:
+        """Open the map discovery screen at FOLDED state."""
+        self._map_screen = MapDiscoveryScreen()
+        self._map_state  = MapState.FOLDED
+        self._refresh_map_bytes()
+        self._mode = WorldMode.MAP_DISCOVERY
+
+    def _refresh_map_bytes(self) -> None:
+        if self._map_screen is not None:
+            self._map_bytes = self._map_screen.render(
+                self._map_state, self.width, self.height)
+
+    def _close_map(self) -> None:
+        """Close the map screen; add item to inventory and write journal entry."""
+        if not self._map_item_collected:
+            self._map_item_collected = True
+
+            # Add to inventory if available
+            if self._inventory is not None:
+                try:
+                    self._inventory.add(_MAP_ITEM_ID)
+                except Exception:
+                    pass
+
+            # Write journal entry if available
+            if self._journal is not None:
+                try:
+                    from ..journal.journal import EntryKind
+                    self._journal.write(
+                        EntryKind.LORE_FRAGMENT,
+                        _JOURNAL_TITLE,
+                        _JOURNAL_BODY,
+                        tags=["0007_WTCH", "mercurie", "0036_KLIT"],
+                    )
+                except Exception:
+                    pass
+
+            # Mark quest entry witnessed so the encounter does not re-fire
+            self.advance_quest("forest_journal_discovery", "map_received")
+
+        self._map_screen = None
+        self._map_bytes  = None
+        self._mode       = WorldMode.WORLD
