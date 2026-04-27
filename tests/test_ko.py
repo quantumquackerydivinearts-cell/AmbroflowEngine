@@ -56,8 +56,8 @@ def test_coil_layer_12_is_wu_yl():
 
 # ── DreamCalibrationSession ───────────────────────────────────────────────────
 
-def _run_calibration(game_id="7_KLGS", depth=False, resonance=0.7):
-    session = DreamCalibrationSession(game_id=game_id, has_depth_meditation=depth)
+def _run_calibration(game_id="7_KLGS", active_perks=frozenset(), resonance=0.7):
+    session = DreamCalibrationSession(game_id=game_id, active_perks=active_perks)
     # 3 phases × 3 responses each
     for phase in [CalibrationTongue.SAKURA, CalibrationTongue.ROSE, CalibrationTongue.LOTUS]:
         for _ in range(3):
@@ -80,8 +80,8 @@ def test_24_layer_densities_produced():
 
 
 def test_depth_meditation_boosts_lotus_rose():
-    cal_no_depth  = _run_calibration(depth=False, resonance=0.5)
-    cal_with_depth = _run_calibration(depth=True,  resonance=0.5)
+    cal_no_depth   = _run_calibration(active_perks=frozenset(),                    resonance=0.5)
+    cal_with_depth = _run_calibration(active_perks=frozenset({"depth_meditation"}), resonance=0.5)
     assert cal_with_depth.lotus_density >= cal_no_depth.lotus_density
     assert cal_with_depth.rose_density  >= cal_no_depth.rose_density
 

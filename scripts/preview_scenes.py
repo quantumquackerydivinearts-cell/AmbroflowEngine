@@ -233,7 +233,7 @@ def preview_dream(dest_dir: Path) -> None:
         lotus_density=0.5,
         layer_densities=[0.5] * 24,
         game_id="7_KLGS",
-        depth_meditated=0,
+        active_perks=frozenset(),
     )
 
     print("\n-- Ko Dream Calibration Sequence --")

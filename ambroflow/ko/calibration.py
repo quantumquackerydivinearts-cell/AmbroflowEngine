@@ -164,15 +164,15 @@ class DreamCalibration:
       lotus_density   — how grounded their material starting state is
 
     layer_densities is the full 24-position readout.
-    depth_meditated indicates whether Depth Meditation perk was active
-    (enables deeper Lotus/Rose reading).
+    active_perks records which meditation perks were active — load-bearing for
+    downstream systems that need to know which calibration boosts were applied.
     """
     sakura_density:  float
     rose_density:    float
     lotus_density:   float
     layer_densities: dict[int, float]   # key = DreamLayer.index (1–24)
     game_id:         str
-    depth_meditated: bool = False
+    active_perks:    frozenset[str]     = frozenset()
 
     def generate_world_conditions(self) -> dict[str, float]:
         """
@@ -214,8 +214,12 @@ class DreamCalibrationSession:
     ----------
     game_id:
         Active game slug.
-    has_depth_meditation:
-        Whether player has the Depth Meditation perk — enables deeper reading.
+    active_perks:
+        Set of active meditation perk IDs.  Calibration effects:
+          depth_meditation       → +0.08 Lotus and Rose (deeper material/relational read)
+          infernal_meditation    → +0.08 Sakura (deeper orientation/underworld read)
+          transcendental_meditation → +0.05 all phases (content richness — more of the
+                                     day's events are captured across every layer)
     """
 
     PHASES = [
@@ -432,9 +436,9 @@ class DreamCalibrationSession:
         ],
     }
 
-    def __init__(self, game_id: str, has_depth_meditation: bool = False) -> None:
+    def __init__(self, game_id: str, active_perks: frozenset[str] = frozenset()) -> None:
         self._game_id = game_id
-        self._depth   = has_depth_meditation
+        self._perks   = active_perks
         self._phase_idx = 0
         self._responses: dict[CalibrationTongue, list[float]] = {
             CalibrationTongue.SAKURA: [],
@@ -490,13 +494,19 @@ class DreamCalibrationSession:
 
         def _density(tongue: CalibrationTongue) -> float:
             vals = self._responses[tongue]
-            if not vals:
-                return 0.5
-            base = sum(vals) / len(vals)
-            # Depth Meditation perk: increases effective reading depth for Lotus/Rose
-            if self._depth and tongue in (CalibrationTongue.LOTUS, CalibrationTongue.ROSE):
-                base = min(1.0, base + 0.08)
-            return round(base, 4)
+            base = sum(vals) / len(vals) if vals else 0.5
+            # Depth Meditation: deeper Lotus/Rose read (material + relational layers)
+            if tongue in (CalibrationTongue.LOTUS, CalibrationTongue.ROSE):
+                if "depth_meditation" in self._perks:
+                    base += 0.08
+            # Infernal Meditation: deeper Sakura read (orientation/underworld-facing layers)
+            if tongue == CalibrationTongue.SAKURA:
+                if "infernal_meditation" in self._perks:
+                    base += 0.08
+            # Transcendental Meditation: content richness — all phases capture more of the day
+            if "transcendental_meditation" in self._perks:
+                base += 0.05
+            return round(min(1.0, base), 4)
 
         sakura = _density(CalibrationTongue.SAKURA)
         rose   = _density(CalibrationTongue.ROSE)
@@ -521,7 +531,7 @@ class DreamCalibrationSession:
             lotus_density=lotus,
             layer_densities=layer_densities,
             game_id=self._game_id,
-            depth_meditated=self._depth,
+            active_perks=self._perks,
         )
 
 

@@ -50,7 +50,7 @@ def _resolve_combat(action: str, ctx: EncounterContext) -> EncounterResult:
     rank = ctx.actor_skill_ranks.get("melee_weapons", 0) or \
            ctx.actor_skill_ranks.get("guns", 0) or \
            ctx.actor_skill_ranks.get("unarmed", 0)
-    effective = rank / 5.0
+    effective = rank / 50.0
     if effective >= ctx.difficulty:
         return EncounterResult(
             outcome="success",
@@ -71,7 +71,7 @@ def _resolve_combat(action: str, ctx: EncounterContext) -> EncounterResult:
 def _resolve_negotiation(action: str, ctx: EncounterContext) -> EncounterResult:
     speech = ctx.actor_skill_ranks.get("speech", 0)
     barter = ctx.actor_skill_ranks.get("barter", 0)
-    effective = max(speech, barter) / 5.0
+    effective = max(speech, barter) / 50.0
     if effective >= ctx.difficulty:
         return EncounterResult(
             outcome="success",
@@ -100,7 +100,7 @@ def _resolve_observation(action: str, ctx: EncounterContext) -> EncounterResult:
 def _resolve_trap(action: str, ctx: EncounterContext) -> EncounterResult:
     survival = ctx.actor_skill_ranks.get("survival", 0)
     lockpick = ctx.actor_skill_ranks.get("lockpick", 0)
-    effective = max(survival, lockpick) / 5.0
+    effective = max(survival, lockpick) / 50.0
     if effective >= ctx.difficulty:
         return EncounterResult(outcome="success")
     return EncounterResult(

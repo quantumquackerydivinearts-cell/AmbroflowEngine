@@ -121,6 +121,19 @@ KO_FLAGS: tuple[KoFlag, ...] = (
         decay_rate=0.0,
         layer_resonance=9,  # Dyf-Vr / emergent pattern
     ),
+    KoFlag(
+        id="negaya_appeased",
+        shygazun_compound="Zo-Ku-Ko",   # Absence–End–Experience: absence terminated through knowing
+        decimal_address=166,
+        description=(
+            "Player completed the necromancy ritual via the Shakzefan / Lakota path. "
+            "Negaya is appeased and bound — meditation sessions are restored."
+        ),
+        source_games={7},
+        target_games={i: 0.0 for i in range(7, 32)},   # gate only, no weight modification
+        decay_rate=0.0,
+        layer_resonance=6,   # Shak-Lo / entity threshold — body made present again
+    ),
 )
 
 KO_FLAG_BY_ID: dict[str, KoFlag] = {f.id: f for f in KO_FLAGS}

@@ -42,6 +42,12 @@ from .player import WorldPlayer, Direction
 from .renderer import WorldRenderer
 from .loaders import EncounterDef, AudioTrack, select_audio
 from .map_discovery import MapDiscoveryScreen, MapState, ITEM_ID as _MAP_ITEM_ID, _JOURNAL_TITLE, _JOURNAL_BODY
+from .tile_trace import TileTracer, FY, KO, TA, PU, ZO
+from .combat    import (
+    CombatScreen, CombatResult, CombatLoop,
+    resolve_combat, begin_combat_loop, execute_round, to_result,
+    AMMO_GOLD_ROUNDS, WEAPON_ANGELIC_SPEAR,
+)
 
 # ── qqva quest engine (graceful fallback) ────────────────────────────────────
 
@@ -82,6 +88,7 @@ _K_RIGHT  = 1073741903
 _K_RETURN = 13
 _K_SPACE  = 32
 _K_ESCAPE = 27
+_K_FIGHT  = ord('f')
 
 _DIR_KEYS: dict[int, Direction] = {
     _K_UP:    Direction.NORTH,
@@ -103,6 +110,8 @@ class WorldMode(str, Enum):
     DIALOGUE      = "dialogue"
     DUNGEON       = "dungeon"
     MAP_DISCOVERY = "map_discovery"
+    COMBAT        = "combat"
+    DEAD          = "dead"
     DONE          = "done"
 
 
@@ -134,6 +143,7 @@ class WorldPlay:
         orrery:           object                          = None,  # OrreryClient
         inventory:        object                          = None,  # Inventory instance
         journal:          object                          = None,  # Journal instance
+        tile_tracer:      Optional[TileTracer]            = None,
     ) -> None:
         self.width     = width
         self.height    = height
@@ -179,11 +189,22 @@ class WorldPlay:
         self._inventory = inventory
         self._journal   = journal
 
+        # Tile tracer — created fresh if not supplied
+        self._tracer: TileTracer = tile_tracer or TileTracer(orrery=orrery)
+
         # Map discovery
         self._map_screen: Optional[MapDiscoveryScreen] = None
         self._map_state:  MapState                     = MapState.FOLDED
         self._map_bytes:  Optional[bytes]              = None
         self._map_item_collected: bool                 = False
+
+        # Free combat
+        self._combat_screen:   CombatScreen            = CombatScreen()
+        self._combat_npc:      object                  = None   # NPCSpawn | None
+        self._combat_loop:     Optional[CombatLoop]    = None
+        self._combat_result:   Optional[CombatResult]  = None
+        self._combat_bytes:    Optional[bytes]         = None
+        self._dead_npcs:       set[str]                = set()
 
         # HUD hint text
         self._hint: str = ""
@@ -192,6 +213,19 @@ class WorldPlay:
 
     def is_done(self) -> bool:
         return self._mode == WorldMode.DONE
+
+    @property
+    def tile_tracer(self) -> TileTracer:
+        return self._tracer
+
+    def current_tile_context(self) -> dict:
+        """
+        Wraith context dict for the tile the player is currently standing on.
+        Passed to dialogue selectors so NPC responses can be informed by what
+        Ko, Haldoro, and Vios have already witnessed here.
+        """
+        return self._tracer.wraith_context(
+            self._player.zone_id, self._player.x, self._player.y)
 
     def tick(self, dt: float, events: list) -> None:
         """Process pygame events for the current frame."""
@@ -226,6 +260,17 @@ class WorldPlay:
             if self._frozen_bg is not None:
                 screen.blit(self._frozen_bg, (0, 0))
 
+        elif self._mode == WorldMode.COMBAT:
+            if self._combat_bytes is not None:
+                import io as _io
+                try:
+                    from PIL import Image as _Img
+                    pil = _Img.open(_io.BytesIO(self._combat_bytes))
+                    surf = pygame.image.fromstring(pil.tobytes(), pil.size, pil.mode)
+                    screen.blit(surf, (0, 0))
+                except Exception:
+                    pass
+
         elif self._mode == WorldMode.MAP_DISCOVERY:
             if self._map_bytes is not None:
                 import io
@@ -245,6 +290,10 @@ class WorldPlay:
         Delegates to WitnessTracker.advance() when qqva is available;
         applies a structural fallback update to the quest_state dict otherwise.
         """
+        self._tracer.deposit(
+            self._player.zone_id, self._player.x, self._player.y, KO,
+            context={"quest_entry": entry_id, "candidate": candidate},
+        )
         if self._witness_tracker is not None:
             event = {
                 "event_type": "witness",
@@ -271,8 +320,32 @@ class WorldPlay:
                 self._exit_dungeon()
             elif self._mode == WorldMode.MAP_DISCOVERY:
                 self._close_map()
+            elif self._mode == WorldMode.COMBAT:
+                if self._combat_loop is None:
+                    # Prompt not yet confirmed — abort cleanly
+                    self._abort_combat()
+                # else: flee is handled in the COMBAT block below
             else:
                 self._mode = WorldMode.DONE
+            return
+
+        if self._mode == WorldMode.DEAD:
+            if key in (_K_RETURN, _K_SPACE, _K_ESCAPE):
+                self._mode = WorldMode.DONE
+            return
+
+        if self._mode == WorldMode.COMBAT:
+            if self._combat_result is not None:
+                # Result phase — loop is over, outcome shown
+                if key in (_K_RETURN, _K_SPACE):
+                    self._end_combat()
+            elif self._combat_loop is not None:
+                # Active loop
+                if key == _K_FIGHT:
+                    self._process_round("attack")
+                elif key == _K_ESCAPE:
+                    self._process_round("flee")
+                    return   # esc consumed by flee, not by outer esc handler
             return
 
         if self._mode == WorldMode.MAP_DISCOVERY:
@@ -299,6 +372,8 @@ class WorldPlay:
                 self._move(direction)
             elif key in (_K_RETURN, _K_SPACE):
                 self._interact()
+            elif key == _K_FIGHT:
+                self._try_attack()
 
     # ── Movement ─────────────────────────────────────────────────────────────
 
@@ -311,6 +386,9 @@ class WorldPlay:
         elif portal_trig is not None:
             self._enter_dungeon(portal_trig)
         elif moved:
+            self._tracer.deposit(
+                self._player.zone_id, self._player.x, self._player.y, TA,
+            )
             self._check_encounters()
 
     # ── Zone transition ───────────────────────────────────────────────────────
@@ -333,6 +411,10 @@ class WorldPlay:
         zone_id = self._player.zone_id
         for enc in self._encounter_defs:
             if enc.fires(self._quest_state, zone_id):
+                self._tracer.deposit(
+                    self._player.zone_id, self._player.x, self._player.y, KO,
+                    context={"encounter": enc.name},
+                )
                 if enc.name == "forest_journal_discovery":
                     self._begin_map_discovery()
                 else:
@@ -351,7 +433,7 @@ class WorldPlay:
     def _interact(self) -> None:
         zone = self._zone
         npc  = self._player.facing_npc(zone)
-        if npc is not None:
+        if npc is not None and npc.character_id not in self._dead_npcs:
             self._begin_dialogue(npc)
             return
         portal = self._player.facing_portal(zone)
@@ -364,8 +446,8 @@ class WorldPlay:
             return
         zone = self._zone
         npc  = self._player.facing_npc(zone)
-        if npc is not None:
-            self._hint = "[space]  Talk"
+        if npc is not None and npc.character_id not in self._dead_npcs:
+            self._hint = "[space]  Talk     [f]  Attack"
             return
         portal = self._player.facing_portal(zone)
         if portal is not None:
@@ -376,6 +458,10 @@ class WorldPlay:
     # ── Dialogue ─────────────────────────────────────────────────────────────
 
     def _begin_dialogue(self, npc) -> None:
+        self._tracer.deposit(
+            self._player.zone_id, self._player.x, self._player.y, FY,
+            context={"npc": getattr(npc, "character_id", str(npc))},
+        )
         self._mode                    = WorldMode.DIALOGUE
         self._dialogue_needs_snapshot = True
         self._frozen_bg               = None
@@ -429,10 +515,135 @@ class WorldPlay:
         self._frozen_bg       = None
         self._mode            = WorldMode.WORLD
 
+    # ── Free combat ───────────────────────────────────────────────────────────
+
+    def _try_attack(self) -> None:
+        npc = self._player.facing_npc(self._zone)
+        if npc is None or npc.character_id in self._dead_npcs:
+            return
+        self._begin_combat(npc)
+
+    def _get_vitriol_stat(self, stat: str, default: int = 5) -> int:
+        v = getattr(self._chargen, stat, None)
+        if isinstance(v, int):
+            return v
+        profile = getattr(self._chargen, "vitriol", None)
+        if profile is not None:
+            v = getattr(profile, stat, None)
+            if isinstance(v, int):
+                return v
+        return default
+
+    def _get_equipped(self) -> str | None:
+        if self._inventory is not None:
+            if self._inventory.has(AMMO_GOLD_ROUNDS):
+                return AMMO_GOLD_ROUNDS
+            if self._inventory.has(WEAPON_ANGELIC_SPEAR):
+                return WEAPON_ANGELIC_SPEAR
+        return None
+
+    def _begin_combat(self, npc) -> None:
+        self._tracer.deposit(
+            self._player.zone_id, self._player.x, self._player.y, FY,
+            context={"event": "combat_initiated", "npc": npc.character_id},
+        )
+        self._combat_npc    = npc
+        self._combat_result = None
+        ranks    = dict(getattr(self._chargen, "skill_ranks", {}) or {})
+        vitality = self._get_vitriol_stat("vitality")
+        tactility = self._get_vitriol_stat("tactility")
+        equipped = self._get_equipped()
+        npc_name = getattr(npc, "name", npc.character_id)
+        self._combat_loop  = begin_combat_loop(
+            npc.character_id, npc_name, ranks, vitality, tactility, equipped,
+        )
+        self._combat_bytes = self._combat_screen.render_prompt(
+            npc_name, npc.character_id, self.width, self.height)
+        self._mode = WorldMode.COMBAT
+
+    def _process_round(self, action: str) -> None:
+        """Execute one turn.  Deposits FY each round; transitions on loop end."""
+        loop = self._combat_loop
+        if loop is None or loop.is_over:
+            return
+        # FY per round — persistence of intent
+        self._tracer.deposit(
+            self._player.zone_id, self._player.x, self._player.y, FY,
+            context={"event": "combat_round", "round": loop.round_num + 1,
+                     "npc": loop.npc_id},
+        )
+        execute_round(loop, action)
+        if loop.is_over:
+            self._combat_result = to_result(loop)
+            if loop.outcome == "player_dead":
+                self._combat_bytes = self._combat_screen.render_dead(
+                    loop, self.width, self.height)
+            else:
+                self._combat_bytes = self._combat_screen.render_result(
+                    self._combat_result, self.width, self.height)
+        else:
+            self._combat_bytes = self._combat_screen.render_round(
+                loop, self.width, self.height)
+
+    def _end_combat(self) -> None:
+        result = self._combat_result
+        if result is not None:
+            if result.outcome == "player_wins":
+                # Ku (7, death) + Zo (16, absence) — the kill
+                self._tracer.deposit(
+                    self._player.zone_id, self._player.x, self._player.y,
+                    7, ZO,
+                    context={"event": "npc_killed", "npc": result.npc_id},
+                )
+                self._dead_npcs.add(result.npc_id)
+                self.advance_quest(f"killed_{result.npc_id}", "killed")
+            elif result.outcome == "player_flees":
+                # Pu (5, stasis) — arrested motion
+                self._tracer.deposit(
+                    self._player.zone_id, self._player.x, self._player.y, PU,
+                    context={"event": "combat_fled", "npc": result.npc_id},
+                )
+            elif result.outcome == "player_dead":
+                # La (11, tense/excited) — the lethal exchange
+                self._tracer.deposit(
+                    self._player.zone_id, self._player.x, self._player.y, 11,
+                    context={"event": "combat_died", "npc": result.npc_id},
+                )
+                self._combat_npc    = None
+                self._combat_loop   = None
+                self._combat_result = None
+                self._combat_bytes  = None
+                self._mode          = WorldMode.DEAD
+                return
+            else:
+                # npc_wins (immune entity, no angelic gear)
+                self._tracer.deposit(
+                    self._player.zone_id, self._player.x, self._player.y, 11,
+                    context={"event": "combat_lost", "npc": result.npc_id},
+                )
+
+        self._combat_npc    = None
+        self._combat_loop   = None
+        self._combat_result = None
+        self._combat_bytes  = None
+        self._mode          = WorldMode.WORLD
+
+    def _abort_combat(self) -> None:
+        """Player pressed esc at the prompt before confirming — no consequence."""
+        self._combat_npc    = None
+        self._combat_loop   = None
+        self._combat_result = None
+        self._combat_bytes  = None
+        self._mode          = WorldMode.WORLD
+
     # ── Map discovery ─────────────────────────────────────────────────────────
 
     def _begin_map_discovery(self) -> None:
         """Open the map discovery screen at FOLDED state."""
+        self._tracer.deposit(
+            self._player.zone_id, self._player.x, self._player.y, FY,
+            context={"event": "map_discovery_opened"},
+        )
         self._map_screen = MapDiscoveryScreen()
         self._map_state  = MapState.FOLDED
         self._refresh_map_bytes()
@@ -445,6 +656,10 @@ class WorldPlay:
 
     def _close_map(self) -> None:
         """Close the map screen; add item to inventory and write journal entry."""
+        self._tracer.deposit(
+            self._player.zone_id, self._player.x, self._player.y, KO,
+            context={"event": "map_collected", "item_id": _MAP_ITEM_ID},
+        )
         if not self._map_item_collected:
             self._map_item_collected = True
 

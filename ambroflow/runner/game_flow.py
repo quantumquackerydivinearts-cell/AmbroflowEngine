@@ -232,7 +232,7 @@ class GameFlow:
         def _work() -> None:
             cal = DreamCalibrationSession(
                 game_id=game_slug,
-                has_depth_meditation=False,
+                active_perks=frozenset(),
             )
             for r in responses:
                 cal.respond(r)

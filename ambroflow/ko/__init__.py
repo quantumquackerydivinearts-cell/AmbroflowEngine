@@ -21,6 +21,15 @@ from .dream_scene import (
     render_dream_sequence,
 )
 from .calibration import get_assignment_line
+from .negaya import (
+    NegayaEncounterScreen,
+    NEGAYA_KILL_THRESHOLD,
+    NEGAYA_PERMANENT_THRESHOLD,
+    negaya_triggered,
+    negaya_permanent,
+    negaya_duration,
+)
+from .meditation import MeditationSession, MeditationOutcome
 
 __all__ = [
     "DreamCalibration",
@@ -52,4 +61,12 @@ __all__ = [
     "render_closing_screen",
     "render_dream_sequence",
     "get_assignment_line",
+    "NegayaEncounterScreen",
+    "NEGAYA_KILL_THRESHOLD",
+    "NEGAYA_PERMANENT_THRESHOLD",
+    "negaya_triggered",
+    "negaya_permanent",
+    "negaya_duration",
+    "MeditationSession",
+    "MeditationOutcome",
 ]

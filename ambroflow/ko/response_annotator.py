@@ -601,7 +601,7 @@ class DreamResponsePipeline:
 
     Usage
     -----
-        pipeline = DreamResponsePipeline("7_KLGS", has_depth_meditation=False)
+        pipeline = DreamResponsePipeline("7_KLGS", active_perks=frozenset())
         while not pipeline.complete:
             prompts = pipeline.current_prompts
             # ... present prompts to player ...
@@ -619,9 +619,9 @@ class DreamResponsePipeline:
         annotation:     ResponseAnnotation
         current_prompt: str
 
-    def __init__(self, game_id: str, has_depth_meditation: bool = False) -> None:
+    def __init__(self, game_id: str, active_perks: frozenset[str] = frozenset()) -> None:
         from .calibration import DreamCalibrationSession
-        self._session    = DreamCalibrationSession(game_id, has_depth_meditation)
+        self._session    = DreamCalibrationSession(game_id, active_perks)
         self._game_id    = game_id
         self._prompt_idx = 0
         self._kernel_available: Optional[bool] = None

@@ -42,6 +42,18 @@ from .loaders  import (
     select_audio,
 )
 from .map_discovery import MapDiscoveryScreen, MapState
+from .combat        import (
+    CombatScreen, CombatResult, CombatLoop,
+    resolve_combat, npc_difficulty,
+    begin_combat_loop, execute_round, to_result,
+    player_health_from_vitality, npc_hits_to_kill,
+    npc_damage_per_hit, endurance_reduction,
+    AMMO_GOLD_ROUNDS, WEAPON_ANGELIC_SPEAR,
+)
+from .tile_trace    import (
+    TileTracer, TileAttestation, LOTUS_TABLE,
+    FY, PU, TA, ZO, SHA, KO,
+)
 
 __all__ = [
     "WorldMap",
@@ -66,4 +78,22 @@ __all__ = [
     "select_audio",
     "MapDiscoveryScreen",
     "MapState",
+    "CombatScreen",
+    "CombatResult",
+    "CombatLoop",
+    "resolve_combat",
+    "npc_difficulty",
+    "begin_combat_loop",
+    "execute_round",
+    "to_result",
+    "player_health_from_vitality",
+    "npc_hits_to_kill",
+    "npc_damage_per_hit",
+    "endurance_reduction",
+    "AMMO_GOLD_ROUNDS",
+    "WEAPON_ANGELIC_SPEAR",
+    "TileTracer",
+    "TileAttestation",
+    "LOTUS_TABLE",
+    "FY", "PU", "TA", "ZO", "SHA", "KO",
 ]
