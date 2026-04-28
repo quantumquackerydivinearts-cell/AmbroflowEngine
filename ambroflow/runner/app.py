@@ -289,12 +289,14 @@ class AmbroflowApp:
                 self._game_flow = None
                 # Transition into waking play (world navigation)
                 try:
+                    from ..world.zones.lapidus import VENDOR_CATALOGS
                     world_map = build_game7_world()
                     self._world_play = WorldPlay(
                         chargen=chargen,
                         world_map=world_map,
                         width=self._W,
                         height=self._H,
+                        vendor_catalogs=VENDOR_CATALOGS,
                     )
                     self._go("WORLD_PLAY")
                 except Exception:

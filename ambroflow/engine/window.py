@@ -39,9 +39,11 @@ class InputEvent:
     CANCEL       = "cancel"
     MENU         = "menu"
     QUIT         = "quit"
+    FIGHT        = "fight"
+    ALCHEMY      = "alchemy"
 
 
-# Key → InputEvent mapping (WASD + arrows, Esc, Enter/Space)
+# Key → InputEvent mapping (WASD + arrows, Esc, Enter/Space, F/Z)
 _KEY_MAP: dict[int, str] = {
     glfw.KEY_W:      InputEvent.MOVE_NORTH,
     glfw.KEY_UP:     InputEvent.MOVE_NORTH,
@@ -55,6 +57,8 @@ _KEY_MAP: dict[int, str] = {
     glfw.KEY_SPACE:  InputEvent.INTERACT,
     glfw.KEY_ESCAPE: InputEvent.CANCEL,
     glfw.KEY_TAB:    InputEvent.MENU,
+    glfw.KEY_F:      InputEvent.FIGHT,
+    glfw.KEY_Z:      InputEvent.ALCHEMY,
 }
 
 # Movement events that participate in held-key continuous repeat

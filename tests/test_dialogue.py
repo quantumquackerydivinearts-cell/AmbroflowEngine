@@ -51,8 +51,8 @@ def _minimal_registry() -> dict:
         "quests": [
             {"slug": "0009_KLST", "name": "Demons and Diamonds"},
         ],
-        "items":  [{"id": "herb_001", "name": "Herb Common"}],
-        "objects": [{"id": "8000_KLOB", "name": "Mortar"}],
+        "items":  [{"id": "0028_KLIT", "name": "Herb (Common)"}],
+        "objects": [{"id": "0001_KLOB", "name": "Mortar"}],
     }
 
 
@@ -69,8 +69,8 @@ def test_bundle_load_from_file():
     assert "0006_WTCH" in bundle.characters
     assert bundle.characters["0006_WTCH"].name == "Alfir"
     assert "0009_KLST" in bundle.quests
-    assert "herb_001"  in bundle.items
-    assert "8000_KLOB" in bundle.objects
+    assert "0028_KLIT"  in bundle.items
+    assert "0001_KLOB" in bundle.objects
 
 
 def test_bundle_character_lookup():

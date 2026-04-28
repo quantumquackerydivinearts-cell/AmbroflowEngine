@@ -48,6 +48,8 @@ from .combat    import (
     resolve_combat, begin_combat_loop, execute_round, to_result,
     AMMO_GOLD_ROUNDS, WEAPON_ANGELIC_SPEAR,
 )
+from .alchemy_screen import AlchemyScreen, _APPROACHES
+from .vendor_screen import VendorScreen, COIN_ID
 
 # ── qqva quest engine (graceful fallback) ────────────────────────────────────
 
@@ -88,7 +90,8 @@ _K_RIGHT  = 1073741903
 _K_RETURN = 13
 _K_SPACE  = 32
 _K_ESCAPE = 27
-_K_FIGHT  = ord('f')
+_K_FIGHT   = ord('f')
+_K_ALCHEMY = ord('z')
 
 _DIR_KEYS: dict[int, Direction] = {
     _K_UP:    Direction.NORTH,
@@ -111,6 +114,8 @@ class WorldMode(str, Enum):
     DUNGEON       = "dungeon"
     MAP_DISCOVERY = "map_discovery"
     COMBAT        = "combat"
+    ALCHEMY       = "alchemy"
+    VENDOR        = "vendor"
     DEAD          = "dead"
     DONE          = "done"
 
@@ -144,6 +149,11 @@ class WorldPlay:
         inventory:        object                          = None,  # Inventory instance
         journal:          object                          = None,  # Journal instance
         tile_tracer:      Optional[TileTracer]            = None,
+        clock:            object                          = None,  # WorldClock instance
+        alchemy:          object                          = None,  # AlchemySystem instance
+        presence:         object                          = None,  # PresenceState instance
+        recipe_book:      object                          = None,  # RecipeBook instance
+        vendor_catalogs:  Optional[Dict[str, Dict[str, int]]] = None,
     ) -> None:
         self.width     = width
         self.height    = height
@@ -188,6 +198,41 @@ class WorldPlay:
         # Inventory + journal (optional — graceful no-ops when absent)
         self._inventory = inventory
         self._journal   = journal
+
+        # Clock (optional — advances 1 hour per zone transition)
+        self._clock = clock
+
+        # Alchemy (optional — graceful no-ops when absent)
+        self._alchemy       = alchemy
+        self._presence      = presence
+        self._recipe_book   = recipe_book
+        self._alchemy_screen = AlchemyScreen()
+        # Session state
+        self._alchemy_subjects:     list  = []
+        self._alchemy_subject_idx:  int   = 0
+        self._alchemy_approach_idx: int   = 0
+        self._alchemy_phase:        str   = "subject"   # subject | approach | result
+        self._alchemy_result:       object = None
+        self._alchemy_bytes:        Optional[bytes] = None
+        self._alchemy_calendar_ctx: object = None
+
+        # Vendor (optional)
+        self._vendor_catalogs: Dict[str, Dict[str, int]] = vendor_catalogs or {}
+        self._vendor_screen    = VendorScreen()
+        self._vendor_catalog:  list  = []   # [(item_id, price), ...]
+        self._vendor_name:     str   = ""
+        self._vendor_idx:      int   = 0
+        self._vendor_bytes:    Optional[bytes] = None
+
+        # Item spawn tracking — zone_ids whose spawns have been collected
+        self._collected_zones: set[str] = set()
+
+        # Collect item spawns for the starting zone
+        self._collect_zone_items(starting)
+
+        # Zone/NPC discovery tracking for journal auto-writes
+        self._seen_zones: set[str] = set()
+        self._met_npcs:   set[str] = set()
 
         # Tile tracer — created fresh if not supplied
         self._tracer: TileTracer = tile_tracer or TileTracer(orrery=orrery)
@@ -283,6 +328,28 @@ class WorldPlay:
                 except Exception:
                     pass
 
+        elif self._mode == WorldMode.ALCHEMY:
+            if self._alchemy_bytes is not None:
+                import io as _io2
+                try:
+                    from PIL import Image as _Img2
+                    pil = _Img2.open(_io2.BytesIO(self._alchemy_bytes))
+                    surf = pygame.image.fromstring(pil.tobytes(), pil.size, pil.mode)
+                    screen.blit(surf, (0, 0))
+                except Exception:
+                    pass
+
+        elif self._mode == WorldMode.VENDOR:
+            if self._vendor_bytes is not None:
+                import io as _io3
+                try:
+                    from PIL import Image as _Img3
+                    pil = _Img3.open(_io3.BytesIO(self._vendor_bytes))
+                    surf = pygame.image.fromstring(pil.tobytes(), pil.size, pil.mode)
+                    screen.blit(surf, (0, 0))
+                except Exception:
+                    pass
+
     def advance_quest(self, entry_id: str, candidate: str) -> None:
         """
         Witness a quest entry with the given candidate choice.
@@ -320,6 +387,8 @@ class WorldPlay:
                 self._exit_dungeon()
             elif self._mode == WorldMode.MAP_DISCOVERY:
                 self._close_map()
+            elif self._mode == WorldMode.ALCHEMY:
+                self._end_alchemy()
             elif self._mode == WorldMode.COMBAT:
                 if self._combat_loop is None:
                     # Prompt not yet confirmed — abort cleanly
@@ -366,6 +435,14 @@ class WorldPlay:
             # TODO: route to DungeonRuntime.move() / act()
             return
 
+        if self._mode == WorldMode.ALCHEMY:
+            self._handle_alchemy_key(key)
+            return
+
+        if self._mode == WorldMode.VENDOR:
+            self._handle_vendor_key(key)
+            return
+
         if self._mode == WorldMode.WORLD:
             direction = _DIR_KEYS.get(key) or _WASD.get(key)
             if direction is not None:
@@ -374,6 +451,8 @@ class WorldPlay:
                 self._interact()
             elif key == _K_FIGHT:
                 self._try_attack()
+            elif key == _K_ALCHEMY:
+                self._begin_alchemy()
 
     # ── Movement ─────────────────────────────────────────────────────────────
 
@@ -403,6 +482,34 @@ class WorldPlay:
         self._player.y       = exit_trig.target_y
         self._zone           = target
         self._active_track   = self._select_audio_track()
+
+        # Advance clock one hour per zone crossing
+        if self._clock is not None:
+            try:
+                self._clock.advance(1)
+            except Exception:
+                pass
+
+        # First-visit: journal entry + item spawn collection
+        zone_id = exit_trig.target_zone
+        if zone_id not in self._seen_zones:
+            self._seen_zones.add(zone_id)
+            self._journal_zone_discovered(zone_id, target)
+            self._collect_zone_items(target)
+
+    def _collect_zone_items(self, zone) -> None:
+        """Auto-collect all ItemSpawns in `zone` on first visit."""
+        if self._inventory is None:
+            return
+        zone_id = getattr(zone, "zone_id", None)
+        if zone_id is None or zone_id in self._collected_zones:
+            return
+        self._collected_zones.add(zone_id)
+        for spawn in getattr(zone, "item_spawns", []):
+            try:
+                self._inventory.add(spawn.item_id, spawn.qty)
+            except Exception:
+                pass
 
     # ── Encounter checking ────────────────────────────────────────────────────
 
@@ -434,7 +541,10 @@ class WorldPlay:
         zone = self._zone
         npc  = self._player.facing_npc(zone)
         if npc is not None and npc.character_id not in self._dead_npcs:
-            self._begin_dialogue(npc)
+            if npc.character_id in self._vendor_catalogs:
+                self._begin_vendor(npc)
+            else:
+                self._begin_dialogue(npc)
             return
         portal = self._player.facing_portal(zone)
         if portal is not None:
@@ -453,19 +563,28 @@ class WorldPlay:
         if portal is not None:
             self._hint = "[space]  Enter dungeon"
             return
+        if self._alchemy is not None:
+            self._hint = "[z]  Alchemy"
+            return
         self._hint = ""
 
     # ── Dialogue ─────────────────────────────────────────────────────────────
 
     def _begin_dialogue(self, npc) -> None:
+        char_id = getattr(npc, "character_id", str(npc))
         self._tracer.deposit(
             self._player.zone_id, self._player.x, self._player.y, FY,
-            context={"npc": getattr(npc, "character_id", str(npc))},
+            context={"npc": char_id},
         )
         self._mode                    = WorldMode.DIALOGUE
         self._dialogue_needs_snapshot = True
         self._frozen_bg               = None
         self._dialogue_bytes          = None
+
+        # First-meeting character note
+        if char_id not in self._met_npcs:
+            self._met_npcs.add(char_id)
+            self._journal_npc_met(npc)
 
         if _HAS_DIALOGUE and self._bundle is not None:
             realm_id = (
@@ -689,3 +808,317 @@ class WorldPlay:
         self._map_screen = None
         self._map_bytes  = None
         self._mode       = WorldMode.WORLD
+
+    # ── Journal auto-writes ───────────────────────────────────────────────────
+
+    def _journal_zone_discovered(self, zone_id: str, zone) -> None:
+        if self._journal is None:
+            return
+        try:
+            from ..journal.journal import EntryKind
+            name = getattr(zone, "name", zone_id)
+            self._journal.write(
+                EntryKind.OBSERVATION,
+                f"Arrived: {name}",
+                f"First visit to {name} ({zone_id}).",
+                tags=[zone_id, getattr(zone.realm, "value", "lapidus")],
+            )
+        except Exception:
+            pass
+
+    def _journal_npc_met(self, npc) -> None:
+        if self._journal is None:
+            return
+        try:
+            from ..journal.journal import EntryKind
+            char_id  = getattr(npc, "character_id", str(npc))
+            npc_name = getattr(npc, "name", char_id)
+            self._journal.write(
+                EntryKind.CHARACTER_NOTE,
+                f"Met {npc_name}",
+                f"First encounter with {npc_name} ({char_id}) in {self._player.zone_id}.",
+                tags=[char_id, self._player.zone_id],
+            )
+        except Exception:
+            pass
+
+    def _journal_alchemy_note(self, result, subject) -> None:
+        if self._journal is None:
+            return
+        try:
+            from ..journal.journal import EntryKind
+            subject_name = getattr(subject, "name", str(subject))
+            q = result.resonance_quality
+            outs = ", ".join(f"{k}×{v}" for k, v in result.outputs.items()) if result.outputs else "none"
+            body = (
+                f"Subject: {subject_name}\n"
+                f"Resonance: {q:.2f}\n"
+                f"Outputs: {outs}\n"
+            )
+            if result.recipe_discovered:
+                body += "Recipe discovered.\n"
+            kind = EntryKind.LORE_FRAGMENT if result.epiphanic else EntryKind.ALCHEMY_NOTE
+            self._journal.write(
+                kind,
+                f"Alchemy: {subject_name}",
+                body,
+                tags=[getattr(subject, "id", ""), self._player.zone_id],
+            )
+        except Exception:
+            pass
+
+    # ── Alchemy session ───────────────────────────────────────────────────────
+
+    def _begin_alchemy(self) -> None:
+        if self._alchemy is None:
+            self._hint = "(alchemy not available)"
+            return
+        try:
+            from ..alchemy.system import SUBJECTS
+            all_subjects = list(SUBJECTS)
+        except Exception:
+            self._hint = "(alchemy unavailable)"
+            return
+
+        # Derive calendar context and filter season-locked subjects
+        cal_ctx = None
+        if self._clock is not None:
+            try:
+                from .calendar import get_alchemy_calendar_context
+                cal_ctx = get_alchemy_calendar_context(self._clock.date)
+            except Exception:
+                pass
+        self._alchemy_calendar_ctx = cal_ctx
+
+        locked   = cal_ctx.locked_subject_ids if cal_ctx is not None else frozenset()
+        inv_dict = self._inventory.as_dict() if self._inventory is not None else {}
+        available = [
+            s for s in self._alchemy.available_subjects(inv_dict)
+            if s.id not in locked
+        ]
+
+        if not available:
+            self._hint = "(no subjects available — check apparatus and materials)"
+            return
+
+        self._alchemy_subjects     = available
+        self._alchemy_subject_idx  = 0
+        self._alchemy_approach_idx = 0
+        self._alchemy_phase        = "subject"
+        self._alchemy_result       = None
+        self._mode = WorldMode.ALCHEMY
+        self._refresh_alchemy_bytes()
+
+    def _end_alchemy(self) -> None:
+        self._alchemy_bytes  = None
+        self._alchemy_result = None
+        self._mode = WorldMode.WORLD
+
+    def _handle_alchemy_key(self, key: int) -> None:
+        phase = self._alchemy_phase
+
+        if phase == "subject":
+            if key in (_K_UP, ord('w')):
+                self._alchemy_subject_idx = max(0, self._alchemy_subject_idx - 1)
+                self._refresh_alchemy_bytes()
+            elif key in (_K_DOWN, ord('s')):
+                self._alchemy_subject_idx = min(
+                    len(self._alchemy_subjects) - 1, self._alchemy_subject_idx + 1)
+                self._refresh_alchemy_bytes()
+            elif key in (_K_RETURN, _K_SPACE):
+                self._alchemy_phase = "approach"
+                self._alchemy_approach_idx = 0
+                self._refresh_alchemy_bytes()
+            elif key == _K_ESCAPE:
+                self._end_alchemy()
+
+        elif phase == "approach":
+            if key in (_K_UP, ord('w')):
+                self._alchemy_approach_idx = max(0, self._alchemy_approach_idx - 1)
+                self._refresh_alchemy_bytes()
+            elif key in (_K_DOWN, ord('s')):
+                self._alchemy_approach_idx = min(2, self._alchemy_approach_idx + 1)
+                self._refresh_alchemy_bytes()
+            elif key in (_K_RETURN, _K_SPACE):
+                self._execute_treatment()
+            elif key == _K_ESCAPE:
+                self._alchemy_phase = "subject"
+                self._refresh_alchemy_bytes()
+
+        elif phase == "result":
+            if key in (_K_RETURN, _K_SPACE, _K_ESCAPE):
+                self._end_alchemy()
+
+    def _execute_treatment(self) -> None:
+        try:
+            from ..alchemy.system import (
+                DiagnosticReading, TreatmentApproach, PresenceState,
+            )
+        except Exception:
+            self._end_alchemy()
+            return
+
+        subject = self._alchemy_subjects[self._alchemy_subject_idx]
+        approach_mode = _APPROACHES[self._alchemy_approach_idx]
+
+        inv_dict = {}
+        if self._inventory is not None:
+            try:
+                inv_dict = self._inventory.as_dict()
+            except Exception:
+                pass
+
+        presence = self._presence or PresenceState()
+        perm = presence.permeability
+
+        # Build a diagnostic reading scaled by permeability
+        identified_axes = subject.field.axes() if perm >= 0.5 else frozenset()
+        mode_engagement = {
+            "ontological":  min(1.0, perm * 1.2),
+            "cosmological": min(1.0, perm * 0.8),
+            "narrative":    min(1.0, perm * 1.0),
+            "somatic":      min(1.0, perm * 0.9),
+        }
+        reading = DiagnosticReading(
+            subject_id=subject.id,
+            identified_axes=identified_axes,
+            mode_engagement=mode_engagement,
+            presence_score=perm,
+        )
+        approach = TreatmentApproach(approach_mode=approach_mode)
+
+        try:
+            result = self._alchemy.treat(
+                subject_id=subject.id,
+                actor_id=getattr(self._chargen, "character_id", "0000_0451"),
+                reading=reading,
+                approach=approach,
+                presence=presence,
+                inventory=inv_dict,
+                recipe_book=self._recipe_book,
+                calendar_context=self._alchemy_calendar_ctx,
+            )
+        except Exception:
+            self._end_alchemy()
+            return
+
+        # Apply presence delta with calendar charge multiplier
+        if self._presence is not None:
+            try:
+                from ..alchemy.system import AlchemySystem
+                delta = AlchemySystem.derive_presence_delta(result.resonance_quality, result.epiphanic)
+                self._presence.permeability = min(1.0, max(0.0,
+                    self._presence.permeability + delta.permeability_delta))
+                charge_gain = delta.epiphanic_charge_delta
+                if self._alchemy_calendar_ctx is not None:
+                    charge_gain *= self._alchemy_calendar_ctx.charge_multiplier
+                self._presence.epiphanic_charge = min(1.0, max(0.0,
+                    self._presence.epiphanic_charge + charge_gain))
+                self._presence.mania_level = min(1.0, max(0.0,
+                    self._presence.mania_level + delta.mania_level_delta))
+            except Exception:
+                pass
+
+        # treat() already mutated inv_dict (consumed materials, added outputs).
+        # Sync the real Inventory to match.
+        if self._inventory is not None:
+            try:
+                self._inventory.sync_from(inv_dict)
+            except Exception:
+                pass
+
+        self._alchemy_result = result
+        self._alchemy_phase  = "result"
+        self._journal_alchemy_note(result, subject)
+        self._refresh_alchemy_bytes()
+
+    def _refresh_alchemy_bytes(self) -> None:
+        inv_dict = {}
+        if self._inventory is not None:
+            try:
+                inv_dict = self._inventory.as_dict()
+            except Exception:
+                pass
+
+        cal  = self._alchemy_calendar_ctx
+        phase = self._alchemy_phase
+        if phase == "subject":
+            season_note = getattr(cal, "season_note", "") if cal is not None else ""
+            self._alchemy_bytes = self._alchemy_screen.render_subject_select(
+                self._alchemy_subjects,
+                self._alchemy_subject_idx,
+                inv_dict,
+                self.width, self.height,
+                season_note=season_note,
+            )
+        elif phase == "approach":
+            subject = self._alchemy_subjects[self._alchemy_subject_idx]
+            formula_bonus = getattr(cal, "formula_approach_bonus", 0.0) if cal is not None else 0.0
+            peak_axis     = getattr(cal, "peak_axis", None) if cal is not None else None
+            self._alchemy_bytes = self._alchemy_screen.render_approach_select(
+                subject,
+                self._alchemy_approach_idx,
+                self.width, self.height,
+                formula_bonus=formula_bonus,
+                peak_axis=peak_axis,
+            )
+        elif phase == "result":
+            subject = self._alchemy_subjects[self._alchemy_subject_idx]
+            self._alchemy_bytes = self._alchemy_screen.render_result(
+                self._alchemy_result,
+                getattr(subject, "name", subject.id),
+                self.width, self.height,
+            )
+
+    # ── Vendor mode ───────────────────────────────────────────────────────────
+
+    def _begin_vendor(self, npc) -> None:
+        raw_catalog = self._vendor_catalogs.get(npc.character_id, {})
+        self._vendor_catalog = sorted(raw_catalog.items(), key=lambda kv: kv[0])
+        self._vendor_name    = npc.character_id
+        self._vendor_idx     = 0
+        self._mode           = WorldMode.VENDOR
+        self._refresh_vendor_bytes()
+
+    def _end_vendor(self) -> None:
+        self._vendor_bytes = None
+        self._mode = WorldMode.WORLD
+
+    def _handle_vendor_key(self, key: int) -> None:
+        if key == _K_ESCAPE:
+            self._end_vendor()
+        elif key in (_K_UP, ord('w')):
+            self._vendor_idx = max(0, self._vendor_idx - 1)
+            self._refresh_vendor_bytes()
+        elif key in (_K_DOWN, ord('s')):
+            self._vendor_idx = min(len(self._vendor_catalog) - 1, self._vendor_idx + 1)
+            self._refresh_vendor_bytes()
+        elif key in (_K_RETURN, _K_SPACE):
+            self._execute_purchase()
+
+    def _execute_purchase(self) -> None:
+        if not self._vendor_catalog or self._inventory is None:
+            return
+        if self._vendor_idx >= len(self._vendor_catalog):
+            return
+        item_id, price = self._vendor_catalog[self._vendor_idx]
+        coin_qty = self._inventory.quantity(COIN_ID)
+        if coin_qty < price:
+            return
+        try:
+            self._inventory.remove(COIN_ID, price)
+            self._inventory.add(item_id, 1)
+        except Exception:
+            pass
+        self._refresh_vendor_bytes()
+
+    def _refresh_vendor_bytes(self) -> None:
+        coin_qty = self._inventory.quantity(COIN_ID) if self._inventory is not None else 0
+        self._vendor_bytes = self._vendor_screen.render(
+            vendor_name = self._vendor_name,
+            catalog     = self._vendor_catalog,
+            cursor_idx  = self._vendor_idx,
+            coin_qty    = coin_qty,
+            width       = self.width,
+            height      = self.height,
+        )

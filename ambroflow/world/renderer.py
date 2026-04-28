@@ -61,15 +61,28 @@ _LAP_FILL: dict[WorldTileKind, tuple] = {
     _C.STAIRS_DOWN:      ( 60,  52,  40),
     _C.PORTAL:           (160, 100, 180),
     _C.DUNGEON_ENTRANCE: ( 35,  25,  52),
+    # Surface materials
+    _C.TREE:             ( 18,  55,  18),   # deep forest green — impassable
+    _C.MARBLE:           (220, 215, 200),   # pale cream — Azoth Sprint
+    _C.YELLOW_BRICK:     (185, 145,  55),   # warm yellow — Hopefare St / slum
+    _C.CERAMIC:          ( 88, 128, 155),   # cool blue tile — June St / market
+    _C.SLATE:            ( 72,  78,  88),   # dark gray-blue — Goldshoot St / temple
+    _C.SILICA:           (195, 185, 165),   # pale extravagant — Youthspring Rd / nobles
 }
 _LAP_EDGE: dict[WorldTileKind, tuple] = {
-    _C.GRASS: ( 38,  70,  28),
-    _C.ROAD:  ( 92,  78,  54),
-    _C.WALL:  ( 60,  50,  36),
-    _C.FLOOR: ( 52,  46,  36),
-    _C.DOOR:  (140, 100,  55),
-    _C.WATER: ( 18,  42,  78),
+    _C.GRASS:            ( 38,  70,  28),
+    _C.ROAD:             ( 92,  78,  54),
+    _C.WALL:             ( 60,  50,  36),
+    _C.FLOOR:            ( 52,  46,  36),
+    _C.DOOR:             (140, 100,  55),
+    _C.WATER:            ( 18,  42,  78),
     _C.DUNGEON_ENTRANCE: ( 55,  40,  80),
+    _C.TREE:             ( 10,  40,  10),
+    _C.MARBLE:           (180, 175, 162),
+    _C.YELLOW_BRICK:     (155, 118,  38),
+    _C.CERAMIC:          ( 68, 105, 130),
+    _C.SLATE:            ( 54,  60,  70),
+    _C.SILICA:           (165, 155, 138),
 }
 
 # Mercurie — cool faewilds: teal, silver, deep purple
@@ -88,15 +101,27 @@ _MER_FILL: dict[WorldTileKind, tuple] = {
     _C.STAIRS_DOWN:      ( 38,  34,  72),
     _C.PORTAL:           (130, 100, 180),
     _C.DUNGEON_ENTRANCE: ( 28,  20,  52),
+    _C.TREE:             ( 12,  52,  48),
+    _C.MARBLE:           (195, 195, 215),
+    _C.YELLOW_BRICK:     (155, 138,  85),
+    _C.CERAMIC:          ( 45,  98, 118),
+    _C.SLATE:            ( 52,  60,  82),
+    _C.SILICA:           (175, 168, 192),
 }
 _MER_EDGE: dict[WorldTileKind, tuple] = {
-    _C.GRASS:  ( 15,  58,  52),
-    _C.ROAD:   ( 45,  36,  70),
-    _C.WALL:   ( 30,  26,  60),
-    _C.FLOOR:  ( 25,  22,  52),
-    _C.DOOR:   (100,  68, 130),
-    _C.WATER:  (  8,  52,  72),
+    _C.GRASS:            ( 15,  58,  52),
+    _C.ROAD:             ( 45,  36,  70),
+    _C.WALL:             ( 30,  26,  60),
+    _C.FLOOR:            ( 25,  22,  52),
+    _C.DOOR:             (100,  68, 130),
+    _C.WATER:            (  8,  52,  72),
     _C.DUNGEON_ENTRANCE: ( 45,  30,  80),
+    _C.TREE:             (  8,  40,  36),
+    _C.MARBLE:           (165, 165, 182),
+    _C.YELLOW_BRICK:     (128, 112,  65),
+    _C.CERAMIC:          ( 30,  78,  96),
+    _C.SLATE:            ( 38,  46,  65),
+    _C.SILICA:           (148, 140, 165),
 }
 
 # Sulphera — hot underworld: ember, dark stone, lava
@@ -115,15 +140,27 @@ _SUL_FILL: dict[WorldTileKind, tuple] = {
     _C.STAIRS_DOWN:      ( 42,  12,   5),
     _C.PORTAL:           (140,  60,  20),
     _C.DUNGEON_ENTRANCE: ( 30,   8,   4),
+    _C.TREE:             ( 30,   8,   2),   # charred
+    _C.MARBLE:           (165,  90,  50),   # stained cream
+    _C.YELLOW_BRICK:     (145,  65,  20),
+    _C.CERAMIC:          ( 65,  30,  10),
+    _C.SLATE:            ( 50,  18,   8),
+    _C.SILICA:           (145,  80,  45),
 }
 _SUL_EDGE: dict[WorldTileKind, tuple] = {
-    _C.GRASS:  ( 40,  12,   5),
-    _C.ROAD:   ( 50,  20,   8),
-    _C.WALL:   ( 35,   8,   3),
-    _C.FLOOR:  ( 30,   7,   3),
-    _C.DOOR:   (110,  45,  15),
-    _C.WATER:  ( 65,  20,   3),
+    _C.GRASS:            ( 40,  12,   5),
+    _C.ROAD:             ( 50,  20,   8),
+    _C.WALL:             ( 35,   8,   3),
+    _C.FLOOR:            ( 30,   7,   3),
+    _C.DOOR:             (110,  45,  15),
+    _C.WATER:            ( 65,  20,   3),
     _C.DUNGEON_ENTRANCE: ( 60,  18,   8),
+    _C.TREE:             ( 20,   5,   1),
+    _C.MARBLE:           (135,  70,  35),
+    _C.YELLOW_BRICK:     (118,  50,  12),
+    _C.CERAMIC:          ( 48,  20,   6),
+    _C.SLATE:            ( 35,  12,   4),
+    _C.SILICA:           (118,  60,  30),
 }
 
 _REALM_FILL: dict[Realm, dict] = {

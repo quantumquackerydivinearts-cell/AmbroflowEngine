@@ -37,7 +37,7 @@ def _make_fake_maps_dir(tmp_path: Path) -> Path:
 # ── Item constants ────────────────────────────────────────────────────────────
 
 def test_item_id_format():
-    assert ITEM_ID == "0036_KLIT"
+    assert ITEM_ID == "0039_KLIT"
 
 
 def test_item_name():

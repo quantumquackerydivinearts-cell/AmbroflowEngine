@@ -82,7 +82,7 @@ def _formula_reading(subject_id):
 # ── Subject registry ──────────────────────────────────────────────────────────
 
 def test_known_subjects_exist():
-    for sid in ("tincture_basic", "tincture_restorative", "desire_crystal_fragment", "infernal_salve"):
+    for sid in ("0034_KLIT", "0035_KLIT", "0036_KLIT", "0037_KLIT"):
         assert sid in SUBJECT_BY_ID
 
 
@@ -107,7 +107,7 @@ def test_field_properties_have_three_authored_modes():
 
 def test_field_engagement_modes_are_correct():
     """The four engagement modes are ontological/cosmological/narrative/somatic."""
-    reading = _full_reading("tincture_basic", {"temporal"})
+    reading = _full_reading("0034_KLIT", {"temporal"})
     for mode in ("ontological", "cosmological", "narrative", "somatic"):
         assert mode in reading.mode_engagement
     # Old dragon_tongue mode must not appear
@@ -118,11 +118,11 @@ def test_field_engagement_modes_are_correct():
 
 def test_full_presence_full_diagnosis_high_resonance():
     a = _make_system()
-    subject  = SUBJECT_BY_ID["tincture_basic"]
-    reading  = _full_reading("tincture_basic", subject.field.axes())
+    subject  = SUBJECT_BY_ID["0034_KLIT"]
+    reading  = _full_reading("0034_KLIT", subject.field.axes())
     approach = TreatmentApproach(approach_mode="presence")
     presence = PresenceState(permeability=1.0)
-    inv      = {"herb_common": 2, "water_flask": 1}
+    inv      = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
 
     resonance, _ = a.calculate_resonance(subject, reading, approach, presence, inv)
     assert resonance >= 0.85
@@ -130,10 +130,10 @@ def test_full_presence_full_diagnosis_high_resonance():
 
 def test_formula_approach_reduces_resonance():
     a       = _make_system()
-    subject = SUBJECT_BY_ID["tincture_basic"]
-    reading  = _full_reading("tincture_basic", subject.field.axes())
+    subject = SUBJECT_BY_ID["0034_KLIT"]
+    reading  = _full_reading("0034_KLIT", subject.field.axes())
     presence = PresenceState(permeability=1.0)
-    inv      = {"herb_common": 2, "water_flask": 1}
+    inv      = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
 
     r_presence, _ = a.calculate_resonance(subject, reading, TreatmentApproach("presence"), presence, inv)
     r_formula,  _ = a.calculate_resonance(subject, reading, TreatmentApproach("formula"),  presence, inv)
@@ -143,13 +143,13 @@ def test_formula_approach_reduces_resonance():
 
 def test_false_axis_identification_penalises_resonance():
     a       = _make_system()
-    subject = SUBJECT_BY_ID["tincture_basic"]
+    subject = SUBJECT_BY_ID["0034_KLIT"]
     presence = PresenceState(permeability=1.0)
-    inv      = {"herb_common": 2, "water_flask": 1}
+    inv      = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
 
-    clean_reading = _full_reading("tincture_basic", subject.field.axes())
+    clean_reading = _full_reading("0034_KLIT", subject.field.axes())
     noisy_reading = DiagnosticReading(
-        subject_id="tincture_basic",
+        subject_id="0034_KLIT",
         identified_axes=subject.field.axes(),
         false_axes=frozenset({"spatial", "mental"}),
         mode_engagement={
@@ -166,8 +166,8 @@ def test_false_axis_identification_penalises_resonance():
 
 def test_missing_materials_caps_resonance():
     a       = _make_system()
-    subject = SUBJECT_BY_ID["tincture_basic"]
-    reading = _full_reading("tincture_basic", subject.field.axes())
+    subject = SUBJECT_BY_ID["0034_KLIT"]
+    reading = _full_reading("0034_KLIT", subject.field.axes())
     presence = PresenceState(permeability=1.0)
 
     resonance, _ = a.calculate_resonance(
@@ -179,9 +179,9 @@ def test_missing_materials_caps_resonance():
 
 def test_low_permeability_reduces_resonance():
     a       = _make_system()
-    subject = SUBJECT_BY_ID["tincture_basic"]
-    reading = _full_reading("tincture_basic", subject.field.axes())
-    inv     = {"herb_common": 2, "water_flask": 1}
+    subject = SUBJECT_BY_ID["0034_KLIT"]
+    reading = _full_reading("0034_KLIT", subject.field.axes())
+    inv     = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
 
     r_high, _ = a.calculate_resonance(subject, reading, TreatmentApproach("presence"),
                                       PresenceState(permeability=1.0), inv)
@@ -194,43 +194,43 @@ def test_low_permeability_reduces_resonance():
 
 def test_resonant_treatment_produces_output():
     a   = _make_system()
-    inv = {"herb_common": 2, "water_flask": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
     result = a.treat(
-        subject_id="tincture_basic",
+        subject_id="0034_KLIT",
         actor_id="test",
-        reading=_full_reading("tincture_basic", {"temporal"}),
+        reading=_full_reading("0034_KLIT", {"temporal"}),
         approach=TreatmentApproach("presence"),
         presence=PresenceState(permeability=1.0),
         inventory=inv,
     )
     assert result.success
-    assert inv.get("tincture_basic", 0) >= 1
+    assert inv.get("0034_KLIT", 0) >= 1
 
 
 def test_resonant_treatment_consumes_materials():
     a   = _make_system()
-    inv = {"herb_common": 2, "water_flask": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
     a.treat(
-        subject_id="tincture_basic",
+        subject_id="0034_KLIT",
         actor_id="test",
-        reading=_full_reading("tincture_basic", {"temporal"}),
+        reading=_full_reading("0034_KLIT", {"temporal"}),
         approach=TreatmentApproach("presence"),
         presence=PresenceState(permeability=1.0),
         inventory=inv,
     )
-    assert inv.get("herb_common", 0) == 0
-    assert inv.get("water_flask", 0) == 0
+    assert inv.get("0073_KLOB", 0) == 0
+    assert inv.get("0040_KLOB", 0) == 0
 
 
 def test_epiphanic_result_requires_charge_and_resonance():
     a   = _make_system()
-    inv = {"herb_common": 2, "water_flask": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
 
     # High resonance but no charge → not epiphanic
     result = a.treat(
-        subject_id="tincture_basic",
+        subject_id="0034_KLIT",
         actor_id="test",
-        reading=_full_reading("tincture_basic", {"temporal"}),
+        reading=_full_reading("0034_KLIT", {"temporal"}),
         approach=TreatmentApproach("presence"),
         presence=PresenceState(permeability=1.0, epiphanic_charge=0.0),
         inventory=inv,
@@ -238,26 +238,26 @@ def test_epiphanic_result_requires_charge_and_resonance():
     assert not result.epiphanic
 
     # High resonance AND sufficient charge → epiphanic
-    inv2 = {"herb_common": 2, "water_flask": 1}
+    inv2 = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
     result2 = a.treat(
-        subject_id="tincture_basic",
+        subject_id="0034_KLIT",
         actor_id="test",
-        reading=_full_reading("tincture_basic", {"temporal"}),
+        reading=_full_reading("0034_KLIT", {"temporal"}),
         approach=TreatmentApproach("presence"),
         presence=PresenceState(permeability=1.0, epiphanic_charge=_EPIPHANIC_CHARGE_REQ),
         inventory=inv2,
     )
     assert result2.epiphanic
-    assert inv2.get("tincture_basic", 0) == 2   # enhanced output
+    assert inv2.get("0034_KLIT", 0) == 2   # enhanced output
 
 
 def test_epiphanic_result_has_contagion_radius():
     a   = _make_system()
-    inv = {"herb_common": 2, "water_flask": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
     result = a.treat(
-        subject_id="tincture_basic",
+        subject_id="0034_KLIT",
         actor_id="test",
-        reading=_full_reading("tincture_basic", {"temporal"}),
+        reading=_full_reading("0034_KLIT", {"temporal"}),
         approach=TreatmentApproach("presence"),
         presence=PresenceState(permeability=1.0, epiphanic_charge=_EPIPHANIC_CHARGE_REQ, mania_level=1.0),
         inventory=inv,
@@ -268,11 +268,11 @@ def test_epiphanic_result_has_contagion_radius():
 
 def test_non_epiphanic_result_has_no_contagion():
     a   = _make_system()
-    inv = {"herb_common": 2, "water_flask": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
     result = a.treat(
-        subject_id="tincture_basic",
+        subject_id="0034_KLIT",
         actor_id="test",
-        reading=_full_reading("tincture_basic", {"temporal"}),
+        reading=_full_reading("0034_KLIT", {"temporal"}),
         approach=TreatmentApproach("presence"),
         presence=PresenceState(permeability=1.0, epiphanic_charge=0.0),
         inventory=inv,
@@ -282,11 +282,11 @@ def test_non_epiphanic_result_has_no_contagion():
 
 def test_formula_approach_with_correct_materials_still_low_resonance():
     a   = _make_system()
-    inv = {"herb_common": 2, "water_flask": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
     result = a.treat(
-        subject_id="tincture_basic",
+        subject_id="0034_KLIT",
         actor_id="test",
-        reading=_formula_reading("tincture_basic"),
+        reading=_formula_reading("0034_KLIT"),
         approach=TreatmentApproach("formula"),
         presence=PresenceState(permeability=1.0),
         inventory=inv,
@@ -296,11 +296,11 @@ def test_formula_approach_with_correct_materials_still_low_resonance():
 
 def test_field_transformed_above_threshold():
     a   = _make_system()
-    inv = {"herb_common": 2, "water_flask": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
     result = a.treat(
-        subject_id="tincture_basic",
+        subject_id="0034_KLIT",
         actor_id="test",
-        reading=_full_reading("tincture_basic", {"temporal"}),
+        reading=_full_reading("0034_KLIT", {"temporal"}),
         approach=TreatmentApproach("presence"),
         presence=PresenceState(permeability=1.0, epiphanic_charge=0.0),
         inventory=inv,
@@ -312,28 +312,28 @@ def test_field_transformed_above_threshold():
 
 def test_ontological_engagement_gives_alchemical_sanity():
     a   = _make_system()
-    inv = {"herb_common": 2, "water_flask": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
     reading = DiagnosticReading(
-        subject_id="tincture_basic",
+        subject_id="0034_KLIT",
         identified_axes=frozenset({"temporal"}),
         mode_engagement={"ontological": 1.0, "cosmological": 0.0, "narrative": 0.0, "somatic": 0.0},
         presence_score=0.8,
     )
-    result = a.treat("tincture_basic", "test", reading, TreatmentApproach("presence"),
+    result = a.treat("0034_KLIT", "test", reading, TreatmentApproach("presence"),
                      PresenceState(permeability=1.0), inv)
     assert result.sanity_delta.get("alchemical", 0.0) > 0.0
 
 
 def test_cosmological_engagement_gives_cosmic_sanity():
     a   = _make_system()
-    inv = {"herb_common": 2, "water_flask": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
     reading = DiagnosticReading(
-        subject_id="tincture_basic",
+        subject_id="0034_KLIT",
         identified_axes=frozenset({"temporal"}),
         mode_engagement={"ontological": 0.0, "cosmological": 1.0, "narrative": 0.0, "somatic": 0.0},
         presence_score=0.8,
     )
-    result = a.treat("tincture_basic", "test", reading, TreatmentApproach("presence"),
+    result = a.treat("0034_KLIT", "test", reading, TreatmentApproach("presence"),
                      PresenceState(permeability=1.0), inv)
     assert result.sanity_delta.get("cosmic", 0.0) > 0.0
 
@@ -341,13 +341,13 @@ def test_cosmological_engagement_gives_cosmic_sanity():
 def test_epiphanic_sanity_delta_larger_than_base():
     a = _make_system()
 
-    base_reading = _full_reading("tincture_basic", {"temporal"})
-    inv1 = {"herb_common": 2, "water_flask": 1}
-    base_result = a.treat("tincture_basic", "test", base_reading, TreatmentApproach("presence"),
+    base_reading = _full_reading("0034_KLIT", {"temporal"})
+    inv1 = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    base_result = a.treat("0034_KLIT", "test", base_reading, TreatmentApproach("presence"),
                           PresenceState(permeability=1.0, epiphanic_charge=0.0), inv1)
 
-    inv2 = {"herb_common": 2, "water_flask": 1}
-    epic_result = a.treat("tincture_basic", "test", base_reading, TreatmentApproach("presence"),
+    inv2 = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    epic_result = a.treat("0034_KLIT", "test", base_reading, TreatmentApproach("presence"),
                           PresenceState(permeability=1.0, epiphanic_charge=_EPIPHANIC_CHARGE_REQ), inv2)
 
     base_total = sum(base_result.sanity_delta.values())
@@ -359,9 +359,9 @@ def test_epiphanic_sanity_delta_larger_than_base():
 
 def test_mode_insights_reported_for_high_engagement():
     a   = _make_system()
-    inv = {"herb_common": 2, "water_flask": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
     reading = DiagnosticReading(
-        subject_id="tincture_basic",
+        subject_id="0034_KLIT",
         identified_axes=frozenset({"temporal"}),
         mode_engagement={
             "ontological":  0.9,
@@ -371,7 +371,7 @@ def test_mode_insights_reported_for_high_engagement():
         },
         presence_score=0.8,
     )
-    result = a.treat("tincture_basic", "test", reading, TreatmentApproach("presence"),
+    result = a.treat("0034_KLIT", "test", reading, TreatmentApproach("presence"),
                      PresenceState(permeability=1.0), inv)
     assert "ontological"  in result.mode_insights
     assert "cosmological" in result.mode_insights
@@ -383,8 +383,8 @@ def test_mode_insights_reported_for_high_engagement():
 def test_treatment_recorded_to_orrery():
     orrery = _MockOrrery()
     a      = AlchemySystem(orrery=orrery)
-    inv    = {"herb_common": 2, "water_flask": 1}
-    a.treat("tincture_basic", "test", _full_reading("tincture_basic", {"temporal"}),
+    inv    = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    a.treat("0034_KLIT", "test", _full_reading("0034_KLIT", {"temporal"}),
             TreatmentApproach("presence"), PresenceState(permeability=1.0), inv)
 
     kinds = [e[0] for e in orrery.events]
@@ -405,17 +405,17 @@ def test_unknown_subject_fails_gracefully():
 
 def test_available_subjects_with_materials():
     a   = _make_system()
-    inv = {"herb_common": 2, "water_flask": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
     available = a.available_subjects(inv)
     ids = [s.id for s in available]
-    assert "tincture_basic" in ids
+    assert "0034_KLIT" in ids
 
 
 def test_unavailable_subject_without_materials():
     a   = _make_system()
     available = a.available_subjects({})
     ids = [s.id for s in available]
-    assert "tincture_basic" not in ids
+    assert "0034_KLIT" not in ids
 
 
 # ── Presence delta ────────────────────────────────────────────────────────────
@@ -434,17 +434,17 @@ def test_good_result_builds_epiphanic_charge():
 
 def test_realm_aligned_provenance_boosts_modifier():
     """Sulphera-sourced materials give a bonus for temporal-axis fields."""
-    subject = SUBJECT_BY_ID["tincture_basic"]   # temporal axis
+    subject = SUBJECT_BY_ID["0034_KLIT"]   # temporal axis
     assert "temporal" in subject.field.axes()
     assert _REALM_AXIS_AFFINITY["sulphera"] == "temporal"
 
     store_aligned = {
-        "herb_common": [ItemProvenance(realm_id="sulphera", source_type="foraged", quantity=2)],
-        "water_flask": [ItemProvenance(realm_id="sulphera", source_type="foraged", quantity=1)],
+        "0073_KLOB": [ItemProvenance(realm_id="sulphera", source_type="foraged", quantity=2)],
+        "0040_KLOB": [ItemProvenance(realm_id="sulphera", source_type="foraged", quantity=1)],
     }
     store_neutral = {
-        "herb_common": [ItemProvenance(realm_id="lapidus",  source_type="purchased", quantity=2)],
-        "water_flask": [ItemProvenance(realm_id="lapidus",  source_type="purchased", quantity=1)],
+        "0073_KLOB": [ItemProvenance(realm_id="lapidus",  source_type="purchased", quantity=2)],
+        "0040_KLOB": [ItemProvenance(realm_id="lapidus",  source_type="purchased", quantity=1)],
     }
 
     mod_aligned = _aggregate_provenance_mod(
@@ -458,14 +458,14 @@ def test_realm_aligned_provenance_boosts_modifier():
 
 
 def test_foraged_beats_purchased():
-    subject = SUBJECT_BY_ID["tincture_basic"]
+    subject = SUBJECT_BY_ID["0034_KLIT"]
     store_foraged = {
-        "herb_common": [ItemProvenance(realm_id="lapidus", source_type="foraged",   quantity=2)],
-        "water_flask": [ItemProvenance(realm_id="lapidus", source_type="foraged",   quantity=1)],
+        "0073_KLOB": [ItemProvenance(realm_id="lapidus", source_type="foraged",   quantity=2)],
+        "0040_KLOB": [ItemProvenance(realm_id="lapidus", source_type="foraged",   quantity=1)],
     }
     store_purchased = {
-        "herb_common": [ItemProvenance(realm_id="lapidus", source_type="purchased", quantity=2)],
-        "water_flask": [ItemProvenance(realm_id="lapidus", source_type="purchased", quantity=1)],
+        "0073_KLOB": [ItemProvenance(realm_id="lapidus", source_type="purchased", quantity=2)],
+        "0040_KLOB": [ItemProvenance(realm_id="lapidus", source_type="purchased", quantity=1)],
     }
     mod_foraged   = _aggregate_provenance_mod(subject.field.axes(), subject.required_materials, store_foraged)
     mod_purchased = _aggregate_provenance_mod(subject.field.axes(), subject.required_materials, store_purchased)
@@ -475,17 +475,17 @@ def test_foraged_beats_purchased():
 def test_provenance_modifier_applied_to_resonance():
     """High-provenance materials produce higher resonance than no-provenance."""
     a       = _make_system()
-    subject = SUBJECT_BY_ID["tincture_basic"]
+    subject = SUBJECT_BY_ID["0034_KLIT"]
     # Use partial engagement so resonance has headroom below 1.0 for provenance to boost.
-    reading = _partial_reading("tincture_basic", subject.field.axes())
+    reading = _partial_reading("0034_KLIT", subject.field.axes())
     presence = PresenceState(permeability=0.7)
-    inv_base = {"herb_common": 2, "water_flask": 1}
-    inv_prov = {"herb_common": 2, "water_flask": 1}
+    inv_base = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv_prov = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
 
     # Aligned (sulphera → temporal), foraged — should give modifier > 1.0
     store_high = {
-        "herb_common": [ItemProvenance(realm_id="sulphera", source_type="foraged",   quantity=2)],
-        "water_flask": [ItemProvenance(realm_id="sulphera", source_type="inherited", quantity=1)],
+        "0073_KLOB": [ItemProvenance(realm_id="sulphera", source_type="foraged",   quantity=2)],
+        "0040_KLOB": [ItemProvenance(realm_id="sulphera", source_type="inherited", quantity=1)],
     }
 
     r_no_prov,  _   = a.calculate_resonance(subject, reading, TreatmentApproach("presence"),
@@ -503,16 +503,16 @@ def test_provenance_modifier_applied_to_resonance():
 def test_provenance_consumed_on_treat():
     """Materials consumed from provenance store when treatment succeeds."""
     a   = _make_system()
-    inv = {"herb_common": 2, "water_flask": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
     store = {
-        "herb_common": [ItemProvenance(realm_id="lapidus", source_type="foraged", quantity=2)],
-        "water_flask": [ItemProvenance(realm_id="lapidus", source_type="foraged", quantity=1)],
+        "0073_KLOB": [ItemProvenance(realm_id="lapidus", source_type="foraged", quantity=2)],
+        "0040_KLOB": [ItemProvenance(realm_id="lapidus", source_type="foraged", quantity=1)],
     }
 
     a.treat(
-        subject_id="tincture_basic",
+        subject_id="0034_KLIT",
         actor_id="test",
-        reading=_full_reading("tincture_basic", {"temporal"}),
+        reading=_full_reading("0034_KLIT", {"temporal"}),
         approach=TreatmentApproach("presence"),
         presence=PresenceState(permeability=1.0),
         inventory=inv,
@@ -520,27 +520,27 @@ def test_provenance_consumed_on_treat():
     )
 
     # Both materials should be consumed from provenance store
-    assert "herb_common" not in store
-    assert "water_flask"  not in store
+    assert "0073_KLOB" not in store
+    assert "0040_KLOB"  not in store
 
 
 def test_partial_provenance_consume():
     """Consuming 1 of 3 leaves 2 remaining in the store."""
     store = {
-        "herb_common": [ItemProvenance(realm_id="lapidus", source_type="foraged", quantity=3)],
+        "0073_KLOB": [ItemProvenance(realm_id="lapidus", source_type="foraged", quantity=3)],
     }
-    consume_provenance("herb_common", 1, store)
-    assert store["herb_common"][0].quantity == 2
+    consume_provenance("0073_KLOB", 1, store)
+    assert store["0073_KLOB"][0].quantity == 2
 
 
 def test_provenance_missing_still_works():
     """treat() works without provenance_store — backward compatible."""
     a   = _make_system()
-    inv = {"herb_common": 2, "water_flask": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
     result = a.treat(
-        subject_id="tincture_basic",
+        subject_id="0034_KLIT",
         actor_id="test",
-        reading=_full_reading("tincture_basic", {"temporal"}),
+        reading=_full_reading("0034_KLIT", {"temporal"}),
         approach=TreatmentApproach("presence"),
         presence=PresenceState(permeability=1.0),
         inventory=inv,
@@ -554,12 +554,12 @@ def test_provenance_missing_still_works():
 def test_recipe_discovered_at_sufficient_resonance():
     a    = _make_system()
     book = RecipeBook()
-    inv  = {"herb_common": 2, "water_flask": 1}
+    inv  = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
 
     result = a.treat(
-        subject_id="tincture_basic",
+        subject_id="0034_KLIT",
         actor_id="test",
-        reading=_full_reading("tincture_basic", {"temporal"}),
+        reading=_full_reading("0034_KLIT", {"temporal"}),
         approach=TreatmentApproach("presence"),
         presence=PresenceState(permeability=1.0),
         inventory=inv,
@@ -569,18 +569,18 @@ def test_recipe_discovered_at_sufficient_resonance():
     # Full presence should exceed _RECIPE_DISCOVERY_THRESH
     assert result.resonance_quality >= _RECIPE_DISCOVERY_THRESH
     assert result.recipe_discovered
-    assert book.is_known("tincture_basic")
+    assert book.is_known("0034_KLIT")
 
 
 def test_recipe_not_discovered_at_low_resonance():
     a    = _make_system()
     book = RecipeBook()
-    inv  = {"herb_common": 2, "water_flask": 1}
+    inv  = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
 
     result = a.treat(
-        subject_id="tincture_basic",
+        subject_id="0034_KLIT",
         actor_id="test",
-        reading=_formula_reading("tincture_basic"),
+        reading=_formula_reading("0034_KLIT"),
         approach=TreatmentApproach("formula"),
         presence=PresenceState(permeability=0.0),
         inventory=inv,
@@ -589,7 +589,7 @@ def test_recipe_not_discovered_at_low_resonance():
 
     assert result.resonance_quality < _RECIPE_DISCOVERY_THRESH
     assert not result.recipe_discovered
-    assert not book.is_known("tincture_basic")
+    assert not book.is_known("0034_KLIT")
 
 
 def test_recipe_not_re_discovered():
@@ -598,11 +598,11 @@ def test_recipe_not_re_discovered():
     book = RecipeBook()
 
     for _ in range(2):
-        inv = {"herb_common": 2, "water_flask": 1}
+        inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
         result = a.treat(
-            subject_id="tincture_basic",
+            subject_id="0034_KLIT",
             actor_id="test",
-            reading=_full_reading("tincture_basic", {"temporal"}),
+            reading=_full_reading("0034_KLIT", {"temporal"}),
             approach=TreatmentApproach("presence"),
             presence=PresenceState(permeability=1.0),
             inventory=inv,
@@ -611,40 +611,40 @@ def test_recipe_not_re_discovered():
 
     # Second call: already known, so recipe_discovered is False
     assert not result.recipe_discovered
-    assert book.is_known("tincture_basic")
+    assert book.is_known("0034_KLIT")
 
 
 def test_recipe_book_contains_correct_materials():
     a    = _make_system()
     book = RecipeBook()
-    inv  = {"herb_common": 2, "water_flask": 1}
+    inv  = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
 
     a.treat(
-        subject_id="tincture_basic",
+        subject_id="0034_KLIT",
         actor_id="test",
-        reading=_full_reading("tincture_basic", {"temporal"}),
+        reading=_full_reading("0034_KLIT", {"temporal"}),
         approach=TreatmentApproach("presence"),
         presence=PresenceState(permeability=1.0),
         inventory=inv,
         recipe_book=book,
     )
 
-    recipe = book.get("tincture_basic")
+    recipe = book.get("0034_KLIT")
     assert recipe is not None
-    assert recipe.required_materials == {"herb_common": 2, "water_flask": 1}
-    assert "tincture_basic" in recipe.output_items
+    assert recipe.required_materials == {"0073_KLOB": 2, "0040_KLOB": 1}
+    assert "0034_KLIT" in recipe.output_items
 
 
 def test_recipe_orrery_event_on_first_discovery():
     orrery = _MockOrrery()
     a      = AlchemySystem(orrery=orrery)
     book   = RecipeBook()
-    inv    = {"herb_common": 2, "water_flask": 1}
+    inv    = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
 
     a.treat(
-        subject_id="tincture_basic",
+        subject_id="0034_KLIT",
         actor_id="test",
-        reading=_full_reading("tincture_basic", {"temporal"}),
+        reading=_full_reading("0034_KLIT", {"temporal"}),
         approach=TreatmentApproach("presence"),
         presence=PresenceState(permeability=1.0),
         inventory=inv,
@@ -658,12 +658,12 @@ def test_recipe_orrery_event_on_first_discovery():
 def test_no_recipe_book_no_discovery_event():
     orrery = _MockOrrery()
     a      = AlchemySystem(orrery=orrery)
-    inv    = {"herb_common": 2, "water_flask": 1}
+    inv    = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
 
     a.treat(
-        subject_id="tincture_basic",
+        subject_id="0034_KLIT",
         actor_id="test",
-        reading=_full_reading("tincture_basic", {"temporal"}),
+        reading=_full_reading("0034_KLIT", {"temporal"}),
         approach=TreatmentApproach("presence"),
         presence=PresenceState(permeability=1.0),
         inventory=inv,
@@ -672,3 +672,74 @@ def test_no_recipe_book_no_discovery_event():
 
     kinds = [e[0] for e in orrery.events]
     assert "alchemy.recipe_discovered" not in kinds
+
+
+# ── Apparatus (required_objects) ─────────────────────────────────────────────
+
+def test_missing_apparatus_hard_blocks_treatment():
+    a   = _make_system()
+    # All materials present but no Mortar or Pestle
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1}
+    result = a.treat(
+        subject_id="0034_KLIT",
+        actor_id="test",
+        reading=_full_reading("0034_KLIT", {"temporal"}),
+        approach=TreatmentApproach("presence"),
+        presence=PresenceState(permeability=1.0),
+        inventory=inv,
+    )
+    assert not result.success
+    assert "missing_apparatus" in result.reason
+
+
+def test_apparatus_not_consumed_on_treatment():
+    a   = _make_system()
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    a.treat(
+        subject_id="0034_KLIT",
+        actor_id="test",
+        reading=_full_reading("0034_KLIT", {"temporal"}),
+        approach=TreatmentApproach("presence"),
+        presence=PresenceState(permeability=1.0),
+        inventory=inv,
+    )
+    # Materials consumed; apparatus remains
+    assert inv.get("0001_KLOB", 0) == 1
+    assert inv.get("0002_KLOB", 0) == 1
+
+
+def test_available_subjects_excludes_missing_apparatus():
+    a   = _make_system()
+    # All materials for Basic Tincture present but no apparatus
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1}
+    ids = [s.id for s in a.available_subjects(inv)]
+    assert "0034_KLIT" not in ids
+
+
+def test_available_subjects_includes_when_apparatus_present():
+    a   = _make_system()
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    ids = [s.id for s in a.available_subjects(inv)]
+    assert "0034_KLIT" in ids
+
+
+def test_partial_apparatus_still_blocks():
+    a   = _make_system()
+    # Mortar present but Pestle missing
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1}
+    result = a.treat(
+        subject_id="0034_KLIT",
+        actor_id="test",
+        reading=_full_reading("0034_KLIT", {"temporal"}),
+        approach=TreatmentApproach("presence"),
+        presence=PresenceState(permeability=1.0),
+        inventory=inv,
+    )
+    assert not result.success
+    assert "0002_KLOB" in result.reason
+
+
+def test_subject_required_objects_are_klob_ids():
+    for subj in SUBJECT_BY_ID.values():
+        for oid in subj.required_objects:
+            assert oid.endswith("_KLOB"), f"{subj.id}: apparatus ID {oid!r} must be _KLOB"

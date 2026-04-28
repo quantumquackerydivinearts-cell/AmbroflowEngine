@@ -45,6 +45,13 @@ class WorldTileKind(str, Enum):
     STAIRS_DOWN      = "stairs_down"     # passable — triggers floor/level transition
     PORTAL           = "portal"          # passable — triggers realm transition
     DUNGEON_ENTRANCE = "dungeon_entrance"# passable — opens a DungeonRuntime session
+    # ── Lapidus surface materials ──────────────────────────────────────────
+    TREE             = "tree"            # impassable outdoor vegetation / forest
+    MARBLE           = "marble"          # passable — hard marble paving (Azoth Sprint)
+    YELLOW_BRICK     = "yellow_brick"    # passable — warm brick (Hopefare St / slum)
+    CERAMIC          = "ceramic"         # passable — decorative tile (June St / market)
+    SLATE            = "slate"           # passable — serious stone (Goldshoot St / temple)
+    SILICA           = "silica"          # passable — extravagant surface (Youthspring Rd / nobles)
 
 
 _PASSABLE: frozenset[WorldTileKind] = frozenset({
@@ -59,6 +66,11 @@ _PASSABLE: frozenset[WorldTileKind] = frozenset({
     WorldTileKind.STAIRS_DOWN,
     WorldTileKind.PORTAL,
     WorldTileKind.DUNGEON_ENTRANCE,
+    WorldTileKind.MARBLE,
+    WorldTileKind.YELLOW_BRICK,
+    WorldTileKind.CERAMIC,
+    WorldTileKind.SLATE,
+    WorldTileKind.SILICA,
 })
 
 
@@ -101,6 +113,15 @@ class NPCSpawn:
     character_id: str
 
 
+@dataclass(frozen=True)
+class ItemSpawn:
+    """A one-time item pickup at a fixed position within a zone."""
+    x:       int
+    y:       int
+    item_id: str
+    qty:     int = 1
+
+
 @dataclass
 class Zone:
     zone_id:      str
@@ -113,6 +134,7 @@ class Zone:
     exits:        list[ZoneExit]      = field(default_factory=list)
     npc_spawns:   list[NPCSpawn]      = field(default_factory=list)
     portals:      list[DungeonPortal] = field(default_factory=list)
+    item_spawns:  list[ItemSpawn]     = field(default_factory=list)
 
     def tile_at(self, x: int, y: int) -> WorldTileKind:
         """Return tile kind at (x, y), VOID if out of bounds."""
@@ -137,6 +159,9 @@ class Zone:
             if n.x == x and n.y == y:
                 return n
         return None
+
+    def items_at(self, x: int, y: int) -> list[ItemSpawn]:
+        return [i for i in self.item_spawns if i.x == x and i.y == y]
 
     @classmethod
     def from_export_dict(cls, data: dict) -> "Zone":
@@ -226,6 +251,13 @@ _ASCII_TILE: dict[str, WorldTileKind] = {
     "P": WorldTileKind.PORTAL,
     "E": WorldTileKind.DUNGEON_ENTRANCE,
     " ": WorldTileKind.VOID,
+    # Surface material tiles
+    "T": WorldTileKind.TREE,
+    "M": WorldTileKind.MARBLE,
+    "Y": WorldTileKind.YELLOW_BRICK,
+    "C": WorldTileKind.CERAMIC,
+    "L": WorldTileKind.SLATE,
+    "X": WorldTileKind.SILICA,
     # Placement markers — resolved to FLOOR at build time
     "@": WorldTileKind.FLOOR,   # player spawn
     "N": WorldTileKind.FLOOR,   # NPC spawn (matched to npc_ids in order)
@@ -233,13 +265,14 @@ _ASCII_TILE: dict[str, WorldTileKind] = {
 
 
 def build_zone_from_ascii(
-    zone_id:   str,
-    realm:     Realm,
-    name:      str,
-    rows:      list[str],
-    exits:     list[ZoneExit]      = (),
-    portals:   list[DungeonPortal] = (),
-    npc_ids:   list[str]           = (),
+    zone_id:     str,
+    realm:       Realm,
+    name:        str,
+    rows:        list[str],
+    exits:       list[ZoneExit]      = (),
+    portals:     list[DungeonPortal] = (),
+    npc_ids:     list[str]           = (),
+    item_spawns: list[ItemSpawn]     = (),
 ) -> Zone:
     """
     Parse an ASCII zone map into a Zone.
@@ -279,6 +312,7 @@ def build_zone_from_ascii(
         exits=list(exits),
         npc_spawns=npc_spawns,
         portals=list(portals),
+        item_spawns=list(item_spawns),
     )
 
 

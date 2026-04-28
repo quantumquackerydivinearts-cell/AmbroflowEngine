@@ -88,9 +88,12 @@ Hypatia's primary skill — she is the player character, ID 0000_0451.
 from __future__ import annotations
 
 from dataclasses import dataclass, field as dc_field
-from typing import Literal, Optional
+from typing import TYPE_CHECKING, Literal, Optional
 
 from ..orrery.client import OrreryClient
+
+if TYPE_CHECKING:
+    from ..world.calendar import AlchemyCalendarContext
 
 
 # ── Type aliases ───────────────────────────────────────────────────────────────
@@ -369,9 +372,11 @@ class AlchemicalSubject:
     """
     An alchemical subject — something that can be perceived, diagnosed, and treated.
 
-    required_materials  — physical substrate; empty for purely energetic treatments.
+    required_materials  — consumed on treatment (KLIT + consumable KLOB raw materials).
                           When non-empty and unsatisfied, resonance is capped at
                           _MATERIALS_ABSENT_CAP regardless of diagnostic quality.
+    required_objects    — apparatus KLOB IDs that must be present but are never consumed.
+                          Missing apparatus hard-blocks the treatment entirely.
     base_outputs        — yields at resonance >= 0.50
     enhanced_outputs    — yields at epiphanic quality
     """
@@ -379,6 +384,7 @@ class AlchemicalSubject:
     name:               str
     field:              InformationField
     required_materials: dict[str, int]
+    required_objects:   frozenset[str]
     base_outputs:       dict[str, int]
     enhanced_outputs:   dict[str, int]
     lore:               str
@@ -437,7 +443,7 @@ class RecipeBook:
 
 SUBJECTS: tuple[AlchemicalSubject, ...] = (
     AlchemicalSubject(
-        id="tincture_basic",
+        id="0034_KLIT",
         name="Basic Tincture",
         field=InformationField(properties=(
             FieldProperty(
@@ -449,13 +455,14 @@ SUBJECTS: tuple[AlchemicalSubject, ...] = (
                 intensity=0.6,
             ),
         )),
-        required_materials={"herb_common": 2, "water_flask": 1},
-        base_outputs={"tincture_basic": 1},
-        enhanced_outputs={"tincture_basic": 2},
+        required_materials={"0073_KLOB": 2, "0040_KLOB": 1},
+        required_objects=frozenset({"0001_KLOB", "0002_KLOB"}),
+        base_outputs={"0034_KLIT": 1},
+        enhanced_outputs={"0034_KLIT": 2},
         lore="The simplest reduction. Start here.",
     ),
     AlchemicalSubject(
-        id="tincture_restorative",
+        id="0035_KLIT",
         name="Restorative Tincture",
         field=InformationField(properties=(
             FieldProperty(
@@ -467,13 +474,14 @@ SUBJECTS: tuple[AlchemicalSubject, ...] = (
                 intensity=0.7,
             ),
         )),
-        required_materials={"herb_restorative": 3, "water_flask": 1, "tincture_basic": 1},
-        base_outputs={"tincture_restorative": 1},
-        enhanced_outputs={"tincture_restorative": 2},
+        required_materials={"0074_KLOB": 3, "0040_KLOB": 1, "0034_KLIT": 1},
+        required_objects=frozenset({"0001_KLOB", "0002_KLOB", "0005_KLOB"}),
+        base_outputs={"0035_KLIT": 1},
+        enhanced_outputs={"0035_KLIT": 2},
         lore="Hypatia knows this one before the tutor does.",
     ),
     AlchemicalSubject(
-        id="desire_crystal_fragment",
+        id="0036_KLIT",
         name="Desire Crystal Fragment",
         field=InformationField(properties=(
             FieldProperty(
@@ -485,13 +493,14 @@ SUBJECTS: tuple[AlchemicalSubject, ...] = (
                 intensity=0.8,
             ),
         )),
-        required_materials={"raw_desire_stone": 1, "asmodean_essence": 1},
-        base_outputs={"desire_crystal_fragment": 1},
-        enhanced_outputs={"desire_crystal": 1},
+        required_materials={"0076_KLOB": 1, "0077_KLOB": 1},
+        required_objects=frozenset({"0001_KLOB", "0002_KLOB", "0010_KLOB", "0017_KLOB"}),
+        base_outputs={"0036_KLIT": 1},
+        enhanced_outputs={"0023_KLIT": 1},
         lore="Asmodean material. Gold-adjacent in its craft demands.",
     ),
     AlchemicalSubject(
-        id="infernal_salve",
+        id="0037_KLIT",
         name="Infernal Salve",
         field=InformationField(properties=(
             FieldProperty(
@@ -504,10 +513,45 @@ SUBJECTS: tuple[AlchemicalSubject, ...] = (
                 intensity=0.75,
             ),
         )),
-        required_materials={"sulphur_essence": 2, "binding_wax": 1, "tincture_restorative": 1},
-        base_outputs={"infernal_salve": 1},
-        enhanced_outputs={"infernal_salve": 2},
+        required_materials={"0024_KLOB": 2, "0075_KLOB": 1, "0035_KLIT": 1},
+        required_objects=frozenset({"0001_KLOB", "0002_KLOB", "0017_KLOB", "0019_KLOB"}),
+        base_outputs={"0037_KLIT": 1},
+        enhanced_outputs={"0037_KLIT": 2},
         lore="Usable in Sulphera's rings. Sulphur recognises its origin.",
+    ),
+    AlchemicalSubject(
+        id="0038_KLIT",
+        name="Angelic Revival Salve",
+        field=InformationField(properties=(
+            FieldProperty(
+                axis="spatial",
+                shygazun="Wunashako",
+                narrative="The angelic wound seals the soul into the clean death — "
+                          "a death with no door back.  Desire is the only force that "
+                          "exceeds the container.  The dust of the crystal is ground "
+                          "into the wound so desire can find its own way home.",
+                somatic="The pull of something unfinished, strong enough to reopen what was closed.",
+                intensity=0.9,
+            ),
+            FieldProperty(
+                axis="temporal",
+                shygazun="ko",
+                narrative="The moment that was refused.  Alchemy does not undo the "
+                          "angelic blow — it insists that the thread was not yet cut.",
+                somatic="A breath that had stopped, resuming without deciding to.",
+                intensity=0.7,
+            ),
+        )),
+        required_materials={"0023_KLIT": 1, "0037_KLIT": 1},
+        required_objects=frozenset({"0001_KLOB", "0002_KLOB", "0005_KLOB", "0019_KLOB"}),
+        base_outputs={"0038_KLIT": 1},
+        enhanced_outputs={"0038_KLIT": 2},
+        lore=(
+            "Only for the angelically slain.  Desire Crystal Dust — the ground remnant "
+            "of Wunashako crystallised — carries the field of wanting-beyond-the-container "
+            "directly into the sealed wound.  Requires Alzedroswune window or Vrwumane: "
+            "they alone know the spatial passage back."
+        ),
     ),
 )
 
@@ -561,12 +605,13 @@ class AlchemySystem:
 
     def calculate_resonance(
         self,
-        subject:          AlchemicalSubject,
-        reading:          DiagnosticReading,
-        approach:         TreatmentApproach,
-        presence:         PresenceState,
-        inventory:        dict[str, int],
-        provenance_store: Optional[ProvenanceStore] = None,
+        subject:              AlchemicalSubject,
+        reading:              DiagnosticReading,
+        approach:             TreatmentApproach,
+        presence:             PresenceState,
+        inventory:            dict[str, int],
+        provenance_store:     Optional[ProvenanceStore] = None,
+        approach_mod_override: Optional[float]          = None,
     ) -> tuple[float, float]:
         """
         Return ``(resonance, provenance_modifier)`` where resonance is 0.0–1.0.
@@ -596,8 +641,11 @@ class AlchemySystem:
         # Raw resonance before approach modifier
         raw = axis_accuracy * mode_score * permeability_mult
 
-        # Approach modifier
-        raw *= _APPROACH_MOD.get(approach.approach_mode, 0.40)
+        # Approach modifier (calendar context can override for formula mode)
+        if approach_mod_override is not None:
+            raw *= approach_mod_override
+        else:
+            raw *= _APPROACH_MOD.get(approach.approach_mode, 0.40)
 
         # Materials cap: if required materials absent, hard cap at _MATERIALS_ABSENT_CAP
         if subject.required_materials:
@@ -690,8 +738,9 @@ class AlchemySystem:
         approach:         TreatmentApproach,
         presence:         PresenceState,
         inventory:        dict[str, int],
-        provenance_store: Optional[ProvenanceStore] = None,
-        recipe_book:      Optional[RecipeBook]      = None,
+        provenance_store: Optional[ProvenanceStore]       = None,
+        recipe_book:      Optional[RecipeBook]            = None,
+        calendar_context: "Optional[AlchemyCalendarContext]" = None,
     ) -> AlchemicalResult:
         """
         Attempt alchemical treatment of a subject.
@@ -710,13 +759,48 @@ class AlchemySystem:
                 mode_insights=[], reason=f"Unknown subject: {subject_id!r}",
             )
 
+        # Apparatus hard-block: missing objects prevent treatment entirely
+        if subject.required_objects:
+            missing = [oid for oid in subject.required_objects if inventory.get(oid, 0) < 1]
+            if missing:
+                return AlchemicalResult(
+                    success=False, subject_id=subject_id,
+                    resonance_quality=0.0, epiphanic=False,
+                    outputs={}, sanity_delta={},
+                    contagion_radius=0.0, field_transformed=False,
+                    mode_insights=[], reason=f"missing_apparatus:{','.join(sorted(missing))}",
+                )
+
+        # Effective formula approach modifier (Alzedroswune navigator lift)
+        approach_mod_override: Optional[float] = None
+        if calendar_context is not None and approach.approach_mode == "formula":
+            approach_mod_override = min(
+                1.0, _APPROACH_MOD["formula"] + calendar_context.formula_approach_bonus
+            )
+
         resonance, prov_mod = self.calculate_resonance(
-            subject, reading, approach, presence, inventory, provenance_store
+            subject, reading, approach, presence, inventory, provenance_store,
+            approach_mod_override=approach_mod_override,
         )
 
+        # Seasonal axis bonus — peak axis is with you; hostile season fights you
+        if calendar_context is not None:
+            seasonal_boost = max(
+                (calendar_context.axis_bonus.get(prop.axis, 0.0)
+                 for prop in subject.field.properties),
+                default=0.0,
+            )
+            resonance = min(1.0, max(0.0, resonance + seasonal_boost))
+
         # Epiphanic: high resonance AND sufficient accumulated charge
+        # Threshold can be lowered by calendar context (anchor days / Vrwumane)
+        epiphany_threshold = (
+            calendar_context.epiphany_threshold
+            if calendar_context is not None
+            else _EPIPHANY_THRESHOLD
+        )
         epiphanic = (
-            resonance >= _EPIPHANY_THRESHOLD
+            resonance >= epiphany_threshold
             and presence.epiphanic_charge >= _EPIPHANIC_CHARGE_REQ
         )
 
@@ -762,16 +846,19 @@ class AlchemySystem:
                 inventory[item_id] = inventory.get(item_id, 0) + qty
 
         # Record to Orrery
-        self._orrery.record("alchemy.treated", {
-            "actor_id":           actor_id,
-            "subject_id":         subject_id,
-            "resonance":          resonance,
-            "epiphanic":          epiphanic,
-            "approach_mode":      approach.approach_mode,
-            "outputs":            outputs,
-            "field_transformed":  field_transformed,
+        orrery_payload: dict = {
+            "actor_id":            actor_id,
+            "subject_id":          subject_id,
+            "resonance":           resonance,
+            "epiphanic":           epiphanic,
+            "approach_mode":       approach.approach_mode,
+            "outputs":             outputs,
+            "field_transformed":   field_transformed,
             "provenance_modifier": prov_mod,
-        })
+        }
+        if calendar_context is not None:
+            orrery_payload["season"] = calendar_context.season_name
+        self._orrery.record("alchemy.treated", orrery_payload)
 
         if sanity_delta:
             self._orrery.record_sanity_delta(
@@ -808,13 +895,13 @@ class AlchemySystem:
         inventory: dict[str, int],
     ) -> list[AlchemicalSubject]:
         """
-        Return subjects whose required materials are present in inventory.
-        (Energetic subjects with no required materials are always available.)
+        Return subjects whose required materials AND required objects are present.
+        (Subjects with no requirements are always available.)
         """
         result = []
         for s in SUBJECTS:
-            if not s.required_materials:
-                result.append(s)
-            elif all(inventory.get(k, 0) >= v for k, v in s.required_materials.items()):
+            has_mats = all(inventory.get(k, 0) >= v for k, v in s.required_materials.items())
+            has_objs = all(inventory.get(oid, 0) >= 1 for oid in s.required_objects)
+            if has_mats and has_objs:
                 result.append(s)
         return result

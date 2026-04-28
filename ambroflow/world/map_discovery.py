@@ -38,7 +38,7 @@ _DEFAULT_MAPS_DIR = (
     / "DjinnOS" / "apps" / "atelier-api" / "static" / "maps"
 )
 
-ITEM_ID   = "0036_KLIT"
+ITEM_ID   = "0039_KLIT"
 ITEM_NAME = "Map of Mercurie"
 
 # Journal entry written on first discovery

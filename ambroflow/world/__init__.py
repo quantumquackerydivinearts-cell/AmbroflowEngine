@@ -27,7 +27,28 @@ from .map import (
     ZoneExit,
     DungeonPortal,
     NPCSpawn,
+    ItemSpawn,
     build_zone_from_ascii,
+)
+from .zones.lapidus import VENDOR_CATALOGS
+from .vendor_screen import VendorScreen
+from .calendar import (
+    AeraluneDate,
+    WorldClock,
+    TimeOfDay,
+    MONTHS,
+    VRWUMANE,
+    DAYS_PER_MONTH,
+    DAYS_PER_YEAR,
+    ASTRONOMICAL_ANCHORS,
+    SPRING_EQUINOX,
+    SUMMER_SOLSTICE,
+    AUTUMN_EQUINOX,
+    WINTER_SOLSTICE,
+    fountain_running,
+    alzedroswune_present,
+    AlchemyCalendarContext,
+    get_alchemy_calendar_context,
 )
 from .player   import WorldPlayer, Direction
 from .renderer import WorldRenderer
@@ -42,6 +63,7 @@ from .loaders  import (
     select_audio,
 )
 from .map_discovery import MapDiscoveryScreen, MapState
+from .alchemy_screen import AlchemyScreen
 from .combat        import (
     CombatScreen, CombatResult, CombatLoop,
     resolve_combat, npc_difficulty,
@@ -63,7 +85,10 @@ __all__ = [
     "ZoneExit",
     "DungeonPortal",
     "NPCSpawn",
+    "ItemSpawn",
     "build_zone_from_ascii",
+    "VENDOR_CATALOGS",
+    "VendorScreen",
     "WorldPlayer",
     "Direction",
     "WorldRenderer",
@@ -78,6 +103,7 @@ __all__ = [
     "select_audio",
     "MapDiscoveryScreen",
     "MapState",
+    "AlchemyScreen",
     "CombatScreen",
     "CombatResult",
     "CombatLoop",
@@ -96,4 +122,21 @@ __all__ = [
     "TileAttestation",
     "LOTUS_TABLE",
     "FY", "PU", "TA", "ZO", "SHA", "KO",
+    # Calendar
+    "AeraluneDate",
+    "WorldClock",
+    "TimeOfDay",
+    "MONTHS",
+    "VRWUMANE",
+    "DAYS_PER_MONTH",
+    "DAYS_PER_YEAR",
+    "ASTRONOMICAL_ANCHORS",
+    "SPRING_EQUINOX",
+    "SUMMER_SOLSTICE",
+    "AUTUMN_EQUINOX",
+    "WINTER_SOLSTICE",
+    "fountain_running",
+    "alzedroswune_present",
+    "AlchemyCalendarContext",
+    "get_alchemy_calendar_context",
 ]

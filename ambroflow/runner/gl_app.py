@@ -115,6 +115,9 @@ class GLApp:
         # Live 3-D opening sequence
         self._fate_gl: Optional[FateKnocksGLPlay] = None
 
+        # Starting inventory — populated at the top of the free-roam cycle
+        self._starting_inventory: dict = {}
+
         # GL texture for current PIL frame
         self._screen_tex: Optional[Texture] = None
 
@@ -287,7 +290,10 @@ class GLApp:
 
         # Intercept FATE_KNOCKS and hand off to live GL scene
         if self._game_flow.phase == FlowPhase.FATE_KNOCKS:
-            self._fate_gl = FateKnocksGLPlay(self._W, self._H)
+            self._fate_gl = FateKnocksGLPlay(
+                self._W, self._H,
+                on_free_roam=self._init_starting_inventory,
+            )
             self._screen  = "FATE_GL"
             return
 
@@ -311,6 +317,18 @@ class GLApp:
         if self._game_flow.is_done():
             self._game_flow = None
             self._go("GAME_SELECT")
+
+    def _init_starting_inventory(self) -> None:
+        """Collect home item spawns into _starting_inventory at free-roam start."""
+        try:
+            from ..world.zones.lapidus import build_wiltoll_home
+            home = build_wiltoll_home()
+            inv: dict = {}
+            for spawn in home.item_spawns:
+                inv[spawn.item_id] = inv.get(spawn.item_id, 0) + spawn.qty
+            self._starting_inventory = inv
+        except Exception:
+            pass
 
     def _handle_fate_gl(self, events: list[str]) -> None:
         self._chars.clear()

@@ -69,8 +69,8 @@ _IMMUNE_TYPES: frozenset[str] = frozenset({
 _RESISTANT_TYPES: frozenset[str] = frozenset({"WTCH"})
 _RESISTANCE_MULTIPLIER = 2.0
 
-AMMO_GOLD_ROUNDS    = "gold_rounds"
-WEAPON_ANGELIC_SPEAR = "angelic_spear"
+AMMO_GOLD_ROUNDS    = "0040_KLIT"
+WEAPON_ANGELIC_SPEAR = "0024_KLIT"
 
 # Either item bypasses supernatural immunity and witch resistance
 _ANGELIC_GEAR: frozenset[str] = frozenset({AMMO_GOLD_ROUNDS, WEAPON_ANGELIC_SPEAR})

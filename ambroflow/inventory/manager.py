@@ -73,6 +73,10 @@ class Inventory:
     def as_dict(self) -> dict[str, int]:
         return dict(self._items)
 
+    def sync_from(self, state: dict[str, int]) -> None:
+        """Replace internal state with an externally-mutated snapshot."""
+        self._items = {k: v for k, v in state.items() if v > 0}
+
     def __iter__(self) -> Iterator[tuple[str, int]]:
         return iter(self._items.items())
 

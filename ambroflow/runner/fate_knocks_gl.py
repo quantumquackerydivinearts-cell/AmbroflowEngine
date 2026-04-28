@@ -239,10 +239,12 @@ class FateKnocksGLPlay:
 
     Parameters
     ----------
-    width, height : window dimensions
+    width, height     : window dimensions
+    on_free_roam      : optional callback fired once at the start of the
+                        post-letter free-roam phase (inventory initialisation)
     """
 
-    def __init__(self, width: int, height: int) -> None:
+    def __init__(self, width: int, height: int, on_free_roam=None) -> None:
         self._W = width
         self._H = height
 
@@ -288,6 +290,11 @@ class FateKnocksGLPlay:
         self._done_pending = False
         self._done         = False
 
+        # Post-letter free-roam phase
+        self._on_free_roam:    object = on_free_roam
+        self._free_roam:       bool   = False
+        self._free_roam_began: bool   = False
+
         self._t = 0.0
 
     # ── Public API ────────────────────────────────────────────────────────────
@@ -301,7 +308,9 @@ class FateKnocksGLPlay:
             if ev in (InputEvent.INTERACT, InputEvent.CANCEL):
                 self._overlay_on = False
                 if self._done_pending:
-                    self._done = True
+                    # Letter dismissed — begin free roam rather than exiting
+                    self._done_pending = False
+                    self._free_roam    = True
             return
 
         dx, dz = {
@@ -320,9 +329,14 @@ class FateKnocksGLPlay:
 
         if is_passable(tile) and not blocked_by_furn:
             self._px, self._py = nx, nz
-            beat = self._scene.check_beat(nx, nz)
-            if beat:
-                self._show_beat(beat)
+            if self._free_roam:
+                # In free roam, stepping on the front door exits the scene
+                if (nx, nz) == self._scene.COURIER_TILE:
+                    self._done = True
+            else:
+                beat = self._scene.check_beat(nx, nz)
+                if beat:
+                    self._show_beat(beat)
 
     def resize(self, width: int, height: int) -> None:
         self._W, self._H = width, height
@@ -332,6 +346,14 @@ class FateKnocksGLPlay:
         self._t += dt
         self._cam.target = glm.vec3(float(self._px), 0.0, float(self._py))
         self._cam.update(dt)
+        # Fire inventory callback at the top of the first free-roam cycle
+        if self._free_roam and not self._free_roam_began:
+            self._free_roam_began = True
+            if self._on_free_roam is not None:
+                try:
+                    self._on_free_roam()
+                except Exception:
+                    pass
 
     def draw(self) -> None:
         GL.glClearColor(0.04, 0.03, 0.08, 1.0)
@@ -341,12 +363,40 @@ class FateKnocksGLPlay:
             self._ui.add(self._overlay_tex, (-1.0, -1.0, 1.0, 1.0), opacity=0.97)
             self._ui.draw()
             self._ui.clear()
+        elif self._free_roam:
+            self._draw_door_hint()
 
     def delete(self) -> None:
         self._wr.delete()
         self._ui.delete()
         if self._overlay_tex:
             self._overlay_tex.delete()
+        if self._hint_tex:
+            self._hint_tex.delete()
+
+    # ── Free-roam hint ────────────────────────────────────────────────────────
+
+    _hint_tex: "Optional[Texture]" = None
+
+    def _draw_door_hint(self) -> None:
+        if not _PIL:
+            return
+        if self._hint_tex is None:
+            img  = Image.new("RGBA", (self._W, self._H), (0, 0, 0, 0))
+            draw = ImageDraw.Draw(img)
+            font = _load_font(12)
+            text = "Walk to the door to begin."
+            tw, _ = text_size(draw, text, font)
+            draw.text(
+                ((self._W - tw) // 2, int(self._H * 0.90)),
+                text,
+                fill=(P.KO_GOLD[0], P.KO_GOLD[1], P.KO_GOLD[2], 180),
+                font=font,
+            )
+            self._hint_tex = Texture.from_pil(img)
+        self._ui.add(self._hint_tex, (-1.0, -1.0, 1.0, 1.0), opacity=1.0)
+        self._ui.draw()
+        self._ui.clear()
 
     # ── Internal ──────────────────────────────────────────────────────────────
 
