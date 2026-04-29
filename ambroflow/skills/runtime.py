@@ -4,7 +4,7 @@ Skill Runtime
 Live skill and perk state for an active player session.
 
 Tracks:
-  - Skill ranks (0 = untrained, 1–50 = trained)
+  - Skill ranks (0 = untrained, 1–100 = trained)
   - Unlocked perks
   - Completed quests
   - Perk unlock eligibility
@@ -82,8 +82,8 @@ class SkillRuntime:
     # ── Mutations ─────────────────────────────────────────────────────────────
 
     def train_skill(self, skill_id: str, to_rank: int = 1) -> None:
-        """Set skill rank.  Clamps to [0, 50]."""
-        self._ranks[skill_id] = max(0, min(50, to_rank))
+        """Set skill rank.  Clamps to [0, 100]."""
+        self._ranks[skill_id] = max(0, min(100, to_rank))
 
     def complete_quest(self, quest_id: str) -> None:
         self._quests.add(quest_id)

@@ -35,6 +35,7 @@ from .persistence import auto_backend
 from .registry import GAMES
 from .game_flow import GameFlow, FlowPhase
 from .fate_knocks_gl import FateKnocksGLPlay
+from .gl_world_play import GLWorldPlay
 from .screens.title      import render_title_screen
 from .screens.game_select import render_game_select
 from .screens.name_entry  import render_name_entry
@@ -42,6 +43,7 @@ from .screens.name_entry  import render_name_entry
 from ..engine.window  import Window, InputEvent
 from ..engine.texture import Texture
 from ..render.ui      import UIRenderer
+from ..inventory.manager import Inventory
 
 try:
     from PIL import Image
@@ -112,11 +114,17 @@ class GLApp:
         # In-game chargen pipeline
         self._game_flow: Optional[GameFlow] = None
 
+        # Chargen state carried forward into world play
+        self._chargen: Optional[object] = None
+
         # Live 3-D opening sequence
         self._fate_gl: Optional[FateKnocksGLPlay] = None
 
         # Starting inventory — populated at the top of the free-roam cycle
         self._starting_inventory: dict = {}
+
+        # Strictly-GL world play (post-chargen, post-opening)
+        self._gl_world_play: Optional[GLWorldPlay] = None
 
         # GL texture for current PIL frame
         self._screen_tex: Optional[Texture] = None
@@ -159,6 +167,8 @@ class GLApp:
         if self._game_flow:
             self._game_flow.width  = w
             self._game_flow.height = h
+        if self._gl_world_play:
+            self._gl_world_play.resize(w, h)
         self._dirty       = True
         self._frame_cache = None
         if self._screen_tex:
@@ -290,6 +300,7 @@ class GLApp:
 
         # Intercept FATE_KNOCKS and hand off to live GL scene
         if self._game_flow.phase == FlowPhase.FATE_KNOCKS:
+            self._chargen = self._game_flow.chargen
             self._fate_gl = FateKnocksGLPlay(
                 self._W, self._H,
                 on_free_roam=self._init_starting_inventory,
@@ -330,7 +341,7 @@ class GLApp:
         except Exception:
             pass
 
-    def _handle_fate_gl(self, events: list[str]) -> None:
+    def _handle_fate_gl(self, events: list[str], ui: "UIRenderer") -> None:
         self._chars.clear()
         self._bs_count = 0
         if self._fate_gl is None:
@@ -343,6 +354,49 @@ class GLApp:
             if self._game_flow is not None:
                 self._game_flow.phase = FlowPhase.DONE
                 self._game_flow = None
+            self._launch_world_play(ui)
+
+    def _launch_world_play(self, ui: "UIRenderer") -> None:
+        """Build WorldPlay + GLWorldPlay and transition to WORLD_PLAY screen."""
+        try:
+            from ..world import WorldPlay, build_game7_world
+            from ..world.zones.lapidus import VENDOR_CATALOGS
+
+            chargen   = self._chargen
+            world_map = build_game7_world()
+
+            inv = Inventory()
+            for item_id, qty in self._starting_inventory.items():
+                try:
+                    inv.add(item_id, qty)
+                except Exception:
+                    pass
+
+            wp = WorldPlay(
+                chargen         = chargen,
+                world_map       = world_map,
+                width           = self._W,
+                height          = self._H,
+                inventory       = inv,
+                vendor_catalogs = VENDOR_CATALOGS,
+            )
+            self._gl_world_play = GLWorldPlay(wp, ui, self._W, self._H)
+            self._screen = "WORLD_PLAY"
+        except Exception:
+            self._go("GAME_SELECT")
+
+    def _handle_world_play(self, events: list[str]) -> None:
+        self._chars.clear()
+        self._bs_count = 0
+        if self._gl_world_play is None:
+            return
+        for ev in events:
+            self._gl_world_play.handle_event(ev)
+        if self._gl_world_play.is_done():
+            self._gl_world_play.delete()
+            self._gl_world_play = None
+            self._chargen = None
+            self._starting_inventory = {}
             self._go("GAME_SELECT")
 
     # ── Main loop ─────────────────────────────────────────────────────────────
@@ -403,7 +457,9 @@ class GLApp:
                 elif self._screen == "IN_GAME":
                     self._handle_in_game(events)
                 elif self._screen == "FATE_GL":
-                    self._handle_fate_gl(events)
+                    self._handle_fate_gl(events, ui)
+                elif self._screen == "WORLD_PLAY":
+                    self._handle_world_play(events)
 
                 # ── Render ──────────────────────────────────────────────────
                 GL.glClearColor(0.02, 0.01, 0.05, 1.0)
@@ -412,6 +468,9 @@ class GLApp:
                 if self._screen == "FATE_GL" and self._fate_gl is not None:
                     self._fate_gl.tick(dt)
                     self._fate_gl.draw()
+                elif self._screen == "WORLD_PLAY" and self._gl_world_play is not None:
+                    self._gl_world_play.tick(dt)
+                    self._gl_world_play.draw()
                 else:
                     self._render_pil_screen(ui)
 
@@ -421,6 +480,8 @@ class GLApp:
             self._session.save()
             if self._fate_gl:
                 self._fate_gl.delete()
+            if self._gl_world_play:
+                self._gl_world_play.delete()
             if self._screen_tex:
                 self._screen_tex.delete()
             ui.delete()
