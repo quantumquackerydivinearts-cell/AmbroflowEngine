@@ -65,8 +65,8 @@ Provenance
 Every item in play carries provenance — where and how it was obtained.  Provenance
 modulates material potency during resonance calculation:
 
-  Realm alignment with the field axis gives a bonus (Lapidus→mental,
-  Mercurie→spatial, Sulphera→temporal).
+  Realm alignment with the field axis gives a bonus (Lapidus→spatial,
+  Mercurie→mental, Sulphera→temporal).
   Source type further modifies: foraged > inherited > gifted > crafted > purchased.
 
 Discovered recipes
@@ -98,9 +98,9 @@ if TYPE_CHECKING:
 
 # ── Type aliases ───────────────────────────────────────────────────────────────
 
-FieldAxis    = Literal["mental", "spatial", "temporal"]
-ApproachMode = Literal["presence", "intuition", "formula"]
-SourceType   = Literal["foraged", "purchased", "gifted", "inherited", "crafted"]
+FieldAxis    = Literal["spatial", "mental", "temporal"]
+ApproachMode = Literal["intuition", "presence", "formula"]
+SourceType   = Literal["purchasedS", "foraged", "gifted", "inherited", "crafted"]
 RealmId      = Literal["lapidus", "mercurie", "sulphera"]
 
 
@@ -129,8 +129,8 @@ _APPROACH_MOD: dict[str, float] = {
 
 #: Realm whose sourced materials align with each field axis.
 _REALM_AXIS_AFFINITY: dict[str, str] = {
-    "lapidus":  "mental",    # Overworld — consciousness, presence
-    "mercurie": "spatial",   # Faewilds  — orthogonal space, traversal
+    "lapidus":  "spatial",    # Overworld — orthogonal space, traversal
+    "mercurie": "mental",   # Faewilds  — Consciousness, presence
     "sulphera": "temporal",  # Underworld — time, transformation, persistence
 }
 
@@ -140,7 +140,8 @@ _SOURCE_INTENSITY_MOD: dict[str, float] = {
     "inherited": 1.15,   # temporal depth / lineage charge
     "gifted":    1.10,   # relational field of the giver
     "crafted":   1.00,   # neutral — depends on the resonance of the crafting event
-    "purchased": 0.85,   # transactional — lower field connection
+    "purchased": 0.85,   # transactional — lower field connection due to energetic contamination, requires cleansing to purify
+    "sanctified": 1.05   # cleansed — redeemed field connection due to affects of meditation upon the reagent with Divine assistance
 }
 
 _REALM_ALIGNMENT_BONUS  = 0.15   # added to source modifier when realm aligns with axis
