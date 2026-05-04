@@ -25,9 +25,8 @@ from typing import Any
 
 _HERE = Path(__file__).resolve().parent   # ambroflow/world/
 _DJINNOS_CANDIDATES = [
-    _HERE.parents[2] / "DjinnOS" / "DjinnOS_Shyagzun",
-    _HERE.parents[3] / "DjinnOS_Shyagzun",
     Path("C:/DjinnOS/DjinnOS_Shyagzun"),
+    _HERE.parents[1] / "DjinnOS" / "DjinnOS_Shyagzun",   # sibling repo
 ]
 
 _compiler_mod = None

@@ -17,10 +17,66 @@ import logging
 from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
 try:
-    from PIL import Image, ImageDraw
+    from PIL import Image, ImageDraw, ImageFont
     _PIL = True
 except ImportError:
     _PIL = False
+
+
+# ── Minimal overlay screen generators (Gap 9) ─────────────────────────────
+
+def _make_overlay_screen(W: int, H: int, title: str, body_lines: list[str],
+                          bg: tuple = (8, 5, 14),
+                          accent: tuple = (185, 145, 55)) -> bytes:
+    """Generic PIL overlay: dark panel + title + body lines."""
+    if not _PIL:
+        return b""
+    img  = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    drw  = ImageDraw.Draw(img)
+    pw, ph = int(W * 0.72), int(H * 0.78)
+    ox, oy = (W - pw) // 2, (H - ph) // 2
+    drw.rectangle([ox, oy, ox+pw, oy+ph], fill=(*bg, 235))
+    drw.rectangle([ox, oy, ox+pw, oy+2], fill=(*accent, 255))
+    try:
+        from .screens.common import _load_font
+        fnt_h = _load_font(16)
+        fnt_b = _load_font(12)
+    except Exception:
+        fnt_h = fnt_b = None
+    drw.text((ox+18, oy+14), title, fill=(*accent, 255), font=fnt_h)
+    drw.line([(ox+16, oy+36), (ox+pw-16, oy+36)], fill=(*accent, 120), width=1)
+    ty = oy + 50
+    for ln in body_lines:
+        drw.text((ox+18, ty), ln, fill=(200, 195, 215, 255), font=fnt_b)
+        ty += 20
+    hint = "[Esc]  Close"
+    drw.text((ox+pw-80, oy+ph-22), hint, fill=(130, 120, 100, 180), font=fnt_b)
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    return buf.getvalue()
+
+
+def _shop_screen_bytes(W: int, H: int) -> bytes:
+    return _make_overlay_screen(W, H, "Apothecary Shop",
+        ["Your shop is open for trade.",
+         "",
+         "Stock your counter with crafted goods.",
+         "Customers arrive during market hours.",
+         "",
+         "[Alchemy]  Craft stock",
+         "[Space]    Browse inventory"],
+        bg=(18, 10, 8), accent=(185, 120, 45))
+
+
+def _smelt_screen_bytes(W: int, H: int) -> bytes:
+    return _make_overlay_screen(W, H, "Furnace",
+        ["The furnace is hot.",
+         "",
+         "Smelt ores into ingots.",
+         "Alloy metals at higher temperatures.",
+         "",
+         "[Alchemy]  Open smelting recipes"],
+        bg=(22, 8, 4), accent=(230, 100, 30))
 
 from ..engine.texture import Texture
 from ..render.ui      import UIRenderer
@@ -410,12 +466,21 @@ class GLWorldPlay:
         _BYTES_ATTR = {
             WorldMode.ALCHEMY:       "_alchemy_bytes",
             WorldMode.VENDOR:        "_vendor_bytes",
+            WorldMode.SHOP:          "_shop_bytes",
+            WorldMode.SMELT:         "_smelt_bytes",
             WorldMode.COMBAT:        "_combat_bytes",
             WorldMode.MAP_DISCOVERY: "_map_bytes",
         }
         attr = _BYTES_ATTR.get(mode)
         if attr:
             data = getattr(wp, attr, None)
+            # Generate missing shop/smelt bytes on demand
+            if data is None and mode == WorldMode.SHOP:
+                data = _shop_screen_bytes(self._W, self._H)
+                wp._shop_bytes = data
+            elif data is None and mode == WorldMode.SMELT:
+                data = _smelt_screen_bytes(self._W, self._H)
+                wp._smelt_bytes = data
             if data:
                 try:
                     return Image.open(io.BytesIO(data)).convert("RGBA").resize(

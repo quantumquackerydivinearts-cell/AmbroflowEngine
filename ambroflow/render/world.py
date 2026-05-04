@@ -150,6 +150,102 @@ class WorldRenderer:
         self._vao.unbind()
         self._vbo_inst.unbind()
 
+    # ── Ko scene loading (.scene.ko / .scene.json → direct instance buffer) ──
+
+    # Interaction node action_id → (atlas tile_id, height) — used by load_scene_ko
+    _KO_ACTION_FURN: "dict[str, tuple[int, float]]" = {
+        "open_alchemy_ui":     (8,  0.8),   # TABLE workbench
+        "open_smelt_ui":       (10, 1.0),   # FURNACE
+        "open_shop_ui":        (12, 0.9),   # COUNTER
+        "shop_counter":        (12, 0.9),
+        "meditation_tutorial": (14, 0.4),   # ALTAR
+        "meditate":            (14, 0.4),
+        "lore_books":          (15, 1.8),   # BOOKSHELF
+        "read":                (15, 1.8),
+        "save_and_heal":       (7,  0.5),   # BED
+        "open_chest":          (8,  0.6),   # TABLE (chest height)
+    }
+
+    # Kobra color token → atlas tile ID (maps to _ATLAS_COLORS in fate_knocks_gl)
+    _KO_TOKEN_ATLAS: "dict[str, int]" = {
+        "Ot":  0,   # warm flagstone / wood floor
+        "El":  3,   # stone wall
+        "Ru": 10,   # furnace / door (ember-dark)
+        "Fu":  4,   # water / glass (blue)
+        "Ka": 14,   # cloth / altar (violet-indigo)
+        "AE": 14,   # cushion (violet)
+        "Ki":  1,   # nature / spirit (forest green)
+        "Na":  5,   # silver / stone
+        "Ha":  9,   # white / parchment
+        "Ga":  6,   # void / black
+        "Ung": 15,  # dark wood / thatch
+        "Wu":  6,   # deep black
+    }
+    _KO_TOKEN_ATLAS_DEFAULT = 0
+
+    def load_scene_ko(self, path: "Path | str") -> int:
+        """
+        Load a .scene.ko (or compiled .scene.json) directly into the renderer.
+
+        Maps Kobra color tokens → atlas tile IDs using _KO_TOKEN_ATLAS,
+        bypassing the Zone tile-kind system entirely so per-material colors
+        are preserved.
+
+        Returns the number of voxels loaded.
+        """
+        from ..world.ko_scene_reader import load_ko_scene
+
+        try:
+            scene = load_ko_scene(Path(path))
+        except Exception as exc:
+            import logging
+            logging.getLogger(__name__).warning("load_scene_ko failed: %s", exc)
+            return 0
+
+        voxels = scene.get("renderer", {}).get("scene", {}).get("voxels", [])
+        if not voxels:
+            return 0
+
+        rows: list[float] = []
+        for v in voxels:
+            tok  = v.get("color_token", "")
+            tid  = float(self._KO_TOKEN_ATLAS.get(tok, self._KO_TOKEN_ATLAS_DEFAULT))
+            # scene coords: x=column, y=row, z=elevation
+            # world coords: X=column, Y=elevation, Z=row
+            rows.extend([
+                float(v.get("x", 0)),   # world X
+                float(v.get("z", 0)),   # world Y (elevation)
+                float(v.get("y", 0)),   # world Z (row / depth)
+                tid,
+                1.0,                    # unit height
+            ])
+
+        if not rows:
+            return 0
+
+        import numpy as _np
+        data = _np.array(rows, dtype=_np.float32)
+        n    = len(voxels)
+
+        if self._vbo_inst is None:
+            self._vbo_inst = Buffer(data, GL.GL_DYNAMIC_DRAW)
+        else:
+            self._vbo_inst.upload(data, GL.GL_DYNAMIC_DRAW)
+        self._instance_count = n
+
+        self._vao.bind()
+        self._vbo_inst.bind()
+        stride = _STRIDE_INST
+        self._vao.attrib(3, size=3, stride=stride, offset=0)
+        self._vao.attrib(4, size=1, stride=stride, offset=12)
+        self._vao.attrib(5, size=1, stride=stride, offset=16)
+        self._vao.attrib_divisor(3, 1)
+        self._vao.attrib_divisor(4, 1)
+        self._vao.attrib_divisor(5, 1)
+        self._vao.unbind()
+        self._vbo_inst.unbind()
+        return n
+
     # ── Furniture loading ──────────────────────────────────────────────────────
 
     def load_furniture(self, placements: "list") -> None:

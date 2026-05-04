@@ -116,6 +116,8 @@ class WorldMode(str, Enum):
     COMBAT        = "combat"
     ALCHEMY       = "alchemy"
     VENDOR        = "vendor"
+    SHOP          = "shop"     # player-operated trade screen
+    SMELT         = "smelt"    # forge / smelting UI
     DEAD          = "dead"
     DONE          = "done"
 

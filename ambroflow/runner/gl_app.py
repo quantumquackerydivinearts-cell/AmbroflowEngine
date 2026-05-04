@@ -303,7 +303,8 @@ class GLApp:
             self._chargen = self._game_flow.chargen
             self._fate_gl = FateKnocksGLPlay(
                 self._W, self._H,
-                on_free_roam=self._init_starting_inventory,
+                on_free_roam  = self._init_starting_inventory,
+                on_interact   = self._fate_gl_interact,
             )
             self._screen  = "FATE_GL"
             return
@@ -341,6 +342,45 @@ class GLApp:
         except Exception:
             pass
 
+    def _fate_gl_interact(self, action_id: str) -> None:
+        """Handle furniture interactions fired from FateKnocksGLPlay free roam."""
+        if self._fate_gl is None:
+            return
+        if action_id == "stairs_up":
+            self._fate_gl.change_floor(+1)
+            return
+        if action_id == "stairs_down":
+            self._fate_gl.change_floor(-1)
+            return
+        # For UI modes, transition FATE_GL → WORLD_PLAY then switch mode
+        # (GLWorldPlay has the mode-aware render path)
+        from ..render.ui import UIRenderer
+        try:
+            ui = self._fate_gl._ui
+        except AttributeError:
+            return
+        if self._gl_world_play is None:
+            try:
+                self._launch_world_play(ui)
+            except Exception:
+                return
+        wp = getattr(self._gl_world_play, "_wp", None)
+        if wp is None:
+            return
+        from ..world.play import WorldMode
+        mode_map = {
+            "open_shop_ui":          WorldMode.SHOP,
+            "open_smelt_ui":         WorldMode.SMELT,
+            "meditate":              WorldMode.ALCHEMY,   # reuse alchemy overlay until MEDITATION mode exists
+            "meditation_tutorial":   WorldMode.ALCHEMY,
+            "open_alchemy_ui":       WorldMode.ALCHEMY,
+            "lore_books":            WorldMode.DIALOGUE,
+        }
+        mode = mode_map.get(action_id)
+        if mode is not None:
+            wp._mode = mode
+            self._screen = "WORLD_PLAY"
+
     def _handle_fate_gl(self, events: list[str], ui: "UIRenderer") -> None:
         self._chars.clear()
         self._bs_count = 0
@@ -358,23 +398,22 @@ class GLApp:
 
     def _launch_world_play(self, ui: "UIRenderer") -> None:
         """Build WorldPlay + GLWorldPlay and transition to WORLD_PLAY screen."""
+        import logging, traceback
+        _log = logging.getLogger(__name__)
+
+        # ── Step 1: core WorldPlay (must succeed) ──────────────────────────
         try:
             from ..world import WorldPlay, build_game7_world
             from ..world.zones.lapidus import VENDOR_CATALOGS
-            from ..world.world_graph    import WorldGraph
-            from ..world.ko_scene_reader import load_ko_scene
-            from pathlib import Path
 
             chargen   = self._chargen
             world_map = build_game7_world()
-
-            inv = Inventory()
+            inv       = Inventory()
             for item_id, qty in self._starting_inventory.items():
                 try:
                     inv.add(item_id, qty)
                 except Exception:
                     pass
-
             wp = WorldPlay(
                 chargen         = chargen,
                 world_map       = world_map,
@@ -383,27 +422,32 @@ class GLApp:
                 inventory       = inv,
                 vendor_catalogs = VENDOR_CATALOGS,
             )
-
-            # Load scene graph and starting-scene interaction entities
-            graph = WorldGraph.load()
-            start_ko = Path("C:/DjinnOS/productions/kos-labyrnth/scenes/lapidus/home_morning.scene.ko")
-            try:
-                scene_data   = load_ko_scene(start_ko) if start_ko.exists() else {}
-                scene_nodes  = [n for n in scene_data.get("nodes", []) if n.get("kind") == "interaction"]
-            except Exception:
-                scene_nodes = []
-
-            self._gl_world_play = GLWorldPlay(
-                wp,
-                ui,
-                self._W,
-                self._H,
-                world_graph          = graph,
-                interaction_entities = scene_nodes,
-            )
-            self._screen = "WORLD_PLAY"
         except Exception:
+            _log.error("WorldPlay init failed:\n%s", traceback.format_exc())
             self._go("GAME_SELECT")
+            return
+
+        # ── Step 2: scene graph + interaction entities (optional) ──────────
+        graph       = None
+        scene_nodes = []
+        try:
+            from ..world.world_graph     import WorldGraph
+            from ..world.ko_scene_reader import load_ko_scene
+            from pathlib import Path
+            graph      = WorldGraph.load()
+            start_ko   = Path("C:/DjinnOS/productions/kos-labyrnth/scenes/lapidus/home_morning.scene.ko")
+            scene_data = load_ko_scene(start_ko) if start_ko.exists() else {}
+            scene_nodes = [n for n in scene_data.get("nodes", []) if n.get("kind") == "interaction"]
+        except Exception:
+            _log.warning("Scene graph load failed (non-fatal):\n%s", traceback.format_exc())
+
+        # ── Step 3: assemble GLWorldPlay ───────────────────────────────────
+        self._gl_world_play = GLWorldPlay(
+            wp, ui, self._W, self._H,
+            world_graph          = graph,
+            interaction_entities = scene_nodes,
+        )
+        self._screen = "WORLD_PLAY"
 
     def _handle_world_play(self, events: list[str]) -> None:
         self._chars.clear()

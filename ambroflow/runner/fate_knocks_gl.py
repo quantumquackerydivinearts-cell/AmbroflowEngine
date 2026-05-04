@@ -33,9 +33,11 @@ from ..render.world     import WorldRenderer
 from ..render.ui        import UIRenderer
 from ..world.map        import is_passable
 from ..scenes.player_home import (
-    PLAYER_HOME_GROUND, GROUND_FURNITURE,
+    PLAYER_HOME_GROUND, PLAYER_HOME_UPPER,
+    GROUND_FURNITURE, UPPER_FURNITURE,
     FurniturePlacement,
 )
+from ..world.map import WorldTileKind
 from ..scenes.opening import (
     FateKnocksScene,
     DOOR_KNOCK_TEXT, COURIER_LINE, HYPATIA_LETTER_LINES,
@@ -244,9 +246,33 @@ class FateKnocksGLPlay:
                         post-letter free-roam phase (inventory initialisation)
     """
 
-    def __init__(self, width: int, height: int, on_free_roam=None) -> None:
+    # Furniture slot_id → action_id for interaction dispatch
+    _SLOT_ACTIONS: dict[str, str] = {
+        "furnace_w":    "open_smelt_ui",
+        "furnace_e":    "open_smelt_ui",
+        "anvil":        "open_smelt_ui",
+        "register":     "open_shop_ui",
+        "altar":        "meditate",
+        "journal":      "lore_books",
+        "journal_table":"lore_books",
+        "desk":         "lore_books",
+        "stairs_up":    "stairs_up",
+        "stairs_down":  "stairs_down",
+    }
+    # Counter tiles (foyer shop) → open_shop_ui
+    _COUNTER_Z = 9   # z-row of the shop counter
+
+    # Floor definitions
+    _FLOORS = [
+        (PLAYER_HOME_GROUND, GROUND_FURNITURE),
+        (PLAYER_HOME_UPPER,  UPPER_FURNITURE),
+    ]
+
+    def __init__(self, width: int, height: int, on_free_roam=None,
+                 on_interact=None) -> None:
         self._W = width
         self._H = height
+        self._on_interact = on_interact   # callable(action_id: str) | None
 
         # Atlas + GL world renderer
         atlas_img    = _make_interior_atlas()
@@ -277,6 +303,9 @@ class FateKnocksGLPlay:
         self._py = spawn_y
         self._cam.target = glm.vec3(float(self._px), 0.0, float(self._py))
 
+        # Floor state (0 = ground, 1 = upper study)
+        self._floor_index  = 0
+
         # Pre-compute furniture-blocked tiles
         self._furn_blocked = _blocked_by_furniture()
 
@@ -302,6 +331,56 @@ class FateKnocksGLPlay:
     def is_done(self) -> bool:
         return self._done
 
+    def change_floor(self, delta: int) -> None:
+        """Switch to the next/previous floor and reposition the player."""
+        new_idx = self._floor_index + delta
+        if not (0 <= new_idx < len(self._FLOORS)):
+            return
+        zone, furniture = self._FLOORS[new_idx]
+        self._wr.load_zone(zone)
+        self._wr.load_furniture(furniture)
+        self._floor_index  = new_idx
+        self._furn_blocked = frozenset((p.x, p.z) for p in furniture if not p.passable)
+        # Place player at the corresponding stair tile on the new floor
+        if delta > 0:
+            tile_kind = WorldTileKind.STAIRS_DOWN
+        else:
+            tile_kind = WorldTileKind.STAIRS_UP
+        for ty in range(zone.height):
+            for tx in range(zone.width):
+                if zone.tile_at(tx, ty) == tile_kind:
+                    self._px, self._py = tx, ty
+                    self._cam.target = __import__("glm").vec3(float(tx), 0.0, float(ty))
+                    return
+
+    def _nearest_interactive_slot(self) -> Optional[str]:
+        """Return the nearest interactive slot_id within 1.5 tiles, or None."""
+        px, pz = self._px, self._py
+        zone   = self._FLOORS[self._floor_index][0]
+
+        # Stairs — check current tile and immediate neighbours
+        for dx, dz in ((0,0),(1,0),(-1,0),(0,1),(0,-1)):
+            t = zone.tile_at(px + dx, pz + dz)
+            if t == WorldTileKind.STAIRS_UP:
+                return "stairs_up"
+            if t == WorldTileKind.STAIRS_DOWN:
+                return "stairs_down"
+
+        # Counter row (foyer)
+        if abs(pz - self._COUNTER_Z) <= 1:
+            return "register"
+
+        # Furniture pieces
+        furniture = self._FLOORS[self._floor_index][1]
+        best_slot, best_d = None, 2.25  # 1.5² tiles
+        for fp in furniture:
+            if fp.slot_id not in self._SLOT_ACTIONS:
+                continue
+            d2 = (fp.x - px) ** 2 + (fp.z - pz) ** 2
+            if d2 < best_d:
+                best_d, best_slot = d2, fp.slot_id
+        return best_slot
+
     def handle_event(self, ev: str) -> None:
         from ..engine.window import InputEvent
         if self._overlay_on:
@@ -311,6 +390,18 @@ class FateKnocksGLPlay:
                     # Letter dismissed — begin free roam rather than exiting
                     self._done_pending = False
                     self._free_roam    = True
+            return
+
+        # Interaction during free roam — dispatch to furniture action
+        if ev == InputEvent.INTERACT and self._free_roam:
+            slot = self._nearest_interactive_slot()
+            if slot and self._on_interact is not None:
+                action_id = self._SLOT_ACTIONS.get(slot)
+                if action_id:
+                    try:
+                        self._on_interact(action_id)
+                    except Exception:
+                        pass
             return
 
         dx, dz = {
