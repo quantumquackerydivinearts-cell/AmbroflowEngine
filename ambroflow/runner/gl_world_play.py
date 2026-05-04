@@ -13,7 +13,8 @@ _*_bytes attributes, which are already PIL-PNG bytes.
 from __future__ import annotations
 
 import io
-from typing import Optional, TYPE_CHECKING
+import logging
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
 try:
     from PIL import Image, ImageDraw
@@ -25,9 +26,13 @@ from ..engine.texture import Texture
 from ..render.ui      import UIRenderer
 from ..world.map      import WorldTileKind, Realm
 from ..world.player   import Direction
+from ..world.action_handlers import dispatch, ActionContext, ActionResult
+from ..world.world_graph      import WorldGraph
 
 if TYPE_CHECKING:
     from ..world.play import WorldPlay
+
+log = logging.getLogger(__name__)
 
 
 # ── InputEvent string → WorldPlay._handle_key() int ──────────────────────────
@@ -216,23 +221,128 @@ class GLWorldPlay:
 
     def __init__(
         self,
-        world_play: "WorldPlay",
-        ui:         UIRenderer,
-        width:      int,
-        height:     int,
+        world_play:          "WorldPlay",
+        ui:                  UIRenderer,
+        width:               int,
+        height:              int,
+        world_graph:         Optional[WorldGraph] = None,
+        interaction_entities: Optional[List[Dict[str, Any]]] = None,
+        game_state:          Any = None,
+        systems:             Optional[Dict[str, Any]] = None,
     ) -> None:
-        self._wp  = world_play
-        self._ui  = ui
-        self._W   = width
-        self._H   = height
-        self._tex = Texture.empty(width, height)
+        self._wp          = world_play
+        self._ui          = ui
+        self._W           = width
+        self._H           = height
+        self._tex         = Texture.empty(width, height)
+        self._graph       = world_graph or WorldGraph.load()
+        self._entities    = interaction_entities or []
+        self._game_state  = game_state
+        self._systems     = systems or {}
+        self._pending_transition: Optional[ActionResult] = None
 
     # ── Public API ────────────────────────────────────────────────────────────
 
     def is_done(self) -> bool:
         return self._wp.is_done()
 
+    # ── Scene graph integration ───────────────────────────────────────────────
+
+    def pending_transition(self) -> Optional[ActionResult]:
+        """Return and clear any pending scene transition result."""
+        t = self._pending_transition
+        self._pending_transition = None
+        return t
+
+    def load_scene(self, scene_id: str, spawn_id: str = "spawn_point") -> bool:
+        """
+        Load a new scene by scene_id.  Updates WorldPlay zone if possible.
+        Returns True on success.
+        """
+        from ..world.ko_scene_reader import load_ko_scene
+        from ..world.kobra_zone_loader import load_zone_from_kobra
+        import json
+        from pathlib import Path
+
+        # Discover the scene file (prefer .scene.ko, fall back to .scene.json)
+        candidates = [
+            Path("C:/DjinnOS/productions/kos-labyrnth/scenes") / scene_id.replace("/", "/") ,
+        ]
+        candidates_ko   = [c.with_suffix("").with_suffix(".scene.ko")   for c in candidates]
+        candidates_json = [c.with_suffix("").with_suffix(".scene.json") for c in candidates]
+        all_candidates  = candidates_ko + candidates_json
+
+        scene_data = None
+        for p in all_candidates:
+            if p.exists():
+                try:
+                    scene_data = load_ko_scene(p) if p.suffix == ".ko" else json.loads(p.read_text())
+                    break
+                except Exception as exc:
+                    log.warning("scene load error %s: %s", p, exc)
+
+        if scene_data is None:
+            log.info("scene transition stub: %s → %s (scene file not yet authored)", scene_id, spawn_id)
+            self._pending_transition = ActionResult.transition(scene_id, spawn_id)
+            return False
+
+        # Rebuild interaction entities for the new scene
+        self._entities = [n for n in scene_data.get("nodes", []) if n.get("kind") == "interaction"]
+        log.info("loaded scene %s — %d interactions", scene_id, len(self._entities))
+        self._pending_transition = ActionResult.transition(scene_id, spawn_id)
+        return True
+
+    def _find_interaction_at(self, x: float, y: float) -> Optional[Dict[str, Any]]:
+        """Return the nearest interaction entity within 1.5 tiles, or None."""
+        best, best_dist = None, 1.5 * 1.5
+        for ent in self._entities:
+            dx = float(ent.get("x", 0)) - x
+            dy = float(ent.get("y", 0)) - y
+            d2 = dx * dx + dy * dy
+            if d2 < best_dist:
+                best, best_dist = ent, d2
+        return best
+
+    def _dispatch_interaction(self) -> None:
+        player = self._wp._player
+        ent = self._find_interaction_at(player.x, player.y)
+        if ent is None:
+            return
+        meta   = ent.get("metadata") or ent.get("meta") or {}
+        action = meta.get("action") or meta.get("action_mavo", "").replace("Mavo", "").lower()
+        if not action:
+            return
+        # Convert MavoName to snake_case action_id
+        import re as _re
+        action_id = _re.sub(r"(?<=[a-z])(?=[A-Z])", "_", action).lower()
+        zone   = self._wp._zone if hasattr(self._wp, "_zone") else None
+        ctx = ActionContext(
+            action_id   = action_id,
+            entity_id   = str(ent.get("node_id", "")),
+            player_x    = float(player.x),
+            player_y    = float(player.y),
+            player_z    = 0.0,
+            scene_id    = str(zone.zone_id if zone and hasattr(zone, "zone_id") else ""),
+            realm_id    = str(zone.realm.value if zone and hasattr(zone, "realm") else "lapidus"),
+            world_graph = self._graph,
+            game_state  = self._game_state,
+            systems     = self._systems,
+        )
+        result = dispatch(action_id, ctx)
+        if result.kind == "scene_transition" and result.scene_id:
+            self.load_scene(result.scene_id, result.spawn_id or "spawn_point")
+        elif result.kind == "ui_open":
+            log.info("ui open requested: %s", result.ui)
+        elif result.kind == "save":
+            log.info("save_and_heal triggered")
+        elif not result.ok:
+            log.debug("action %r: %s", action_id, result.message)
+
+    # ── Public API ────────────────────────────────────────────────────────────
+
     def handle_event(self, ev: str) -> None:
+        if ev == "interact":
+            self._dispatch_interaction()
         key = _EV_TO_KEY.get(ev, 0)
         if key:
             self._wp._handle_key(key)

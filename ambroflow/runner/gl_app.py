@@ -361,6 +361,9 @@ class GLApp:
         try:
             from ..world import WorldPlay, build_game7_world
             from ..world.zones.lapidus import VENDOR_CATALOGS
+            from ..world.world_graph    import WorldGraph
+            from ..world.ko_scene_reader import load_ko_scene
+            from pathlib import Path
 
             chargen   = self._chargen
             world_map = build_game7_world()
@@ -380,7 +383,24 @@ class GLApp:
                 inventory       = inv,
                 vendor_catalogs = VENDOR_CATALOGS,
             )
-            self._gl_world_play = GLWorldPlay(wp, ui, self._W, self._H)
+
+            # Load scene graph and starting-scene interaction entities
+            graph = WorldGraph.load()
+            start_ko = Path("C:/DjinnOS/productions/kos-labyrnth/scenes/lapidus/home_morning.scene.ko")
+            try:
+                scene_data   = load_ko_scene(start_ko) if start_ko.exists() else {}
+                scene_nodes  = [n for n in scene_data.get("nodes", []) if n.get("kind") == "interaction"]
+            except Exception:
+                scene_nodes = []
+
+            self._gl_world_play = GLWorldPlay(
+                wp,
+                ui,
+                self._W,
+                self._H,
+                world_graph          = graph,
+                interaction_entities = scene_nodes,
+            )
             self._screen = "WORLD_PLAY"
         except Exception:
             self._go("GAME_SELECT")

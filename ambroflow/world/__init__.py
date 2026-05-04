@@ -50,9 +50,14 @@ from .calendar import (
     AlchemyCalendarContext,
     get_alchemy_calendar_context,
 )
-from .player   import WorldPlayer, Direction
-from .renderer import WorldRenderer
-from .play     import WorldPlay, WorldMode
+from .player             import WorldPlayer, Direction
+from .renderer           import WorldRenderer
+from .play               import WorldPlay, WorldMode
+from .kobra_zone_loader  import (
+    load_zone_from_kobra,
+    resolve_color_token,
+    ParsedPlacement,
+)
 from .zones    import build_game7_world
 from .loaders  import (
     EncounterDef,
