@@ -422,6 +422,15 @@ class GLApp:
                 inventory       = inv,
                 vendor_catalogs = VENDOR_CATALOGS,
             )
+            # Post-FateKnocks: player enters world inside their home
+            home_id = "lapidus_wiltoll_home"
+            if home_id in world_map.zones:
+                home   = world_map.zones[home_id]
+                sx, sy = home.player_spawn
+                wp._player.zone_id = home_id
+                wp._player.x       = sx
+                wp._player.y       = sy
+                wp._zone           = home
         except Exception:
             _log.error("WorldPlay init failed:\n%s", traceback.format_exc())
             self._go("GAME_SELECT")

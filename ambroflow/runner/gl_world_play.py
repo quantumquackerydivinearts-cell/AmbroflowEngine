@@ -162,6 +162,57 @@ _SUL_EDGE: dict = {
 _REALM_FILL = {Realm.LAPIDUS: _LAP_FILL, Realm.MERCURIE: _MER_FILL, Realm.SULPHERA: _SUL_FILL}
 _REALM_EDGE = {Realm.LAPIDUS: _LAP_EDGE, Realm.MERCURIE: _MER_EDGE, Realm.SULPHERA: _SUL_EDGE}
 
+# Interior atlas for home zones — tile_id 0-15 matching fate_knocks_gl._ATLAS_COLORS
+_INTERIOR_ATLAS_COLORS = [
+    ( 72,  62,  50),   #  0  FLOOR
+    ( 55,  90,  42),   #  1  GRASS (unused inside)
+    (100,  78,  52),   #  2  ROAD/DIRT (unused inside)
+    ( 86,  74,  58),   #  3  WALL
+    ( 32,  58, 100),   #  4  WATER (unused inside)
+    ( 90,  84,  74),   #  5  STONE (unused inside)
+    (  8,   6,  12),   #  6  VOID
+    (110,  65,  38),   #  7  BED
+    ( 88,  56,  28),   #  8  TABLE
+    (185, 160, 105),   #  9  JOURNAL
+    ( 90,  42,  28),   # 10  FURNACE
+    ( 62,  64,  68),   # 11  ANVIL
+    ( 78,  66,  50),   # 12  COUNTER
+    ( 48,  52,  60),   # 13  REGISTER
+    ( 72,  56,  94),   # 14  ALTAR
+    ( 58,  42,  24),   # 15  BOOKSHELF
+]
+
+def _make_interior_atlas() -> "Image.Image":
+    """16×1 RGBA interior atlas — mirrors fate_knocks_gl._ATLAS_COLORS."""
+    cell = 32
+    cols = len(_INTERIOR_ATLAS_COLORS)
+    img  = Image.new("RGBA", (cols * cell, cell), (0, 0, 0, 0))
+    pix  = img.load()
+    for idx, (r, g, b) in enumerate(_INTERIOR_ATLAS_COLORS):
+        ox = idx * cell
+        for py in range(cell):
+            for px in range(cell):
+                border = px == 0 or py == 0 or px == cell - 1 or py == cell - 1
+                col = (r // 2, g // 2, b // 2, 255) if border else (r, g, b, 255)
+                pix[ox + px, py] = col
+    return img
+
+# kind_to_atlas override for home zone (interior atlas cell indices)
+_HOME_KIND_ATLAS: dict = {
+    _C.VOID:        6,
+    _C.WALL:        3,
+    _C.FLOOR:       0,
+    _C.DOOR:        0,
+    _C.GRASS:       1,
+    _C.ROAD:        2,
+    _C.STAIRS_UP:   0,
+    _C.STAIRS_DOWN: 0,
+    _C.PORTAL:      0,
+}
+
+# Zones that use the interior atlas palette
+_INTERIOR_ZONE_IDS = frozenset({"lapidus_wiltoll_home"})
+
 _PLAYER_FILL   = (220, 190, 100)
 _PLAYER_SHADOW = ( 80,  60,  20)
 _NPC_FILL      = (160, 160, 180)
@@ -172,8 +223,33 @@ _HUD_ACCENT    = (200, 155,  50)
 
 TILE_SIZE = 32
 
+# Atlas cell ordering — must match _default_atlas indices in render/world.py.
+# Cells 0-15: base types; 16-18: specialty road/paving surfaces.
+_ATLAS_ORDER = [
+    _C.FLOOR, _C.GRASS, _C.ROAD, _C.WALL, _C.WATER, _C.STONE, _C.VOID,
+    _C.DOOR, _C.BRIDGE, _C.YELLOW_BRICK, _C.MARBLE, _C.PORTAL,
+    _C.DUNGEON_ENTRANCE, _C.TREE, _C.STAIRS_UP, _C.STAIRS_DOWN,
+    _C.CERAMIC, _C.SLATE, _C.SILICA,
+]
 
-# ── PIL world tile renderer ───────────────────────────────────────────────────
+def _make_realm_atlas(fill_map: dict) -> "Image.Image":
+    """Build a 16×1 cell RGBA atlas from a realm fill-colour dict."""
+    cols = len(_ATLAS_ORDER)
+    cell = 32
+    img  = Image.new("RGBA", (cols * cell, cell), (0, 0, 0, 0))
+    pix  = img.load()
+    for idx, kind in enumerate(_ATLAS_ORDER):
+        r, g, b = fill_map.get(kind, (20, 20, 20))
+        ox = idx * cell
+        for py in range(cell):
+            for px in range(cell):
+                border = px == 0 or py == 0 or px == cell-1 or py == cell-1
+                col = (r//2, g//2, b//2, 255) if border else (r, g, b, 255)
+                pix[ox+px, py] = col
+    return img
+
+
+# ── PIL world tile renderer (kept for NPC/player overlay only) ────────────────
 
 def _render_world_pil(wp: "WorldPlay", W: int, H: int) -> "Image.Image":
     """Paint tile grid + entities + HUD into a PIL RGBA image."""
@@ -277,25 +353,73 @@ class GLWorldPlay:
 
     def __init__(
         self,
-        world_play:          "WorldPlay",
-        ui:                  UIRenderer,
-        width:               int,
-        height:              int,
-        world_graph:         Optional[WorldGraph] = None,
+        world_play:           "WorldPlay",
+        ui:                   UIRenderer,
+        width:                int,
+        height:               int,
+        world_graph:          Optional[WorldGraph] = None,
         interaction_entities: Optional[List[Dict[str, Any]]] = None,
-        game_state:          Any = None,
-        systems:             Optional[Dict[str, Any]] = None,
+        game_state:           Any = None,
+        systems:              Optional[Dict[str, Any]] = None,
     ) -> None:
         self._wp          = world_play
         self._ui          = ui
         self._W           = width
         self._H           = height
-        self._tex         = Texture.empty(width, height)
         self._graph       = world_graph or WorldGraph.load()
         self._entities    = interaction_entities or []
         self._game_state  = game_state
         self._systems     = systems or {}
         self._pending_transition: Optional[ActionResult] = None
+        self._t           = 0.0
+        self._zone_id_cached: int = -1  # id() of loaded zone — detects transitions
+
+        # ── WorldRenderer + Camera (same pipeline as FateKnocksGLPlay) ────────
+        from ..render.world import WorldRenderer
+        from ..engine.camera import Camera
+
+        zone    = self._wp._zone
+        zone_id = getattr(zone, "zone_id", "")
+
+        # Static furniture persists across _reload_entities calls
+        self._static_furniture: list = []
+
+        if zone_id in _INTERIOR_ZONE_IDS:
+            atlas_img = _make_interior_atlas()
+            atlas_tex = Texture.from_pil(atlas_img)
+            self._wr  = WorldRenderer.for_lapidus(
+                atlas_tex, atlas_cols=len(_INTERIOR_ATLAS_COLORS), atlas_rows=1)
+            self._wr.load_zone(zone, kind_to_atlas=_HOME_KIND_ATLAS)
+            try:
+                from ..scenes.player_home import GROUND_FURNITURE
+                self._static_furniture = list(GROUND_FURNITURE)
+            except Exception:
+                pass
+        else:
+            realm     = getattr(zone, "realm", None)
+            fill      = _REALM_FILL.get(realm, _LAP_FILL)
+            atlas_img = _make_realm_atlas(fill)
+            atlas_tex = Texture.from_pil(atlas_img)
+            self._wr  = WorldRenderer.for_lapidus(
+                atlas_tex, atlas_cols=len(_ATLAS_ORDER), atlas_rows=1)
+            self._wr.load_zone(zone)
+
+        self._zone_id_cached = id(zone)
+
+        self._cam = Camera(
+            aspect       = width / max(1, height),
+            fov_deg      = 35.0,
+            pitch_deg    = 40.0,
+            distance     = 14.0,
+            follow_speed = 6.0,
+        )
+
+        # Movement throttle state
+        self._mov_last:  dict[str, float] = {}
+        self._mov_start: dict[str, float] = {}
+
+        # PIL texture kept only for overlay-mode screens (ALCHEMY, SHOP, etc.)
+        self._tex = Texture.empty(width, height)
 
     # ── Public API ────────────────────────────────────────────────────────────
 
@@ -396,7 +520,35 @@ class GLWorldPlay:
 
     # ── Public API ────────────────────────────────────────────────────────────
 
+    # Movement throttle constants
+    _WALK_DELAY = 0.18   # s/tile — initial hold speed
+    _RUN_DELAY  = 0.08   # s/tile — sustained run speed
+    _RUN_THRESH = 0.35   # s of continuous hold before run speed
+    _FRESH_GAP  = 0.55   # gap > this = treat as new keypress
+
+    _MOVE_EVS = frozenset({"move_north", "move_south", "move_east", "move_west"})
+
     def handle_event(self, ev: str) -> None:
+        import time as _ti
+
+        # Throttled movement
+        if ev in self._MOVE_EVS:
+            now  = _ti.monotonic()
+            last = self._mov_last.get(ev, 0.0)
+            gap  = now - last
+            if gap > self._FRESH_GAP:
+                # Fresh press — always move, reset hold timer
+                self._mov_start[ev] = now
+                self._mov_last[ev]  = now
+                self._wp._handle_key(_EV_TO_KEY[ev])
+            else:
+                hold  = now - self._mov_start.get(ev, now)
+                delay = self._RUN_DELAY if hold > self._RUN_THRESH else self._WALK_DELAY
+                if gap >= delay:
+                    self._mov_last[ev] = now
+                    self._wp._handle_key(_EV_TO_KEY[ev])
+            return
+
         if ev == "interact":
             self._dispatch_interaction()
         key = _EV_TO_KEY.get(ev, 0)
@@ -407,16 +559,97 @@ class GLWorldPlay:
         self._W, self._H = w, h
         self._wp.width   = w
         self._wp.height  = h
+        self._cam.resize(w / max(1, h))
         if self._tex is not None:
             self._tex.delete()
         self._tex = Texture.empty(w, h)
 
     def tick(self, dt: float) -> None:
-        """Update hint text (no pygame events needed)."""
+        self._t += dt
         self._wp.tick(dt, [])
 
+        # Follow player
+        import glm
+        player = self._wp._player
+        self._cam.target = glm.vec3(float(player.x), 0.0, float(player.y))
+        self._cam.update(dt)
+
+        # Reload WorldRenderer when zone changes (exits, dungeon transitions)
+        zone = self._wp._zone
+        if id(zone) != self._zone_id_cached:
+            from ..render.world import WorldRenderer
+            zone_id = getattr(zone, "zone_id", "")
+            self._wr.delete()
+            if zone_id in _INTERIOR_ZONE_IDS:
+                atlas_img = _make_interior_atlas()
+                atlas_tex = Texture.from_pil(atlas_img)
+                self._wr  = WorldRenderer.for_lapidus(
+                    atlas_tex, atlas_cols=len(_INTERIOR_ATLAS_COLORS), atlas_rows=1)
+                self._wr.load_zone(zone, kind_to_atlas=_HOME_KIND_ATLAS)
+                try:
+                    from ..scenes.player_home import GROUND_FURNITURE
+                    self._static_furniture = list(GROUND_FURNITURE)
+                except Exception:
+                    self._static_furniture = []
+            else:
+                realm     = getattr(zone, "realm", None)
+                fill      = _REALM_FILL.get(realm, _LAP_FILL)
+                atlas_img = _make_realm_atlas(fill)
+                atlas_tex = Texture.from_pil(atlas_img)
+                self._wr  = WorldRenderer.for_lapidus(
+                    atlas_tex, atlas_cols=len(_ATLAS_ORDER), atlas_rows=1)
+                self._wr.load_zone(zone)
+                self._static_furniture = []
+            self._zone_id_cached = id(zone)
+
+        # Refresh player + NPC furniture instances each frame
+        self._reload_entities()
+
+    def _reload_entities(self) -> None:
+        """Upload static furniture + dynamic entity positions each frame."""
+        class _P:
+            __slots__ = ("x","y","z","tile_id","height")
+            def __init__(self,x,y,z,t,h): self.x=x;self.y=y;self.z=z;self.tile_id=t;self.height=h
+
+        player     = self._wp._player
+        placements = list(self._static_furniture)  # zone furniture first
+        placements.append(_P(float(player.x), 0.12, float(player.y), 9, 0.45))  # player (amber)
+        for npc in getattr(self._wp._zone, "npc_spawns", []):
+            placements.append(_P(float(npc.x), 0.08, float(npc.y), 2, 0.35))   # NPC (grey)
+        self._wr.load_furniture(placements)
+
     def draw(self) -> None:
-        """Render current game state to a PIL image, upload, blit as fullscreen quad."""
+        """Render using WorldRenderer (GL) for world modes; PIL overlay for UI screens."""
+        from ..world.play import WorldMode
+        from OpenGL import GL
+
+        mode = self._wp._mode
+
+        if mode in (WorldMode.WORLD, WorldMode.DUNGEON, WorldMode.DEAD, WorldMode.DIALOGUE):
+            # ── 3D world render — same path as FateKnocksGLPlay ──────────────
+            GL.glClearColor(0.04, 0.03, 0.08, 1.0)
+            GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
+            self._wr.draw(self._cam, time=self._t)
+
+            # Dialogue overlay on top
+            if mode == WorldMode.DIALOGUE:
+                data = getattr(self._wp, "_dialogue_bytes", None)
+                if data and _PIL:
+                    try:
+                        img  = Image.open(io.BytesIO(data)).convert("RGBA")
+                        dh   = int(self._H * 0.38)
+                        img  = img.resize((self._W, dh), Image.LANCZOS)
+                        base = Image.new("RGBA", (self._W, self._H), (0,0,0,0))
+                        base.alpha_composite(img, (0, self._H - dh))
+                        self._tex.update_pil(base)
+                        self._ui.add(self._tex, (-1.0,-1.0,1.0,1.0), opacity=0.96)
+                        self._ui.draw()
+                        self._ui.clear()
+                    except Exception:
+                        pass
+            return
+
+        # ── Overlay modes (ALCHEMY, SHOP, SMELT, VENDOR …) — PIL bytes ───────
         if not _PIL:
             return
         img = self._render_pil()
@@ -426,6 +659,11 @@ class GLWorldPlay:
         self._ui.clear()
 
     def delete(self) -> None:
+        if hasattr(self, "_wr"):
+            try:
+                self._wr.delete()
+            except Exception:
+                pass
         if self._tex is not None:
             self._tex.delete()
             self._tex = None

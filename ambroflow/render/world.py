@@ -71,8 +71,8 @@ LAPIDUS_LIGHTING = {
     "u_fog_near"      : 18.0,
     "u_fog_far"       : 60.0,
     "u_fog_color"     : (0.36, 0.33, 0.44),
-    "u_seam_width"    : 0.06,   # shadow band width in tile-space (0..0.5)
-    "u_seam_strength" : 0.45,   # peak shadow opacity at seam edge
+    "u_seam_width"    : 0.14,   # wider band = more gradual, organic edge
+    "u_seam_strength" : 0.22,   # lower strength = softer, less harsh
 }
 
 
@@ -244,6 +244,35 @@ class WorldRenderer:
         self._vao.attrib_divisor(5, 1)
         self._vao.unbind()
         self._vbo_inst.unbind()
+
+        # ── Furniture: interaction nodes → FurniturePlacement-like objects ────
+        class _P:
+            __slots__ = ("x", "y", "z", "tile_id", "height")
+            def __init__(self, x, y, z, tile_id, height):
+                self.x=x; self.y=y; self.z=z; self.tile_id=tile_id; self.height=height
+
+        placements = []
+        for node in scene.get("nodes", []):
+            if node.get("kind") != "interaction":
+                continue
+            meta   = node.get("metadata") or {}
+            action = meta.get("action", "")
+            entry  = self._KO_ACTION_FURN.get(action)
+            if entry is None:
+                continue
+            tile_id, height = entry
+            # scene coords → world: x=col, z=elevation(meta.z), y=row→world Z
+            placements.append(_P(
+                x       = float(node.get("x", 0)),
+                y       = float(meta.get("z", 0)),      # elevation → world Y
+                z       = float(node.get("y", 0)),      # row       → world Z
+                tile_id = tile_id,
+                height  = height,
+            ))
+
+        if placements:
+            self.load_furniture(placements)
+
         return n
 
     # ── Furniture loading ──────────────────────────────────────────────────────
@@ -372,17 +401,23 @@ class WorldRenderer:
             WorldTileKind.VOID:             6,
             WorldTileKind.WALL:             3,
             WorldTileKind.FLOOR:            0,
-            WorldTileKind.DOOR:             0,
+            WorldTileKind.DOOR:             7,
             WorldTileKind.GRASS:            1,
             WorldTileKind.ROAD:             2,
             WorldTileKind.DIRT:             2,
             WorldTileKind.STONE:            5,
             WorldTileKind.WATER:            4,
-            WorldTileKind.BRIDGE:           7,
-            WorldTileKind.STAIRS_UP:        0,
-            WorldTileKind.STAIRS_DOWN:      0,
-            WorldTileKind.PORTAL:           0,
-            WorldTileKind.DUNGEON_ENTRANCE: 0,
+            WorldTileKind.BRIDGE:           8,
+            WorldTileKind.STAIRS_UP:        14,
+            WorldTileKind.STAIRS_DOWN:      15,
+            WorldTileKind.PORTAL:           11,
+            WorldTileKind.DUNGEON_ENTRANCE: 12,
+            WorldTileKind.TREE:             13,
+            WorldTileKind.MARBLE:           10,
+            WorldTileKind.YELLOW_BRICK:     9,
+            WorldTileKind.CERAMIC:          16,
+            WorldTileKind.SLATE:            17,
+            WorldTileKind.SILICA:           18,
         }
         atlas_map = kind_to_atlas or _default_atlas
         rows: list[float] = []
