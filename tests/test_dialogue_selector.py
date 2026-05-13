@@ -83,7 +83,7 @@ def _paths():
             "character_id": "0006_WTCH",
             "realm_id": "sulphera",
             "priority": 5,
-            "required_witnesses": ["0009_KLST"],
+            "required_witnesses": ["0010_KLST"],   # Perfect Circles (was 0009_KLST)
             "blocked_witnesses": [],
             "lines": [
                 {"speaker": "0006_WTCH", "text": "Welcome to the first ring.", "shygazun": ""},
@@ -167,7 +167,8 @@ def test_fallback_sulphera_blocked_without_gate():
 
 
 def test_fallback_sulphera_accessible_with_gate():
-    state = _quest_state(witnessed=["0009_KLST"])
+    # Sulphera gate is 0010_KLST (Perfect Circles) since registry.py update.
+    state = _quest_state(witnessed=["0010_KLST"])
     chosen = _fallback_select(state, "sulphera", "0006_WTCH", _paths())
     assert chosen is not None
     assert chosen["path_id"] == "path_sulphera"

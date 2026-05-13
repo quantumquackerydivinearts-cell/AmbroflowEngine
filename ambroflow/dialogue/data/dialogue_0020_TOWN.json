@@ -1,0 +1,83 @@
+{
+  "character_id": "0020_TOWN",
+  "paths": [
+    {
+      "path_id": "sidhal_greeting",
+      "character_id": "0020_TOWN",
+      "realm_id": "lapidus",
+      "required_witnesses": [],
+      "blocked_witnesses": [],
+      "priority": 5,
+      "lines": [
+        {
+          "speaker": "0020_TOWN",
+          "text": "You look like someone who came here knowing what they wanted and found something different instead. The city does that. Sit down, if you have a minute."
+        }
+      ]
+    },
+    {
+      "path_id": "sidhal_temple_lore",
+      "character_id": "0020_TOWN",
+      "realm_id": "lapidus",
+      "required_witnesses": [],
+      "blocked_witnesses": [],
+      "priority": 8,
+      "lines": [
+        {
+          "speaker": "0020_TOWN",
+          "text": "The temple used to serve seven gods. Now it serves the lottery. The priests kept their jobs by agreeing not to distinguish between the two. I keep mine by mopping the floor and pretending not to have opinions. I have very specific opinions."
+        }
+      ]
+    },
+    {
+      "path_id": "sidhal_quest_offer",
+      "character_id": "0020_TOWN",
+      "realm_id": "lapidus",
+      "required_witnesses": [],
+      "blocked_witnesses": ["0003_KLST"],
+      "priority": 25,
+      "lines": [
+        {
+          "speaker": "0020_TOWN",
+          "text": "The Hopefare Road route through the warrens is not on any map the city keeps. I know it because my father taught it to me and his father before him. If you need to reach the other side of Azonithia without going through the lottery checkpoints, I can walk you to it. There are people at the end of the road worth meeting."
+        },
+        {
+          "speaker": "player",
+          "text": "Take me there."
+        },
+        {
+          "speaker": "player",
+          "text": "Maybe later."
+        }
+      ]
+    },
+    {
+      "path_id": "sidhal_directions",
+      "character_id": "0020_TOWN",
+      "realm_id": "lapidus",
+      "required_witnesses": [],
+      "blocked_witnesses": ["0003_KLST"],
+      "priority": 22,
+      "lines": [
+        {
+          "speaker": "0020_TOWN",
+          "text": "The second turning is the one people miss. There is a wall painted with a sun from some old religion -- not the temple's; older than that. Turn there, not at the archway. The archway takes you into the overflow drain. I have lost three apprentices that way. Not to death -- to embarrassment."
+        }
+      ]
+    },
+    {
+      "path_id": "sidhal_post_quest",
+      "character_id": "0020_TOWN",
+      "realm_id": "lapidus",
+      "required_witnesses": ["0003_KLST"],
+      "blocked_witnesses": [],
+      "priority": 30,
+      "lines": [
+        {
+          "speaker": "0020_TOWN",
+          "text": "Good. Wells and Lavelle are exactly what they look like: reliable, competent, and quietly furious about being both in a city that doesn't deserve it. They'll help you. They help everyone. It's a character flaw they've both accepted."
+        }
+      ]
+    }
+  ]
+}

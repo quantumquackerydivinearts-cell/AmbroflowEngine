@@ -183,6 +183,8 @@ class BreathOfKo:
     # entity IDs; None until at least one game session has been integrated.
     kill_patron_id:     Optional[str]                = None
     death_patron_id:    Optional[str]                = None
+    # Akashic record — attached at game start, persisted in snapshot
+    akashic_record:     Optional[object]             = field(default=None, repr=False)
 
     def azoth(self) -> complex:
         return _derive_azoth(
@@ -260,7 +262,7 @@ class BreathOfKo:
         return _orbit_signature(self.azoth(), self.gaoh_constant())
 
     def snapshot(self) -> dict:
-        return {
+        snap: dict = {
             "layer_densities":  dict(self.layer_densities),
             "coil_position":    self.coil_position,
             "games_played":     len(self.dream_calibrations),
@@ -271,3 +273,46 @@ class BreathOfKo:
             "kill_patron_id":   self.kill_patron_id,
             "death_patron_id":  self.death_patron_id,
         }
+        if self.akashic_record is not None:
+            try:
+                snap["akashic"] = self.akashic_record.to_dict()
+            except Exception:
+                pass
+        return snap
+
+    @classmethod
+    def from_snapshot(cls, snap: dict) -> "BreathOfKo":
+        """Restore a BreathOfKo from a snapshot dict (inverse of snapshot())."""
+        fs = FlagState()
+        for flag_id in (snap.get("active_flags") or []):
+            try:
+                fs.set(flag_id)
+            except Exception:
+                pass
+
+        densities: dict[int, float] = {}
+        for k, v in (snap.get("layer_densities") or {}).items():
+            try:
+                densities[int(k)] = float(v)
+            except (ValueError, TypeError):
+                pass
+        if not densities:
+            densities = {i: 0.5 for i in range(1, 25)}
+
+        breath = cls(
+            layer_densities = densities,
+            coil_position   = float(snap.get("coil_position", 6.0)),
+            flag_state      = fs,
+            kill_patron_id  = snap.get("kill_patron_id"),
+            death_patron_id = snap.get("death_patron_id"),
+        )
+
+        akashic_data = snap.get("akashic")
+        if isinstance(akashic_data, dict):
+            try:
+                from .akashic import AkashicRecord
+                breath.akashic_record = AkashicRecord.from_dict(akashic_data)
+            except Exception:
+                pass
+
+        return breath

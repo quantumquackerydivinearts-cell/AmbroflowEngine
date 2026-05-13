@@ -41,6 +41,7 @@ class InputEvent:
     QUIT         = "quit"
     FIGHT        = "fight"
     ALCHEMY      = "alchemy"
+    JOURNAL      = "journal"
 
 
 # Key → InputEvent mapping (WASD + arrows, Esc, Enter/Space, F/Z)
@@ -59,6 +60,7 @@ _KEY_MAP: dict[int, str] = {
     glfw.KEY_TAB:    InputEvent.MENU,
     glfw.KEY_F:      InputEvent.FIGHT,
     glfw.KEY_Z:      InputEvent.ALCHEMY,
+    glfw.KEY_J:      InputEvent.JOURNAL,
 }
 
 # Movement events that participate in held-key continuous repeat

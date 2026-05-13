@@ -29,6 +29,9 @@ from .player_home import (
     UPPER_FURNITURE,
     altar_placements,
     get_player_home_furniture,
+    get_player_home_interactions,
+    HOME_INTERACTIONS,
+    HOME_UPPER_INTERACTIONS,
 )
 
 __all__ = [
@@ -58,4 +61,7 @@ __all__ = [
     "UPPER_FURNITURE",
     "altar_placements",
     "get_player_home_furniture",
+    "get_player_home_interactions",
+    "HOME_INTERACTIONS",
+    "HOME_UPPER_INTERACTIONS",
 ]

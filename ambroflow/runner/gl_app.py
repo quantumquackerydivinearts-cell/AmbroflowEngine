@@ -88,6 +88,7 @@ class GLApp:
     ) -> None:
         self._W = width
         self._H = height
+        self._atelier_url = atelier_url
         self._session = Session(
             backend=auto_backend(atelier_base_url=atelier_url),
             orrery_url=atelier_url,
@@ -125,6 +126,9 @@ class GLApp:
 
         # Strictly-GL world play (post-chargen, post-opening)
         self._gl_world_play: Optional[GLWorldPlay] = None
+
+        # Live BreathOfKo — holds Akashic record across world play session
+        self._active_breath = None
 
         # GL texture for current PIL frame
         self._screen_tex: Optional[Texture] = None
@@ -287,10 +291,32 @@ class GLApp:
             self._dirty = True
             return
         status = self._session.game_status(game.slug)
-        if status == "in_progress":
+        is_resume = (status == "in_progress")
+        if is_resume:
             self._session.resume_game(game.slug)
         else:
             self._session.start_game(game.slug)
+
+        # Build (or restore) the live BreathOfKo and attach an AkashicRecord
+        try:
+            from ..ko.breath import BreathOfKo
+            from ..ko.akashic import AkashicRecord
+            prof = self._session.profile
+            snap = prof.breath_snapshot if prof else None
+            if snap:
+                self._active_breath = BreathOfKo.from_snapshot(snap)
+            else:
+                self._active_breath = BreathOfKo()
+            # Attach or restore the Akashic record for this game
+            ar = getattr(self._active_breath, "akashic_record", None)
+            if ar is None or getattr(ar, "game_slug", None) != game.slug:
+                self._active_breath.akashic_record = AkashicRecord(
+                    game_slug=game.slug)
+            if not is_resume:
+                self._active_breath.akashic_record.begin_run()
+        except Exception:
+            self._active_breath = None
+
         self._game_flow = GameFlow(game.slug, self._W, self._H)
         self._go("IN_GAME")
 
@@ -405,6 +431,9 @@ class GLApp:
         try:
             from ..world import WorldPlay, build_game7_world
             from ..world.zones.lapidus import VENDOR_CATALOGS
+            from ..alchemy.system import AlchemySystem
+            from ..journal.journal import Journal
+            from ..orrery.client import OrreryClient
 
             chargen   = self._chargen
             world_map = build_game7_world()
@@ -414,6 +443,19 @@ class GLApp:
                     inv.add(item_id, qty)
                 except Exception:
                     pass
+
+            orrery = OrreryClient(
+                workspace_id = self._player_id or "anon",
+                game_id      = "7_KLGS",
+                base_url     = (self._atelier_url or "https://atelier-api.quantumquackery.com/"),
+            )
+            alchemy = AlchemySystem(orrery=orrery)
+            journal = Journal(
+                actor_id = self._player_id or "anon",
+                game_id  = "7_KLGS",
+                orrery   = orrery,
+            )
+
             wp = WorldPlay(
                 chargen         = chargen,
                 world_map       = world_map,
@@ -421,6 +463,9 @@ class GLApp:
                 height          = self._H,
                 inventory       = inv,
                 vendor_catalogs = VENDOR_CATALOGS,
+                alchemy         = alchemy,
+                journal         = journal,
+                breath          = self._active_breath,
             )
             # Post-FateKnocks: player enters world inside their home
             home_id = "lapidus_wiltoll_home"
@@ -470,6 +515,15 @@ class GLApp:
             self._gl_world_play = None
             self._chargen = None
             self._starting_inventory = {}
+            # Sync BreathOfKo snapshot back to session profile before saving
+            if self._active_breath is not None and self._session.profile is not None:
+                try:
+                    self._session.profile.breath_snapshot = \
+                        self._active_breath.snapshot()
+                    self._session.save()
+                except Exception:
+                    pass
+            self._active_breath = None
             self._go("GAME_SELECT")
 
     # ── Main loop ─────────────────────────────────────────────────────────────

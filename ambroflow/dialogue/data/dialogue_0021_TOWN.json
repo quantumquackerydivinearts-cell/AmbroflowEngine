@@ -1,0 +1,61 @@
+{
+  "character_id": "0021_TOWN",
+  "paths": [
+    {
+      "path_id": "wells_greeting",
+      "character_id": "0021_TOWN",
+      "realm_id": "lapidus",
+      "required_witnesses": [],
+      "blocked_witnesses": [],
+      "priority": 5,
+      "lines": [
+        {
+          "speaker": "0021_TOWN",
+          "text": "Sidhal sent you. I can tell -- you've still got the look of someone who trusts that the city works the way it says it does."
+        }
+      ]
+    },
+    {
+      "path_id": "wells_aqueduct",
+      "character_id": "0021_TOWN",
+      "realm_id": "lapidus",
+      "required_witnesses": [],
+      "blocked_witnesses": [],
+      "priority": 10,
+      "lines": [
+        {
+          "speaker": "0021_TOWN",
+          "text": "The aqueduct at this section is patched with three different kinds of stone because three different administrations repaired it three different ways and none of them talked to each other. We have held it together for eleven years. That is not competence. That is stubbornness. I hope you have some."
+        }
+      ]
+    },
+    {
+      "path_id": "wells_lottery_lore",
+      "character_id": "0021_TOWN",
+      "realm_id": "lapidus",
+      "required_witnesses": [],
+      "blocked_witnesses": [],
+      "priority": 15,
+      "lines": [
+        {
+          "speaker": "0021_TOWN",
+          "text": "The Lottery isn't random. I've worked these streets long enough to know which families have never been drawn. You want to know who actually runs this city, ask yourself who has never won the prize nobody wants."
+        }
+      ]
+    },
+    {
+      "path_id": "wells_family",
+      "character_id": "0021_TOWN",
+      "realm_id": "lapidus",
+      "required_witnesses": ["0003_KLST"],
+      "blocked_witnesses": [],
+      "priority": 20,
+      "lines": [
+        {
+          "speaker": "0021_TOWN",
+          "text": "Six kids. The oldest works with me. The second one is smarter than both of us and has decided to do something about it. I don't ask for details. Some things a father doesn't need to know in advance."
+        }
+      ]
+    }
+  ]
+}

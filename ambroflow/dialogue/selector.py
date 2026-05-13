@@ -156,9 +156,15 @@ def _fallback_select(
         if isinstance(entry, dict):
             entries[eid] = str(entry.get("witness_state") or "unwitnessed")
 
-    # Sulphera gate
+    # Sulphera gate — requires 0010_KLST (Perfect Circles, Alfir's teaching quest)
     if realm_id == "sulphera":
-        gate = entries.get("0009_KLST", "unwitnessed")
+        gate = entries.get("0010_KLST", "unwitnessed")
+        if gate != WITNESS_WITNESSED:
+            return None
+
+    # Mercurie gate — requires 0007_KLST (Dream of Glass)
+    if realm_id == "mercurie":
+        gate = entries.get("0007_KLST", "unwitnessed")
         if gate != WITNESS_WITNESSED:
             return None
 

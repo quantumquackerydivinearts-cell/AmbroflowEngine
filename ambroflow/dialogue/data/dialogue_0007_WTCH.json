@@ -1,0 +1,83 @@
+{
+  "character_id": "0007_WTCH",
+  "paths": [
+    {
+      "path_id": "forest_witch_greeting",
+      "character_id": "0007_WTCH",
+      "realm_id": "lapidus",
+      "required_witnesses": [],
+      "blocked_witnesses": [],
+      "priority": 5,
+      "lines": [
+        {
+          "speaker": "0007_WTCH",
+          "text": "I don't get many visitors who aren't lost. Are you lost, or are you looking? The difference matters more than people expect. Lost people want directions. Looking people want maps."
+        }
+      ]
+    },
+    {
+      "path_id": "forest_witch_forty_years",
+      "character_id": "0007_WTCH",
+      "realm_id": "lapidus",
+      "required_witnesses": [],
+      "blocked_witnesses": [],
+      "priority": 8,
+      "lines": [
+        {
+          "speaker": "0007_WTCH",
+          "text": "I have been here forty years. The forest has its own intelligence and it is patient in ways that make patience look like rushing. I am still a student. I expect to remain one for whatever time I have left, which I have not asked and do not intend to."
+        }
+      ]
+    },
+    {
+      "path_id": "forest_witch_dream_offer",
+      "character_id": "0007_WTCH",
+      "realm_id": "lapidus",
+      "required_witnesses": [],
+      "blocked_witnesses": ["0007_KLST"],
+      "priority": 20,
+      "lines": [
+        {
+          "speaker": "0007_WTCH",
+          "text": "There is a particular kind of dream that comes when the boundary between what is real and what is possible becomes negotiable. You have been having it, haven't you. I can teach you to stay awake inside it. That is what the Glass is -- the membrane you press against from the wrong side. I will show you the right side. Save whatever dust remains in the morning. I mean that literally."
+        },
+        {
+          "speaker": "player",
+          "text": "Teach me."
+        },
+        {
+          "speaker": "player",
+          "text": "I need to think about it."
+        }
+      ]
+    },
+    {
+      "path_id": "forest_witch_dream_guidance",
+      "character_id": "0007_WTCH",
+      "realm_id": "lapidus",
+      "required_witnesses": [],
+      "blocked_witnesses": ["0007_KLST"],
+      "priority": 25,
+      "lines": [
+        {
+          "speaker": "0007_WTCH",
+          "text": "You are doing fine. The temptation is to try to control it. Don't. The glass does not shatter if you stop pushing -- it dissolves. The dissolving is the point. Let it dissolve. What is on the other side has been waiting. It has patience in quantities that make patience look like rushing."
+        }
+      ]
+    },
+    {
+      "path_id": "forest_witch_mercurie_map",
+      "character_id": "0007_WTCH",
+      "realm_id": "lapidus",
+      "required_witnesses": ["0007_KLST"],
+      "blocked_witnesses": [],
+      "priority": 30,
+      "lines": [
+        {
+          "speaker": "0007_WTCH",
+          "text": "You have been through it. Good. The Faewilds are accessible through two thresholds near this region: the ocean shore at low tide, and the mine's deepest level past the third vein, where the stone changes color. The Fae will know you before you know them. That is not a problem unless you make it one. I have a map. Keep it in your journal."
+        }
+      ]
+    }
+  ]
+}

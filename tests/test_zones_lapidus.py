@@ -16,6 +16,8 @@ from ambroflow.world.zones.lapidus import (
     build_azoth_approach,
     build_castle_azoth,
     build_mt_elaene_trail,
+    build_serpents_pass,
+    build_ocean_shore,
     VENDOR_CATALOGS,
 )
 
@@ -50,10 +52,23 @@ def test_starting_zone_is_wiltoll():
     wm = build_game7_world()
     assert wm.starting_zone_id == "lapidus_wiltoll_lane"
 
-def test_all_zones_are_lapidus_realm():
+def test_lapidus_zones_have_lapidus_realm():
     wm = build_game7_world()
-    for zone in wm.zones.values():
-        assert zone.realm == Realm.LAPIDUS
+    lapidus_ids = [zid for zid in wm.zones if zid.startswith("lapidus_")]
+    for zid in lapidus_ids:
+        assert wm.zones[zid].realm == Realm.LAPIDUS, f"{zid} should be LAPIDUS"
+
+def test_mercurie_zones_have_mercurie_realm():
+    wm = build_game7_world()
+    mercurie_ids = [zid for zid in wm.zones if zid.startswith("mercurie_")]
+    for zid in mercurie_ids:
+        assert wm.zones[zid].realm == Realm.MERCURIE, f"{zid} should be MERCURIE"
+
+def test_sulphera_zones_have_sulphera_realm():
+    wm = build_game7_world()
+    sulphera_ids = [zid for zid in wm.zones if zid.startswith("sulphera_")]
+    for zid in sulphera_ids:
+        assert wm.zones[zid].realm == Realm.SULPHERA, f"{zid} should be SULPHERA"
 
 
 # ── Wiltoll Lane ──────────────────────────────────────────────────────────────
@@ -69,9 +84,9 @@ class TestWiltollLane:
 
     def test_player_spawn(self):
         x, y = self.z.player_spawn
-        # player @ col 3, row 12 (south verge, facing home entrance)
+        # player @ col 3, row 8 (north verge, facing home entrance door at row 7)
         assert x == 3
-        assert y == 12
+        assert y == 8
 
     def test_spawn_tile_is_floor(self):
         x, y = self.z.player_spawn
@@ -204,10 +219,17 @@ class TestAvenueCommon:
 
 # ── Sidhal NPC spawn ──────────────────────────────────────────────────────────
 
-def test_sidhal_spawns_in_slum_zone():
-    z = build_azonithia_slum()
+def test_sidhal_spawns_in_temple_zone():
+    # Sidhal (0020_TOWN) is the temple custodian — placed in Goldshoot St section.
+    z = build_azonithia_temple()
     cids = [n.character_id for n in z.npc_spawns]
-    assert "0004_TOWN" in cids   # Sidhal: farmer/forester, quest 0003_KLST guide
+    assert "0020_TOWN" in cids, "Sidhal should be in temple zone"
+
+def test_nexiott_spawns_in_heartvein_zone():
+    # Nexiott (0017_ROYL) is a noble living in Heartvein Heights.
+    z = build_azonithia_heartvein()
+    cids = [n.character_id for n in z.npc_spawns]
+    assert "0017_ROYL" in cids, "Nexiott should be in heartvein zone"
 
 
 # ── Azoth Approach ────────────────────────────────────────────────────────────
@@ -386,20 +408,22 @@ class TestWiltollHome:
 
     def test_player_spawn(self):
         x, y = self.z.player_spawn
+        # player @ col 8, row 10 (just inside south door, foyer row)
         assert x == 8
-        assert y == 2
+        assert y == 10
 
-    def test_north_door_tiles(self):
-        assert self.z.tile_at(20, 0) == WorldTileKind.DOOR
-        assert self.z.tile_at(21, 0) == WorldTileKind.DOOR
+    def test_south_door_tiles(self):
+        # Door is at south wall (row 12), cols 20-21
+        assert self.z.tile_at(20, 12) == WorldTileKind.DOOR
+        assert self.z.tile_at(21, 12) == WorldTileKind.DOOR
 
-    def test_exit_north_to_wiltoll(self):
-        ex0 = exit_at(self.z, 20, 0, "north")
-        ex1 = exit_at(self.z, 21, 0, "north")
+    def test_exit_south_to_wiltoll(self):
+        ex0 = exit_at(self.z, 20, 12, "south")
+        ex1 = exit_at(self.z, 21, 12, "south")
         assert ex0 is not None
         assert ex0.target_zone == "lapidus_wiltoll_lane"
         assert ex0.target_x == 3
-        assert ex0.target_y == 12
+        assert ex0.target_y == 8   # player spawn row in wiltoll_lane
         assert ex1 is not None
 
     def test_item_spawns_present(self):
@@ -422,14 +446,14 @@ class TestWiltollHome:
         coins = [s for s in self.z.item_spawns if s.item_id == "0016_KLIT"]
         assert coins[0].qty == 50
 
-    def test_vendor_npc_present(self):
-        ids = [n.character_id for n in self.z.npc_spawns]
-        assert "0005_TOWN" in ids
+    def test_no_vendor_npc(self):
+        # Player is the shopkeeper — no vendor NPC spawns in the home.
+        assert len(self.z.npc_spawns) == 0
 
-    def test_foyer_is_passable(self):
+    def test_foyer_row_is_passable(self):
+        # Foyer is rows 9-11; row 10 is the player spawn row
         for col in range(1, 39):
-            assert is_passable(self.z.tile_at(col, 1))
-            assert is_passable(self.z.tile_at(col, 3))
+            assert is_passable(self.z.tile_at(col, 10)), f"col {col} row 10 should be passable"
 
 
 # ── Market Interior ───────────────────────────────────────────────────────────
@@ -460,11 +484,9 @@ class TestMarketInterior:
 
 # ── Vendor catalogs ───────────────────────────────────────────────────────────
 
-def test_vendor_catalogs_home_apothecary():
-    assert "0005_TOWN" in VENDOR_CATALOGS
-    cat = VENDOR_CATALOGS["0005_TOWN"]
-    assert "0073_KLOB" in cat   # Herb (Common)
-    assert "0001_KLOB" in cat   # Mortar
+def test_vendor_catalogs_no_home_apothecary():
+    # 0005_TOWN was removed — player is the shopkeeper; no home apothecary vendor.
+    assert "0005_TOWN" not in VENDOR_CATALOGS
 
 def test_vendor_catalogs_market_general():
     assert "0006_TOWN" in VENDOR_CATALOGS
@@ -482,16 +504,18 @@ def test_vendor_coin_prices_positive():
 
 def test_wiltoll_lane_has_home_exits():
     z = build_wiltoll_lane()
-    ex0 = exit_at(z, 3, 12, "south")
-    ex1 = exit_at(z, 4, 12, "south")
+    # Home exit is north at row 8 (player faces north to enter home door at row 7)
+    ex0 = exit_at(z, 3, 8, "north")
+    ex1 = exit_at(z, 4, 8, "north")
     assert ex0 is not None
     assert ex0.target_zone == "lapidus_wiltoll_home"
     assert ex1 is not None
 
 def test_wiltoll_home_door_tiles():
     z = build_wiltoll_lane()
-    assert z.tile_at(3, 13) == WorldTileKind.DOOR
-    assert z.tile_at(4, 13) == WorldTileKind.DOOR
+    # Home S-facade door: row 7, cols 3-4 (++  in ",,##++#####,==...")
+    assert z.tile_at(3, 7) == WorldTileKind.DOOR
+    assert z.tile_at(4, 7) == WorldTileKind.DOOR
 
 def test_wiltoll_lane_home_in_world_map():
     wm = build_game7_world()

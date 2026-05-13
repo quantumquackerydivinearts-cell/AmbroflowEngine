@@ -80,28 +80,31 @@ MEDITATION_PERKS: tuple[PerkDef, ...] = (
         id="hypnotic_meditation",
         name="Hypnotic Meditation",
         required_skill="meditation",
-        required_quest="0007_KLST",    # Dream of Glass (narrative pos. ~0008-0009)
+        required_quest="0007_KLST",    # Dream of Glass
         required_perks=(),
         effect=(
             "Directed trance states. Unlocks dialogue options with entities that only speak "
             "to minds that have voluntarily softened their threshold. "
             "Enables deeper Undine and Faerie encounter outcomes. "
+            "Completing 0007_KLST also opens the Mercurie threshold — the Forest Witch's map "
+            "reveals both crossing points (ocean shore at low tide; mine third vein). "
             "Presses Narrative sanity upward — trance coherence generates story clarity."
         ),
         sanity_delta={"narrative": 0.04, "cosmic": 0.02},
         stack_event="skill.perk.hypnotic_meditation.unlocked",
-        gates=None,
+        gates={"mercurie_access": True},
     ),
     PerkDef(
         id="infernal_meditation",
         name="Infernal Meditation",
         required_skill="meditation",
-        required_quest="0009_KLST",    # Demons and Diamonds
+        required_quest="0010_KLST",    # Perfect Circles — Alfir teaches after 0009 is complete
         required_perks=(),
         effect=(
             "The ability to hold consciousness in the Underworld's register without dissolution. "
             "This perk gates Sulphera access — opens the Visitor's Ring (Ring 8). "
-            "In Game 7, Alfir (0006_WTCH) delivers the teaching embedded in quest 0009_KLST. "
+            "In Game 7, Alfir (0006_WTCH) delivers the teaching in quest 0010_KLST (Perfect Circles), "
+            "which is unlocked after 0009_KLST (Demons and Diamonds) is complete. "
             "Boosts Cosmic sanity substantially — sustaining infernal presence is a cosmic act."
         ),
         sanity_delta={"cosmic": 0.08},
@@ -158,27 +161,28 @@ MEDITATION_PERKS: tuple[PerkDef, ...] = (
 # ── Full skill registry ────────────────────────────────────────────────────────
 
 SKILLS: tuple[SkillDef, ...] = (
-    SkillDef("barter",          "Barter",          5, "O", "narrative",   ()),
-    SkillDef("energy_weapons",  "Energy Weapons",  5, "I", "cosmic",      ()),
-    SkillDef("explosives",      "Explosives",      5, "T", "terrestrial", ()),
-    SkillDef("guns",            "Guns",            5, "T", "terrestrial", ()),
-    SkillDef("lockpick",        "Lockpick",        5, "I", "narrative",   ()),
-    SkillDef("medicine",        "Medicine",        5, "R", "terrestrial", ()),
-    SkillDef("melee_weapons",   "Melee Weapons",   5, "V", "terrestrial", ()),
-    SkillDef("repair",          "Repair",          5, "T", "alchemical",  ()),
-    SkillDef("alchemy",         "Alchemy",         5, "R", "alchemical",  (),
+    SkillDef("barter",          "Barter",          100, "O", "narrative",   ()),
+    SkillDef("energy_weapons",  "Energy Weapons",  100, "I", "cosmic",      ()),
+    SkillDef("explosives",      "Explosives",      100, "T", "terrestrial", ()),
+    SkillDef("guns",            "Guns",            100, "T", "terrestrial", ()),
+    SkillDef("lockpick",        "Lockpick",        100, "I", "narrative",   ()),
+    SkillDef("medicine",        "Medicine",        100, "R", "terrestrial", ()),
+    SkillDef("melee_weapons",   "Melee Weapons",   100, "V", "terrestrial", ()),
+    SkillDef("repair",          "Repair",          100, "T", "alchemical",  ()),
+    SkillDef("alchemy",         "Alchemy",         100, "R", "alchemical",  (),
              note="Hypatia's primary skill. Synergizes with alchemical_meditation perk."),
-    SkillDef("sneak",           "Sneak",           5, "L", "narrative",   ()),
-    SkillDef("hack",            "Hack",            5, "I", "alchemical",  ()),
-    SkillDef("speech",          "Speech",          5, "L", "narrative",   ()),
-    SkillDef("survival",        "Survival",        5, "V", "terrestrial", ()),
-    SkillDef("unarmed",         "Unarmed",         5, "V", "terrestrial", ()),
-    SkillDef("meditation",      "Meditation",      5, "I", "cosmic",      MEDITATION_PERKS,
+    SkillDef("sneak",           "Sneak",           100, "L", "narrative",   ()),
+    SkillDef("hack",            "Hack",            100, "I", "alchemical",  ()),
+    SkillDef("speech",          "Speech",          100, "L", "narrative",   ()),
+    SkillDef("survival",        "Survival",        100, "L", "terrestrial", (),
+             note="Primary axis: Levity (L). Secondary: Tactility (T). Fae relation diagnostic."),
+    SkillDef("unarmed",         "Unarmed",         100, "V", "terrestrial", ()),
+    SkillDef("meditation",      "Meditation",      100, "I", "cosmic",      MEDITATION_PERKS,
              note="Only skill with a full perk tree. Infernal Meditation gates Sulphera."),
-    SkillDef("magic",           "Magic",           5, "L", "cosmic",      ()),
-    SkillDef("blacksmithing",   "Blacksmithing",   5, "T", "alchemical",  ()),
-    SkillDef("silversmithing",  "Silversmithing",  5, "O", "alchemical",  ()),
-    SkillDef("goldsmithing",    "Goldsmithing",    5, "O", "alchemical",  (),
+    SkillDef("magic",           "Magic",           100, "L", "cosmic",      ()),
+    SkillDef("blacksmithing",   "Blacksmithing",   100, "T", "alchemical",  ()),
+    SkillDef("silversmithing",  "Silversmithing",  100, "O", "alchemical",  ()),
+    SkillDef("goldsmithing",    "Goldsmithing",    100, "O", "alchemical",  (),
              note="Desire Crystal (Asmodean material) is goldsmithing-adjacent."),
 )
 

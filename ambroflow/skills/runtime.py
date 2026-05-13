@@ -79,6 +79,9 @@ class SkillRuntime:
     def has_sulphera_access(self) -> bool:
         return "infernal_meditation" in self._perks
 
+    def has_mercurie_access(self) -> bool:
+        return "hypnotic_meditation" in self._perks
+
     # ── Mutations ─────────────────────────────────────────────────────────────
 
     def train_skill(self, skill_id: str, to_rank: int = 1) -> None:

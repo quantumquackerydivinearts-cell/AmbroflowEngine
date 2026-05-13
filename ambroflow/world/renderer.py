@@ -68,6 +68,7 @@ _LAP_FILL: dict[WorldTileKind, tuple] = {
     _C.CERAMIC:          ( 88, 128, 155),   # cool blue tile — June St / market
     _C.SLATE:            ( 72,  78,  88),   # dark gray-blue — Goldshoot St / temple
     _C.SILICA:           (195, 185, 165),   # pale extravagant — Youthspring Rd / nobles
+    _C.WALL_FACE:        (118,  98,  72),   # warm plaster — interior back wall, wallpaper substrate
 }
 _LAP_EDGE: dict[WorldTileKind, tuple] = {
     _C.GRASS:            ( 38,  70,  28),
@@ -83,6 +84,7 @@ _LAP_EDGE: dict[WorldTileKind, tuple] = {
     _C.CERAMIC:          ( 68, 105, 130),
     _C.SLATE:            ( 54,  60,  70),
     _C.SILICA:           (165, 155, 138),
+    _C.WALL_FACE:        ( 95,  78,  55),
 }
 
 # Mercurie — cool faewilds: teal, silver, deep purple
@@ -107,6 +109,7 @@ _MER_FILL: dict[WorldTileKind, tuple] = {
     _C.CERAMIC:          ( 45,  98, 118),
     _C.SLATE:            ( 52,  60,  82),
     _C.SILICA:           (175, 168, 192),
+    _C.WALL_FACE:        ( 78,  68, 112),   # cool indigo plaster
 }
 _MER_EDGE: dict[WorldTileKind, tuple] = {
     _C.GRASS:            ( 15,  58,  52),
@@ -122,6 +125,7 @@ _MER_EDGE: dict[WorldTileKind, tuple] = {
     _C.CERAMIC:          ( 30,  78,  96),
     _C.SLATE:            ( 38,  46,  65),
     _C.SILICA:           (148, 140, 165),
+    _C.WALL_FACE:        ( 58,  50,  88),
 }
 
 # Sulphera — hot underworld: ember, dark stone, lava
@@ -146,6 +150,7 @@ _SUL_FILL: dict[WorldTileKind, tuple] = {
     _C.CERAMIC:          ( 65,  30,  10),
     _C.SLATE:            ( 50,  18,   8),
     _C.SILICA:           (145,  80,  45),
+    _C.WALL_FACE:        ( 72,  22,  10),   # scorched clay
 }
 _SUL_EDGE: dict[WorldTileKind, tuple] = {
     _C.GRASS:            ( 40,  12,   5),
@@ -161,6 +166,7 @@ _SUL_EDGE: dict[WorldTileKind, tuple] = {
     _C.CERAMIC:          ( 48,  20,   6),
     _C.SLATE:            ( 35,  12,   4),
     _C.SILICA:           (118,  60,  30),
+    _C.WALL_FACE:        ( 55,  15,   6),
 }
 
 _REALM_FILL: dict[Realm, dict] = {

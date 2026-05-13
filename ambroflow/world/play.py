@@ -50,6 +50,7 @@ from .combat    import (
 )
 from .alchemy_screen import AlchemyScreen, _APPROACHES
 from .vendor_screen import VendorScreen, COIN_ID
+from .journal_screen import JournalScreen
 
 # ── qqva quest engine (graceful fallback) ────────────────────────────────────
 
@@ -92,6 +93,7 @@ _K_SPACE  = 32
 _K_ESCAPE = 27
 _K_FIGHT   = ord('f')
 _K_ALCHEMY = ord('z')
+_K_JOURNAL = ord('j')
 
 _DIR_KEYS: dict[int, Direction] = {
     _K_UP:    Direction.NORTH,
@@ -118,6 +120,7 @@ class WorldMode(str, Enum):
     VENDOR        = "vendor"
     SHOP          = "shop"     # player-operated trade screen
     SMELT         = "smelt"    # forge / smelting UI
+    JOURNAL       = "journal"  # in-game journal overlay
     DEAD          = "dead"
     DONE          = "done"
 
@@ -156,6 +159,7 @@ class WorldPlay:
         presence:         object                          = None,  # PresenceState instance
         recipe_book:      object                          = None,  # RecipeBook instance
         vendor_catalogs:  Optional[Dict[str, Dict[str, int]]] = None,
+        breath:           object                          = None,  # BreathOfKo instance
     ) -> None:
         self.width     = width
         self.height    = height
@@ -204,6 +208,9 @@ class WorldPlay:
         # Clock (optional — advances 1 hour per zone transition)
         self._clock = clock
 
+        # BreathOfKo — Akashic write target (optional)
+        self._breath = breath
+
         # Alchemy (optional — graceful no-ops when absent)
         self._alchemy       = alchemy
         self._presence      = presence
@@ -225,6 +232,13 @@ class WorldPlay:
         self._vendor_name:     str   = ""
         self._vendor_idx:      int   = 0
         self._vendor_bytes:    Optional[bytes] = None
+
+        # Journal overlay
+        self._journal_screen  = JournalScreen()
+        self._journal_cursor  = 0
+        self._journal_page    = 0
+        self._journal_detail  = False   # True = expanded detail view
+        self._journal_bytes:  Optional[bytes] = None
 
         # Item spawn tracking — zone_ids whose spawns have been collected
         self._collected_zones: set[str] = set()
@@ -352,6 +366,28 @@ class WorldPlay:
                 except Exception:
                     pass
 
+        elif self._mode == WorldMode.JOURNAL:
+            if self._journal_bytes is not None:
+                import io as _io4
+                try:
+                    from PIL import Image as _Img4
+                    pil = _Img4.open(_io4.BytesIO(self._journal_bytes))
+                    surf = pygame.image.fromstring(pil.tobytes(), pil.size, pil.mode)
+                    screen.blit(surf, (0, 0))
+                except Exception:
+                    pass
+
+    def akashic_context(self) -> object:
+        """Return the AkashicContext for this session, or None if unavailable."""
+        if self._breath is not None:
+            ar = getattr(self._breath, "akashic_record", None)
+            if ar is not None:
+                try:
+                    return ar.context()
+                except Exception:
+                    pass
+        return None
+
     def advance_quest(self, entry_id: str, candidate: str) -> None:
         """
         Witness a quest entry with the given candidate choice.
@@ -363,6 +399,15 @@ class WorldPlay:
             self._player.zone_id, self._player.x, self._player.y, KO,
             context={"quest_entry": entry_id, "candidate": candidate},
         )
+        # Akashic: record this choice
+        if self._breath is not None:
+            ar = getattr(self._breath, "akashic_record", None)
+            if ar is not None:
+                try:
+                    ar.record_choice(entry_id)
+                except Exception:
+                    pass
+
         if self._witness_tracker is not None:
             event = {
                 "event_type": "witness",
@@ -391,6 +436,8 @@ class WorldPlay:
                 self._close_map()
             elif self._mode == WorldMode.ALCHEMY:
                 self._end_alchemy()
+            elif self._mode == WorldMode.JOURNAL:
+                self._end_journal()
             elif self._mode == WorldMode.COMBAT:
                 if self._combat_loop is None:
                     # Prompt not yet confirmed — abort cleanly
@@ -445,6 +492,10 @@ class WorldPlay:
             self._handle_vendor_key(key)
             return
 
+        if self._mode == WorldMode.JOURNAL:
+            self._handle_journal_key(key)
+            return
+
         if self._mode == WorldMode.WORLD:
             direction = _DIR_KEYS.get(key) or _WASD.get(key)
             if direction is not None:
@@ -455,6 +506,8 @@ class WorldPlay:
                 self._try_attack()
             elif key == _K_ALCHEMY:
                 self._begin_alchemy()
+            elif key == _K_JOURNAL:
+                self._begin_journal()
 
     # ── Movement ─────────────────────────────────────────────────────────────
 
@@ -565,10 +618,12 @@ class WorldPlay:
         if portal is not None:
             self._hint = "[space]  Enter dungeon"
             return
+        hints = []
         if self._alchemy is not None:
-            self._hint = "[z]  Alchemy"
-            return
-        self._hint = ""
+            hints.append("[z] Alchemy")
+        if self._journal is not None:
+            hints.append("[j] Journal")
+        self._hint = "   ".join(hints)
 
     # ── Dialogue ─────────────────────────────────────────────────────────────
 
@@ -730,6 +785,22 @@ class WorldPlay:
                     self._player.zone_id, self._player.x, self._player.y, 11,
                     context={"event": "combat_died", "npc": result.npc_id},
                 )
+                # Akashic: record the death
+                if self._breath is not None:
+                    ar = getattr(self._breath, "akashic_record", None)
+                    if ar is not None:
+                        try:
+                            game_day = 0
+                            if self._clock is not None:
+                                game_day = getattr(
+                                    getattr(self._clock, "date", None), "day", 0)
+                            ar.record_death(
+                                zone_id  = self._player.zone_id,
+                                cause    = f"combat:{result.npc_id}",
+                                game_day = game_day,
+                            )
+                        except Exception:
+                            pass
                 self._combat_npc    = None
                 self._combat_loop   = None
                 self._combat_result = None
@@ -1124,3 +1195,66 @@ class WorldPlay:
             width       = self.width,
             height      = self.height,
         )
+
+    # ── Journal overlay ───────────────────────────────────────────────────────
+
+    def _begin_journal(self) -> None:
+        self._journal_cursor = 0
+        self._journal_page   = 0
+        self._journal_detail = False
+        self._mode = WorldMode.JOURNAL
+        self._refresh_journal_bytes()
+
+    def _end_journal(self) -> None:
+        self._journal_bytes = None
+        self._mode = WorldMode.WORLD
+
+    def _handle_journal_key(self, key: int) -> None:
+        entries = self._journal_entries()
+
+        if self._journal_detail:
+            if key in (_K_RETURN, _K_SPACE, _K_ESCAPE):
+                self._journal_detail = False
+                self._refresh_journal_bytes()
+            return
+
+        # List view
+        if key == _K_ESCAPE:
+            self._end_journal()
+        elif key in (_K_UP, ord('w')):
+            if self._journal_cursor > 0:
+                self._journal_cursor -= 1
+                page = self._journal_cursor // JournalScreen._PAGE_ENTRIES
+                if page != self._journal_page:
+                    self._journal_page = page
+                self._refresh_journal_bytes()
+        elif key in (_K_DOWN, ord('s')):
+            if self._journal_cursor < len(entries) - 1:
+                self._journal_cursor += 1
+                page = self._journal_cursor // JournalScreen._PAGE_ENTRIES
+                if page != self._journal_page:
+                    self._journal_page = page
+                self._refresh_journal_bytes()
+        elif key in (_K_RETURN, _K_SPACE):
+            if entries:
+                self._journal_detail = True
+                self._refresh_journal_bytes()
+
+    def _journal_entries(self) -> list:
+        if self._journal is None:
+            return []
+        try:
+            return list(self._journal._entries)
+        except Exception:
+            return []
+
+    def _refresh_journal_bytes(self) -> None:
+        entries = self._journal_entries()
+        if self._journal_detail and entries:
+            idx   = min(self._journal_cursor, len(entries) - 1)
+            self._journal_bytes = self._journal_screen.render_detail(
+                entries[idx], self.width, self.height)
+        else:
+            self._journal_bytes = self._journal_screen.render_list(
+                entries, self._journal_cursor, self._journal_page,
+                self.width, self.height)

@@ -155,6 +155,26 @@ def _read(ctx: ActionContext) -> ActionResult:
     return ActionResult.open_ui("lore_books")
 
 
+@handler("read_journal")
+def _read_journal(ctx: ActionContext) -> ActionResult:
+    return ActionResult.open_ui("journal")
+
+
+@handler("rest")
+def _rest(ctx: ActionContext) -> ActionResult:
+    return ActionResult.save_and_heal()
+
+
+@handler("stairs_up")
+def _stairs_up(ctx: ActionContext) -> ActionResult:
+    return ActionResult.transition("player_home_upper", "24,7")
+
+
+@handler("stairs_down")
+def _stairs_down(ctx: ActionContext) -> ActionResult:
+    return ActionResult.transition("lapidus_wiltoll_home", "9,3")
+
+
 # Sulphera access gate
 @handler("enter_sulphera", "open_sulphera_gate")
 def _sulphera_gate(ctx: ActionContext) -> ActionResult:

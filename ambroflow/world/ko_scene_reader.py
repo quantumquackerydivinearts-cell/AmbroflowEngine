@@ -59,13 +59,28 @@ if _compiler_mod is None:
         "Ki": "#3A7D44", "Na": "#C0C0C0", "Ha": "#FFFFFF", "Ga": "#1A1A1A",
     }
     _ACTION_MAP = {
-        "MavoOpenAlchemyUi":      ("alchemy_bench", "open_alchemy_ui",      "Press E to use alchemy workbench"),
-        "MavoExitToLapidusTown":  ("exit",          "exit_to_lapidus_town", "Press E to go outside"),
-        "MavoOpenSmeltUi":        ("furnace",        "open_smelt_ui",        "Press E to use furnace"),
-        "MavoMeditationTutorial": ("meditate",       "meditation_tutorial",  "Press E to meditate"),
-        "MavoLoreBooks":          ("read",           "lore_books",           "Press E to read books"),
-        "MavoSaveAndHeal":        ("rest",           "save_and_heal",        "Press E to rest (saves game)"),
-        "MavoOpenChest":          ("storage",        "open_chest",           "Press E to open chest"),
+        # ── Alchemy / crafting ────────────────────────────────────────────────
+        "MavoOpenAlchemyUi":      ("alchemy_bench",  "open_alchemy_ui",       "Press E to use alchemy workbench"),
+        "MavoOpenSmeltUi":        ("furnace",         "open_smelt_ui",         "Press E to use furnace"),
+        # ── Journal ───────────────────────────────────────────────────────────
+        "MavoReadJournal":        ("journal",         "read_journal",          "Press E to read your journal"),
+        "MavoOpenJournal":        ("journal",         "read_journal",          "Press E to open journal"),
+        "MavoLoreBooks":          ("books",           "lore_books",            "Press E to read books"),
+        # ── Rest / save ───────────────────────────────────────────────────────
+        "MavoRest":               ("bed",             "rest",                  "Press E to rest (saves game)"),
+        "MavoSaveAndHeal":        ("rest",            "save_and_heal",         "Press E to rest (saves game)"),
+        # ── Stairs ───────────────────────────────────────────────────────────
+        "MavoStairsUp":           ("stairs",          "stairs_up",             "Press E to go upstairs"),
+        "MavoStairsDown":         ("stairs",          "stairs_down",           "Press E to go downstairs"),
+        # ── Shop / trade ──────────────────────────────────────────────────────
+        "MavoOpenShopUi":         ("shop_counter",    "open_shop_ui",          "Press E to manage your shop"),
+        "MavoManageShop":         ("shop_counter",    "open_shop_ui",          "Press E to manage your shop"),
+        # ── Meditation ───────────────────────────────────────────────────────
+        "MavoMeditationTutorial": ("cushion",         "meditation_tutorial",   "Press E to meditate"),
+        "MavoMeditate":           ("cushion",         "meditate",              "Press E to meditate"),
+        # ── Storage / exits ───────────────────────────────────────────────────
+        "MavoOpenChest":          ("storage",         "open_chest",            "Press E to open chest"),
+        "MavoExitToLapidusTown":  ("exit",            "exit_to_lapidus_town",  "Press E to go outside"),
     }
 
     def _rs(t: list[str], i: int) -> tuple[int, int]:
@@ -79,7 +94,10 @@ if _compiler_mod is None:
         return v, 1
 
     def _c3(t: list[str]) -> tuple[int, int, int, int]:
-        x, nx = _rs(t, 0); y, ny = _rs(t, nx); z, nz = _rs(t, nx + ny)
+        # Use _rm (greedy 2-token) so coordinates > 11 encode as two Rose digits.
+        # Encode x as "Lao Shushy" = 7*12+8 = 92, etc.  Single-token fallback
+        # still works for values 0–11 when the next token is not a Rose digit.
+        x, nx = _rm(t, 0); y, ny = _rm(t, nx); z, nz = _rm(t, nx + ny)
         return x, y, z, nx + ny + nz
 
     def _mat(ts: set, ct: str) -> tuple[str, str]:

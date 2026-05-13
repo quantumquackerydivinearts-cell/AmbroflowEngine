@@ -52,6 +52,8 @@ class WorldTileKind(str, Enum):
     CERAMIC          = "ceramic"         # passable — decorative tile (June St / market)
     SLATE            = "slate"           # passable — serious stone (Goldshoot St / temple)
     SILICA           = "silica"          # passable — extravagant surface (Youthspring Rd / nobles)
+    # ── Interior surface ────────────────────────────────────────────────────
+    WALL_FACE        = "wall_face"       # impassable — decorative back wall (pixel art wallpaper surface)
 
 
 _PASSABLE: frozenset[WorldTileKind] = frozenset({
@@ -258,9 +260,12 @@ _ASCII_TILE: dict[str, WorldTileKind] = {
     "C": WorldTileKind.CERAMIC,
     "L": WorldTileKind.SLATE,
     "X": WorldTileKind.SILICA,
+    "W": WorldTileKind.WALL_FACE,
     # Placement markers — resolved to FLOOR at build time
     "@": WorldTileKind.FLOOR,   # player spawn
     "N": WorldTileKind.FLOOR,   # NPC spawn (matched to npc_ids in order)
+    "F": WorldTileKind.FLOOR,   # furniture interact point (entity tracked separately)
+    "?": WorldTileKind.FLOOR,   # generic trigger point
 }
 
 

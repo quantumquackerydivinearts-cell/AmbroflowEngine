@@ -20,7 +20,8 @@ def test_all_meditation_perks_present():
 
 def test_infernal_meditation_quest_gate():
     p = PERK_BY_ID["infernal_meditation"]
-    assert p.required_quest == "0009_KLST", "Demons and Diamonds = 0009_KLST"
+    # Gate is 0010_KLST (Perfect Circles) — Alfir teaches after 0009 completes.
+    assert p.required_quest == "0010_KLST", "Perfect Circles = 0010_KLST"
     assert p.gates == {"sulphera_access": True}
 
 
@@ -103,10 +104,10 @@ def test_unlock_infernal_requires_quest():
     rt = _make_runtime(skill_ranks={"meditation": 1})
     result = rt.unlock_perk("infernal_meditation")
     assert not result.success
-    assert "0009_KLST" in result.reason
+    assert "0010_KLST" in result.reason   # Perfect Circles is the gate
 
     # Complete quest then unlock
-    rt.complete_quest("0009_KLST")
+    rt.complete_quest("0010_KLST")
     result = rt.unlock_perk("infernal_meditation")
     assert result.success
     assert rt.has_sulphera_access()

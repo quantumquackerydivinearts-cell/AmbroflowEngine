@@ -39,6 +39,7 @@ ASCII tile key
   S  STONE         ~  WATER          T  TREE (impassable)
   M  MARBLE        Y  YELLOW_BRICK   C  CERAMIC
   L  SLATE         X  SILICA
+  W  WALL_FACE (impassable — decorative back wall, pixel art wallpaper substrate)
   @  player spawn (→ FLOOR)
   N  NPC spawn    (→ FLOOR, matched to npc_ids in order)
 """
@@ -54,15 +55,7 @@ from ..map import Realm, Zone, ZoneExit, ItemSpawn, build_zone_from_ascii
 # Referenced by WorldPlay to open vendor mode on NPC interaction.
 
 VENDOR_CATALOGS: dict[str, dict[str, int]] = {
-    "0005_TOWN": {   # home apothecary (Wiltoll Lane home)
-        "0073_KLOB": 5,    # Herb (Common)
-        "0074_KLOB": 8,    # Herb (Restorative)
-        "0040_KLOB": 3,    # Water Flask
-        "0075_KLOB": 12,   # Binding Wax
-        "0001_KLOB": 80,   # Mortar
-        "0002_KLOB": 40,   # Pestle
-        "0007_KLOB": 25,   # Reagent Bottle
-    },
+    # 0005_TOWN removed — player is the shopkeeper; player stock is in PlayerState
     "0006_TOWN": {   # general market vendor (June Street)
         "0073_KLOB": 5,
         "0074_KLOB": 8,
@@ -82,43 +75,45 @@ VENDOR_CATALOGS: dict[str, dict[str, int]] = {
 # ── Wiltoll Lane ──────────────────────────────────────────────────────────────
 #
 # 60 wide × 22 tall.
-# Sparse, lush green avenue — player home at the quiet East end of the city.
+# Sparse, lush green avenue — player home at the quiet West end of the city.
 # Mt. Elaene is the constant background presence at the East.
 #
 # Road rows 10–11 (East–West, Azonithia axis).
 # Litleaf Thoroughfare fork: cols 11–12, rows 0–9 (perpendicular road going North).
-# Player home: cols 1–9, rows 13–18 (South of road, door in N wall at cols 3–4).
-# Player spawns at (3,12) on the south verge, facing the home entrance.
-# Dense woodland: rows 19–21 (South).
+# Player home: cols 1–9, rows 2–7 (North of road, door in S wall at cols 3–4).
+# Player spawns at (3,8) on the north verge, facing the home entrance.
+# Sparse trees: rows 13–14 (South of road).  Dense woodland: rows 19–21 (South).
 #
 # Exits:
 #   West  (0,10)+(0,11)   → lapidus_azonithia_slum      (46,5)+(46,6)
 #   East  (59,10)+(59,11) → lapidus_mt_elaene_trail      (1,6)+(1,7)
 #   North (11,0)+(12,0)   → lapidus_litleaf_thoroughfare (0,18)+(1,18)
-#   South (3,12)+(4,12)   → lapidus_wiltoll_home         (20,1)+(21,1)
+#   North (3,8)+(4,8)     → lapidus_wiltoll_home         (20,11)+(21,11)
 
 _WILTOLL_MAP = [
     #          1111111111222222222233333333334444444444555555555566
     # 0123456789012345678901234567890123456789012345678901234567890
     ",,,,,,,,,,,==,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",  # row  0  N exit Litleaf 11-12
     ",,,,,,,,,,,==,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",  # row  1
-    ",,T,,,,,,,,==,,,,T,,,,,T,,,,,,T,,,,,T,,,,,,,,T,,,,,,T,,,,,,,",  # row  2  sparse trees N
-    ",,T,,,,,,,,==,,,,T,,,,,T,,,,,,T,,,,,T,,,,,,,,T,,,,,,T,,,,,,,",  # row  3
-    ",,,,,,,,,,,==,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",  # row  4  clearing
-    ",,,,,,,,,,,==,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",  # row  5
-    ",,,,,,,,,,,==,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",  # row  6
-    ",,,,,,,,,,,==,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",  # row  7
-    ",,,,,,,,,,,==,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",  # row  8
-    ",,,,,,,,,,,==,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",  # row  9
+    # row 2–7: player home (cols 1–9) | Elsa's house (cols 15–23) | Hypatia's house (cols 44–55)
+    ",#########,==,," + "#########" + "," * 20 + "############" + "," * 4,  # row  2  back walls
+    ",#.......#,==,," + "#.......#" + "," * 20 + "#..........#" + "," * 4,  # row  3  interiors
+    ",#.......#,==,," + "#.......#" + "," * 20 + "#..........#" + "," * 4,  # row  4
+    ",#.......#,==,," + "#.......#" + "," * 20 + "#..........#" + "," * 4,  # row  5
+    ",#.......#,==,," + "#.......#" + "," * 20 + "#..........#" + "," * 4,  # row  6
+    ",##++#####,==,," + "#####++##" + "," * 20 + "####++######" + "," * 4,  # row  7  doors: player(3-4) Elsa(20-21) Hypatia(48-49)
+    # row 8: player spawn @(3,8) | Elsa N(20) — Hypatia works at the castle, not here
+    ",,,@,,,,,,,==,,,,,,," + "N" + "," * 39,                                 # row  8
+    ",,,,,,,,,,,==,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",           # row  9
     "============================================================",  # row 10  main road W/E exits
     "============================================================",  # row 11
-    ",,,@,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",  # row 12  S verge — player spawn @(3,12)
-    ",##++#####,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",  # row 13  home N facade, door at cols 3-4
-    ",#.......#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",  # row 14
-    ",#.......#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",  # row 15
-    ",#.......#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",  # row 16
-    ",#.......#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",  # row 17
-    ",#.......#,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",  # row 18  solid S wall
+    ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",  # row 12  S verge
+    ",,T,,,,,,,,,,,,,,T,,,,,T,,,,,,T,,,,,T,,,,,,,,T,,,,,,T,,,,,,,",  # row 13  sparse trees S (was N)
+    ",,T,,,,,,,,,,,,,,T,,,,,T,,,,,,T,,,,,T,,,,,,,,T,,,,,,T,,,,,,,",  # row 14
+    ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",  # row 15  clearing
+    ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",  # row 16
+    ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",  # row 17
+    ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",  # row 18
     ",,,TTTT,,,,,,,TTT,,,,TTT,,,,,,TTTTT,,,,,,TTT,,,,,,TTT,,,,,,,",  # row 19  sparse trees S
     "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",  # row 20  forest wall
     "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",  # row 21
@@ -135,17 +130,33 @@ _WILTOLL_EXITS = [
              target_zone="lapidus_mt_elaene_trail", target_x=1, target_y=6),
     ZoneExit(x=59, y=11, direction="east",
              target_zone="lapidus_mt_elaene_trail", target_x=1, target_y=7),
-    # North fork exits → Litleaf Thoroughfare
+    # North fork exits → Litleaf Thoroughfare (cols 11-12)
     ZoneExit(x=11, y=0, direction="north",
              target_zone="lapidus_litleaf_thoroughfare", target_x=0, target_y=18),
     ZoneExit(x=12, y=0, direction="north",
              target_zone="lapidus_litleaf_thoroughfare", target_x=1, target_y=18),
-    # South verge → player home interior
-    ZoneExit(x=3, y=12, direction="south",
-             target_zone="lapidus_wiltoll_home", target_x=20, target_y=1),
-    ZoneExit(x=4, y=12, direction="south",
-             target_zone="lapidus_wiltoll_home", target_x=21, target_y=1),
+    # Player home door at cols 3-4, row 8
+    ZoneExit(x=3, y=8, direction="north",
+             target_zone="lapidus_wiltoll_home", target_x=20, target_y=11),
+    ZoneExit(x=4, y=8, direction="north",
+             target_zone="lapidus_wiltoll_home", target_x=21, target_y=11),
+    # Elsa's house door at cols 20-21, row 8
+    ZoneExit(x=20, y=8, direction="north",
+             target_zone="lapidus_elsa_house", target_x=13, target_y=8),
+    ZoneExit(x=21, y=8, direction="north",
+             target_zone="lapidus_elsa_house", target_x=14, target_y=8),
+    # Hypatia's house door at cols 48-49, row 8
+    # Quest-gated in game logic: not accessible after 0002_KLST accepted.
+    ZoneExit(x=48, y=8, direction="north",
+             target_zone="lapidus_hypatia_house", target_x=19, target_y=11),
+    ZoneExit(x=49, y=8, direction="north",
+             target_zone="lapidus_hypatia_house", target_x=20, target_y=11),
 ]
+
+_HOME_STAIR_EXIT = ZoneExit(
+    x=9, y=2, direction="north",
+    target_zone="player_home_upper", target_x=24, target_y=7,
+)
 
 
 def build_wiltoll_lane() -> Zone:
@@ -155,73 +166,85 @@ def build_wiltoll_lane() -> Zone:
         name    = "Wiltoll Lane",
         rows    = _WILTOLL_MAP,
         exits   = _WILTOLL_EXITS,
+        # Elsa (0024_TOWN) at col 20 row 8.
+        # Hypatia works at Castle Azoth to the west — she is not on the lane.
+        npc_ids = ["0024_TOWN"],
     )
 
 
 # ── Player Home Interior (Wiltoll Lane) ───────────────────────────────────────
 #
 # 40 wide × 13 tall.
-# Entered from the north facade door of the home on Wiltoll Lane.
+# Entered from the south facade door of the home on Wiltoll Lane
+# (home is North of the road; player approaches from north verge, walks north into door).
 # Three back rooms (Bedroom / Kitchen / Meditation) accessed via the Foyer.
 #
-# Layout:
-#   rows 0–3  Foyer — entrance hall, vendor NPC (0005_TOWN)
-#   row 4     Inner dividing wall with room openings at cols 5, 19, 33
-#   rows 5–11 Three rooms: Bedroom (cols 1–10), Kitchen (cols 12–25),
+# Layout (N→S, top→bottom):
+#   row  0    North wall (solid — back of house)
+#   rows 1–7  Three rooms: Bedroom (cols 1–10), Kitchen (cols 12–25),
 #             Meditation (cols 27–38)
-#   row 12    South wall
+#   row  8    Inner dividing wall with room openings at cols 5, 19, 33
+#   rows 9–11 Foyer — entrance hall, vendor NPC (0005_TOWN)
+#   row 12    South wall — door at cols 20–21 (faces road)
 #
-# Player spawns at (8, 2) just inside the north door.
+# Player spawns at (8, 10) just inside the south door.
 # ItemSpawns in the Kitchen provide starter alchemy apparatus and materials.
 #
 # Exits:
-#   North (20,0)+(21,0) → lapidus_wiltoll_lane (3,12)+(4,12)
+#   South (20,12)+(21,12) → lapidus_wiltoll_lane (3,8)+(4,8)
 
 _HOME_ROOM_ROW = (
     "#" + "." * 10 + "#" + "." * 14 + "#" + "." * 12 + "#"
 )  # 40 chars: Bedroom(1-10) | Kitchen(12-25) | Meditation(27-38)
 
+# Row 1 — decorative back wall face: WALL_FACE tiles inside each room,
+# structural WALL at the column dividers.  Pixel art wallpaper goes here.
+_HOME_WALL_ROW = (
+    "#" + "W" * 10 + "#" + "W" * 14 + "#" + "W" * 12 + "#"
+)  # 40 chars
+
 _HOME_MAP = [
     #          1111111111222222222233333333334
     # 0123456789012345678901234567890123456789
-    "#" * 20 + "++" + "#" * 18,          # row  0: N wall, door at cols 20-21
-    "#" + "." * 38 + "#",                 # row  1: foyer
-    "#" + "." * 7 + "@" + "." * 6 + "N" + "." * 23 + "#",  # row  2: @(8,2), N(15,2)
-    "#" + "." * 38 + "#",                 # row  3: foyer
-    "#####.#####" + "#" + "#######.######" + "#" + "######.#####" + "#",  # row  4: inner wall
+    "#" * 40,                             # row  0: N wall (back of house)
+    _HOME_WALL_ROW,                       # row  1: decorative back wall face
+    "#" + "." * 8 + "^." + "#" + "." * 14 + "#" + "." * 12 + "#",  # row  2: ^ stair (9,2)
+    "#" + "." * 10 + "#" + ".." + "F" + "." * 6 + "F" + "...." + "#" + "." * 12 + "#",  # row  3: F=alchemy bench(14,3) F=anvil(21,3)
+    "#" + "..." + "F" + "." * 6 + "#" + "." * 14 + "#" + "." * 6 + "F" + "." * 5 + "#",  # row  4: F=bed(4,4) F=meditation mat(33,4)
     _HOME_ROOM_ROW,                       # row  5
     _HOME_ROOM_ROW,                       # row  6
-    _HOME_ROOM_ROW,                       # row  7
-    _HOME_ROOM_ROW,                       # row  8
-    _HOME_ROOM_ROW,                       # row  9
-    _HOME_ROOM_ROW,                       # row 10
-    _HOME_ROOM_ROW,                       # row 11
-    "#" * 40,                             # row 12: S wall
+    _HOME_ROOM_ROW,                       # row  7: item spawns (mortar/pestle/furnace etc.)
+    "#####.#####" + "#" + "#######.######" + "#" + "######.#####" + "#",  # row  8: inner wall
+    "#" + "." * 18 + "F" + "." * 19 + "#",  # row  9: F=shop counter(19,9)
+    "#" + ".." + "F" + "...." + "@" + "." * 30 + "#",  # row 10: F=chest(3,10) @=player spawn(8,10)
+    "#" + "." * 38 + "#",                 # row 11: shop floor
+    "#" * 20 + "++" + "#" * 18,          # row 12: S wall, door at cols 20-21
 ]
 
 _HOME_EXITS = [
-    ZoneExit(x=20, y=0, direction="north",
-             target_zone="lapidus_wiltoll_lane", target_x=3, target_y=12),
-    ZoneExit(x=21, y=0, direction="north",
-             target_zone="lapidus_wiltoll_lane", target_x=4, target_y=12),
+    ZoneExit(x=20, y=12, direction="south",
+             target_zone="lapidus_wiltoll_lane", target_x=3, target_y=8),
+    ZoneExit(x=21, y=12, direction="south",
+             target_zone="lapidus_wiltoll_lane", target_x=4, target_y=8),
 ]
 
-_HOME_NPC_IDS = ["0005_TOWN"]   # home apothecary vendor
+_HOME_NPC_IDS: list = []   # no vendor NPCs — player IS the shopkeeper
 
 # Kitchen apparatus and starter materials (all within Kitchen cols 12-25, rows 5-11)
 _HOME_ITEM_SPAWNS = [
-    ItemSpawn(x=13, y=5,  item_id="0001_KLOB", qty=1),   # Mortar
-    ItemSpawn(x=14, y=5,  item_id="0002_KLOB", qty=1),   # Pestle
+    # y-coordinates mirror the N/S flip: new_y = 12 - old_y
+    ItemSpawn(x=13, y=7,  item_id="0001_KLOB", qty=1),   # Mortar
+    ItemSpawn(x=14, y=7,  item_id="0002_KLOB", qty=1),   # Pestle
     ItemSpawn(x=13, y=6,  item_id="0004_KLOB", qty=1),   # Retort Stand
     ItemSpawn(x=14, y=6,  item_id="0005_KLOB", qty=1),   # Retort
-    ItemSpawn(x=13, y=7,  item_id="0007_KLOB", qty=1),   # Reagent Bottle
-    ItemSpawn(x=16, y=5,  item_id="0010_KLOB", qty=1),   # Furnace
-    ItemSpawn(x=17, y=5,  item_id="0017_KLOB", qty=1),   # Crucible
-    ItemSpawn(x=18, y=5,  item_id="0019_KLOB", qty=1),   # Jar
-    ItemSpawn(x=20, y=5,  item_id="0073_KLOB", qty=3),   # Herb (Common) ×3
+    ItemSpawn(x=13, y=5,  item_id="0007_KLOB", qty=1),   # Reagent Bottle
+    ItemSpawn(x=16, y=7,  item_id="0010_KLOB", qty=1),   # Furnace
+    ItemSpawn(x=17, y=7,  item_id="0017_KLOB", qty=1),   # Crucible
+    ItemSpawn(x=18, y=7,  item_id="0019_KLOB", qty=1),   # Jar
+    ItemSpawn(x=20, y=7,  item_id="0073_KLOB", qty=3),   # Herb (Common) ×3
     ItemSpawn(x=20, y=6,  item_id="0074_KLOB", qty=2),   # Herb (Restorative) ×2
-    ItemSpawn(x=21, y=5,  item_id="0040_KLOB", qty=2),   # Water Flask ×2
-    ItemSpawn(x=3,  y=2,  item_id="0016_KLIT", qty=50),  # Coins ×50 (in foyer chest)
+    ItemSpawn(x=21, y=7,  item_id="0040_KLOB", qty=2),   # Water Flask ×2
+    ItemSpawn(x=3,  y=10, item_id="0016_KLIT", qty=50),  # Coins ×50 (in foyer chest)
 ]
 
 
@@ -231,7 +254,7 @@ def build_wiltoll_home() -> Zone:
         realm       = Realm.LAPIDUS,
         name        = "Wiltoll Home — Interior",
         rows        = _HOME_MAP,
-        exits       = _HOME_EXITS,
+        exits       = _HOME_EXITS + [_HOME_STAIR_EXIT],
         npc_ids     = _HOME_NPC_IDS,
         item_spawns = _HOME_ITEM_SPAWNS,
     )
@@ -395,7 +418,8 @@ def _avenue_zone(
 #
 # East-most avenue section.  Yellow brick marks honest poverty — no pretence.
 # Hopefare Street runs North into the 9-warren inner city.
-# Sidhal (0004_TOWN) is met here managing the forest outskirts.
+# Nexiott (0023_TOWN) is found here — the information broker who runs the
+# district radio network.
 #
 # Exits:
 #   East  (47,5)+(47,6)  → lapidus_wiltoll_lane (1,10)+(1,11)
@@ -407,7 +431,6 @@ def build_azonithia_slum() -> Zone:
         zone_id    = "lapidus_azonithia_slum",
         name       = "Azonithia Avenue — Hopefare Street",
         inlet_char = "Y",
-        inlet_npc  = "0004_TOWN",   # Sidhal: farmer/forester, quest 0003_KLST guide
         east_zone  = "lapidus_wiltoll_lane",
         west_zone  = "lapidus_azonithia_market",
         north_zone = "lapidus_slum_interior",
@@ -446,10 +469,12 @@ def build_azonithia_market() -> Zone:
 #   North (22,0)+(23,0) → lapidus_temple_interior (stub)
 
 def build_azonithia_temple() -> Zone:
+    # Sidhal (0020_TOWN) is the temple custodian — met in the Goldshoot inlet.
     return _avenue_zone(
         zone_id    = "lapidus_azonithia_temple",
         name       = "Azonithia Avenue — Goldshoot Street",
         inlet_char = "L",
+        inlet_npc  = "0020_TOWN",   # Sidhal: temple custodian, quest 0003_KLST guide
         east_zone  = "lapidus_azonithia_market",
         west_zone  = "lapidus_azonithia_heartvein",
         north_zone = "lapidus_temple_interior",
@@ -472,6 +497,7 @@ def build_azonithia_heartvein() -> Zone:
         zone_id    = "lapidus_azonithia_heartvein",
         name       = "Azonithia Avenue — Youthspring Road",
         inlet_char = "X",
+        inlet_npc  = "0017_ROYL",   # Nexiott: noble, information broker, radio network
         east_zone  = "lapidus_azonithia_temple",
         west_zone  = "lapidus_azoth_approach",
         north_zone = "lapidus_heartvein_interior",
@@ -557,7 +583,8 @@ def build_azoth_approach() -> Zone:
 #
 # 40 wide × 20 tall.
 # Home of the Stelladeva Dynastic Family, seat of the Royal Lottery system.
-# Alfir (0006_WTCH) works here — teaches Infernal Meditation (quest 0009_KLST).
+# Alfir (0006_WTCH) works here — teaches Infernal Meditation in quest 0010_KLST
+# (Perfect Circles), unlocked after 0009_KLST (Demons and Diamonds) completes.
 #
 # The zodiac fountain at center-courtyard: a ring of stone around a water basin.
 # Ceremonial — runs only on the four astronomical anchors (solstices/equinoxes).
@@ -592,7 +619,7 @@ _CASTLE_MAP = [
     "#......................................#",  # row 11
     "#......................................#",  # row 12
     "#......................................#",  # row 13
-    "#......................................#",  # row 14
+    "#...........................N..........#",  # row 14  Hypatia: lab area (col 28) — she was here all night
     "#......................................#",  # row 15
     "#......................................#",  # row 16
     "#################++####################",  # row 17  S wall — double gate
@@ -607,7 +634,10 @@ _CASTLE_EXITS = [
              target_zone="lapidus_azoth_approach", target_x=23, target_y=1),
 ]
 
-_CASTLE_NPCS = ["0006_WTCH"]   # Alfir: former priest, Infernal Meditation teacher
+_CASTLE_NPCS = ["0006_WTCH", "0000_0451"]
+# Alfir: former priest, Infernal Meditation teacher (row 1 col 2)
+# Hypatia: alchemist, beats everyone out of bed because she was here all night (row 14 col 28)
+# Hypatia's spawn is removed from world state after 0002_KLST is accepted.
 
 
 def build_castle_azoth() -> Zone:
@@ -624,28 +654,27 @@ def build_castle_azoth() -> Zone:
 # ── Mt. Elaene Trail ──────────────────────────────────────────────────────────
 #
 # 20 wide × 14 tall.
-# A small trail through the forest edge at the East end of Wiltoll Lane,
-# leading toward Mt. Elaene.  Available at any time — no quest gate, no unlock.
-# A pressure valve: always accessible when the city's weight gets heavy.
-# Gateway to the Elaene desert — the Alzedroswune's actual home, visible from
-# the player's own lane.
+# A small trail through the forest edge at the East end of Wiltoll Lane.
+# The Forest Witch (0007_WTCH) lives in the clearing at rows 3-4.
+# He carries the folded Mercurie map and offers quest 0007_KLST (Dream of Glass).
+# No quest gate to reach him — he is available any time.
 #
-# Player enters from Wiltoll Lane at (1,6)+(1,7).  Trail corridor is cols 1–2.
-# Exit North → Mt. Elaene summit (stub — mountaineering zone, not yet built).
+# Trail continues East along the mountain base to Serpent's Pass.
 #
 # Exits:
 #   West  (0,6)+(0,7)   → lapidus_wiltoll_lane (58,10)+(58,11)
 #   North (1,0)+(2,0)   → lapidus_mt_elaene_summit (stub)
+#   East  (19,6)+(19,7) → lapidus_serpents_pass (1,6)+(1,7)
 
 _ELAENE_MAP = [
     "T" + ",," + "T" * 17,   # row  0  N exit at 1-2
     "T" + ",," + "T" * 17,   # row  1
     "T" + ",," + "T" * 17,   # row  2
-    "T" + ",," + "T" * 17,   # row  3
+    "T" + ",N," + "T" * 16,  # row  3  Forest Witch at col 2
     "T" + ",," + "T" * 17,   # row  4
     "T" + ",," + "T" * 17,   # row  5
-    "," + ",," + "T" * 17,   # row  6  player enters from Wiltoll here
-    "," + ",," + "T" * 17,   # row  7
+    "," + ",," + "T" * 14 + ",,",  # row  6  W enter + E exit at 19
+    "," + ",," + "T" * 14 + ",,",  # row  7
     "T" + ",," + "T" * 17,   # row  8
     "T" + ",," + "T" * 17,   # row  9
     "T" * 20,                 # row 10
@@ -663,7 +692,13 @@ _ELAENE_EXITS = [
              target_zone="lapidus_mt_elaene_summit", target_x=9, target_y=12),
     ZoneExit(x=2, y=0, direction="north",
              target_zone="lapidus_mt_elaene_summit", target_x=10, target_y=12),
+    ZoneExit(x=19, y=6, direction="east",
+             target_zone="lapidus_serpents_pass", target_x=1, target_y=6),
+    ZoneExit(x=19, y=7, direction="east",
+             target_zone="lapidus_serpents_pass", target_x=1, target_y=7),
 ]
+
+_ELAENE_NPCS = ["0007_WTCH"]   # Forest Witch: Mercurie map, quest 0007_KLST
 
 
 def build_mt_elaene_trail() -> Zone:
@@ -673,6 +708,108 @@ def build_mt_elaene_trail() -> Zone:
         name    = "Mt. Elaene Trail",
         rows    = _ELAENE_MAP,
         exits   = _ELAENE_EXITS,
+        npc_ids = _ELAENE_NPCS,
+    )
+
+
+# ── Serpent's Pass ────────────────────────────────────────────────────────────
+#
+# 40 wide × 14 tall.
+# A narrow defile between old stone walls, mountain base to the North,
+# city outskirts to the South.  Wells and Lavelle have their camp at the East
+# end where the aqueduct stone is laid (0003_KLST endpoint).
+#
+# Exits:
+#   West  (0,6)+(0,7)   → lapidus_mt_elaene_trail (18,6)+(18,7)
+#   East  (39,6)+(39,7) → lapidus_ocean_shore (1,6)+(1,7)
+
+_PASS_MAP = [
+    "S" * 40,                      # row  0  mountain stone wall (North)
+    "S,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,S",  # row  1  narrow pass
+    "S,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,S",  # row  2
+    "S,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,S",  # row  3
+    "S,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,S",  # row  4
+    "S,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,NS",  # row  5  Wells NPC near East
+    ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,N,",  # row  6  W/E exits + Lavelle NPC
+    ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",  # row  7
+    "S,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,S",  # row  8
+    "S,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,S",  # row  9
+    "S" * 40,                      # row 10  South wall
+    "," * 40,                      # row 11
+    "," * 40,                      # row 12
+    "," * 40,                      # row 13
+]
+
+_PASS_EXITS = [
+    ZoneExit(x=0, y=6, direction="west",
+             target_zone="lapidus_mt_elaene_trail", target_x=18, target_y=6),
+    ZoneExit(x=0, y=7, direction="west",
+             target_zone="lapidus_mt_elaene_trail", target_x=18, target_y=7),
+    ZoneExit(x=39, y=6, direction="east",
+             target_zone="lapidus_ocean_shore", target_x=1, target_y=6),
+    ZoneExit(x=39, y=7, direction="east",
+             target_zone="lapidus_ocean_shore", target_x=1, target_y=7),
+]
+
+_PASS_NPCS = ["0021_TOWN", "0022_TOWN"]   # Wells, Lavelle (0003_KLST endpoint)
+
+
+def build_serpents_pass() -> Zone:
+    return build_zone_from_ascii(
+        zone_id = "lapidus_serpents_pass",
+        realm   = Realm.LAPIDUS,
+        name    = "Serpent's Pass",
+        rows    = _PASS_MAP,
+        exits   = _PASS_EXITS,
+        npc_ids = _PASS_NPCS,
+    )
+
+
+# ── Ocean Shore ───────────────────────────────────────────────────────────────
+#
+# 50 wide × 12 tall.
+# Open coastline past Serpent's Pass.  Dark water, salt wind.
+# The Mercurie threshold is accessible here at low tide (quest 0007_KLST gate).
+#
+# Exits:
+#   West  (0,6)+(0,7)    → lapidus_serpents_pass (38,6)+(38,7)
+#   North (24,0)+(25,0)  → mercurie_threshold (25,11)+(26,11)
+
+_SHORE_MAP = [
+    "~" * 25 + ",," + "~" * 23,   # row  0  N exit at 24-25 (mercurie)
+    "~" * 50,                      # row  1  open water
+    "~" * 50,                      # row  2
+    "~" * 50,                      # row  3
+    "," * 10 + "~" * 30 + "," * 10,   # row  4  shoreline
+    "," * 50,                      # row  5  sandy shore
+    ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",  # row  6  W/E exits
+    ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",  # row  7
+    "," * 50,                      # row  8
+    "D" * 50,                      # row  9  dirt track (inland path)
+    "D" * 50,                      # row 10
+    "," * 50,                      # row 11
+]
+
+_SHORE_EXITS = [
+    ZoneExit(x=0, y=6, direction="west",
+             target_zone="lapidus_serpents_pass", target_x=38, target_y=6),
+    ZoneExit(x=0, y=7, direction="west",
+             target_zone="lapidus_serpents_pass", target_x=38, target_y=7),
+    # Mercurie threshold — gated by 0007_KLST in dialogue/selector.py
+    ZoneExit(x=24, y=0, direction="north",
+             target_zone="mercurie_threshold", target_x=25, target_y=11),
+    ZoneExit(x=25, y=0, direction="north",
+             target_zone="mercurie_threshold", target_x=26, target_y=11),
+]
+
+
+def build_ocean_shore() -> Zone:
+    return build_zone_from_ascii(
+        zone_id = "lapidus_ocean_shore",
+        realm   = Realm.LAPIDUS,
+        name    = "Ocean Shore",
+        rows    = _SHORE_MAP,
+        exits   = _SHORE_EXITS,
     )
 
 
@@ -734,4 +871,126 @@ def build_market_interior() -> Zone:
         rows    = _MARKET_MAP,
         exits   = _MARKET_EXITS,
         npc_ids = _MARKET_NPC_IDS,
+    )
+
+
+# ── Elsa's House ──────────────────────────────────────────────────────────────
+#
+# 28 wide × 10 tall.
+# Three doors east of the player home on Wiltoll Lane.
+# Elsa (0024_TOWN) — neighbour, 50s, has lived on the lane thirty years.
+# Warm, working-class interior. A chair by the window. A clean kitchen corner.
+# She is met outside on the lane (quest 0001 scene); this interior is for
+# subsequent visits and deeper conversation.
+#
+# Exits:
+#   South (13,9)+(14,9) → lapidus_wiltoll_lane (20,8)+(21,8)
+
+_ELSA_MAP = [
+    "#" * 28,                              # row 0  N wall
+    "#" + "W" * 26 + "#",                 # row 1  wall face (back-wall wallpaper register)
+    "#" + "." * 26 + "#",                 # row 2
+    "#" + "." * 5 + "F" + "." * 20 + "#", # row 3  F = table (col 6)
+    "#" + "." * 26 + "#",                 # row 4
+    "#" + "." * 10 + "@" + "." * 15 + "#", # row 5  player spawn
+    "#" + "." * 26 + "#",                 # row 6
+    "#" + "." * 26 + "#",                 # row 7
+    "#" + "." * 26 + "#",                 # row 8
+    "#" * 13 + "++" + "#" * 13,           # row 9  S wall door at 13-14
+]
+
+_ELSA_EXITS = [
+    ZoneExit(x=13, y=9, direction="south",
+             target_zone="lapidus_wiltoll_lane", target_x=20, target_y=8),
+    ZoneExit(x=14, y=9, direction="south",
+             target_zone="lapidus_wiltoll_lane", target_x=21, target_y=8),
+]
+
+_ELSA_ITEMS = [
+    ItemSpawn(x=6, y=3, item_id="0073_KLOB", qty=1),   # Herb (Common) on table
+]
+
+
+def build_elsa_house() -> Zone:
+    return build_zone_from_ascii(
+        zone_id     = "lapidus_elsa_house",
+        realm       = Realm.LAPIDUS,
+        name        = "Elsa's House",
+        rows        = _ELSA_MAP,
+        exits       = _ELSA_EXITS,
+        item_spawns = _ELSA_ITEMS,
+    )
+
+
+# ── Hypatia's House ───────────────────────────────────────────────────────────
+#
+# 40 wide × 13 tall.
+# At the quiet east end of Wiltoll Lane — the house with the light on at
+# strange hours.  Hypatia (0000_0451) works here in the early game (quests
+# 0001–0002). After 0002_KLST is accepted she is absent; the house stays open
+# but she is not here. The alchemy apparatus is hers — the player may take
+# consumables but apparatus is fixed.
+#
+# Layout (N→S, top→bottom):
+#   rows 0–6   Workshop (left) + living space (right) separated by interior wall
+#   row  7     Open passage — the wall has no door; it just stops
+#   rows 8–11  Combined lower space — foyer, bench, open floor
+#   row  12    South wall — door at cols 19-20
+#
+# Exits:
+#   South (19,12)+(20,12) → lapidus_wiltoll_lane (48,8)+(49,8)
+
+_HYPATIA_HOUSE_MAP = [
+    "#" * 40,                              # row  0  N wall
+    "#" + "W" * 38 + "#",                 # row  1  wall face
+    "#" + "." * 17 + "#" + "." * 20 + "#",  # row  2  interior divider col 18
+    "#" + "F" + "." * 6 + "F" + "." * 9 + "#" + "." * 20 + "#",  # row  3  alchemy benches (2,8)
+    "#" + "." * 16 + "#" + "." * 20 + "#",  # row  4
+    "#" + "." * 16 + "#" + "." * 20 + "#",  # row  5  (Hypatia not here — she's at the castle)
+    "#" + "." * 16 + "#" + "." * 20 + "#",  # row  6
+    "#" + "." * 38 + "#",                 # row  7  divider ends — open
+    "#" + "." * 38 + "#",                 # row  8
+    "#" + "." * 38 + "#",                 # row  9
+    "#" + "." * 17 + "@" + "." * 20 + "#",  # row 10  player spawn
+    "#" + "." * 38 + "#",                 # row 11
+    "#" * 19 + "++" + "#" * 19,           # row 12  S wall door at 19-20
+]
+
+_HYPATIA_HOUSE_EXITS = [
+    ZoneExit(x=19, y=12, direction="south",
+             target_zone="lapidus_wiltoll_lane", target_x=48, target_y=8),
+    ZoneExit(x=20, y=12, direction="south",
+             target_zone="lapidus_wiltoll_lane", target_x=49, target_y=8),
+]
+
+_HYPATIA_HOUSE_NPCS: list[str] = []
+# Hypatia works at Castle Azoth. Her house is here — the lab materials, the dagger —
+# but she is not. The player finds her at the castle, not at home.
+
+_HYPATIA_HOUSE_ITEMS = [
+    # Workshop consumables — player may take freely in early game.
+    ItemSpawn(x=2,  y=3, item_id="0001_KLOB", qty=1),   # Mortar
+    ItemSpawn(x=8,  y=3, item_id="0005_KLOB", qty=1),   # Retort
+    ItemSpawn(x=3,  y=3, item_id="0007_KLOB", qty=2),   # Reagent Bottles
+    ItemSpawn(x=12, y=3, item_id="0073_KLOB", qty=2),   # Herb (Common)
+    ItemSpawn(x=13, y=3, item_id="0017_KLOB", qty=1),   # Crucible
+    # Alzedroswune materials — present quietly on the bench.
+    # Not explained. The player who does quest 0038 will recognize them.
+    ItemSpawn(x=16, y=3, item_id="0041_KLOB", qty=1),   # Moldavite (sky-born, Alzedroswune-adjacent)
+    ItemSpawn(x=15, y=3, item_id="0042_KLOB", qty=1),   # Desert Glass (lightning formation)
+    # Quest item: dagger — placed here as fallback if player misses 0002 scene.
+    # Game logic removes it once 0002_KLST is accepted (Hypatia gives it in dialogue).
+    ItemSpawn(x=20, y=5, item_id="0001_KLIT", qty=1),   # The dagger (Hypatia's teacher's)
+]
+
+
+def build_hypatia_house() -> Zone:
+    return build_zone_from_ascii(
+        zone_id     = "lapidus_hypatia_house",
+        realm       = Realm.LAPIDUS,
+        name        = "Hypatia's House",
+        rows        = _HYPATIA_HOUSE_MAP,
+        exits       = _HYPATIA_HOUSE_EXITS,
+        npc_ids     = _HYPATIA_HOUSE_NPCS,
+        item_spawns = _HYPATIA_HOUSE_ITEMS,
     )

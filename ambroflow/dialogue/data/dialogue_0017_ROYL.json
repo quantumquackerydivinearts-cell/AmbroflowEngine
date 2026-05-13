@@ -1,0 +1,47 @@
+{
+  "character_id": "0017_ROYL",
+  "paths": [
+    {
+      "path_id": "nexiott_greeting",
+      "character_id": "0017_ROYL",
+      "realm_id": "lapidus",
+      "required_witnesses": [],
+      "blocked_witnesses": [],
+      "priority": 5,
+      "lines": [
+        {
+          "speaker": "0017_ROYL",
+          "text": "I know who you are. Not because I am clever -- because it is my job and I am good at my job. What can I do for you."
+        }
+      ]
+    },
+    {
+      "path_id": "nexiott_information",
+      "character_id": "0017_ROYL",
+      "realm_id": "lapidus",
+      "required_witnesses": [],
+      "blocked_witnesses": [],
+      "priority": 10,
+      "lines": [
+        {
+          "speaker": "0017_ROYL",
+          "text": "The Lottery is the city's official face. What actually runs Azonithia is information: who has it, who doesn't, how fast it moves. I move it. I get paid for it. It is a clean arrangement as long as everyone is honest about what they are doing."
+        }
+      ]
+    },
+    {
+      "path_id": "nexiott_radio",
+      "character_id": "0017_ROYL",
+      "realm_id": "lapidus",
+      "required_witnesses": [],
+      "blocked_witnesses": [],
+      "priority": 15,
+      "lines": [
+        {
+          "speaker": "0017_ROYL",
+          "text": "I maintain the district radio network. Twelve receivers, four transmitters, one broadcast window per night. Most of what goes out is mundane: market prices, weather, aqueduct schedules. Some of it is not. The not-mundane is what I charge for and keep filed."
+        }
+      ]
+    }
+  ]
+}

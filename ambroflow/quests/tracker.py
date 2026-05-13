@@ -8,7 +8,9 @@ Game slugs follow:           {number}_KLGS               (e.g. 7_KLGS)
 
 Quest completion gates:
   - Perk unlock (via SkillRuntime.complete_quest + unlock_perk)
-  - Dungeon access (infernal_meditation perk ← 0009_KLST)
+  - Sulphera access: infernal_meditation perk ← 0010_KLST (Perfect Circles)
+    (0009_KLST Demons and Diamonds must complete first to unlock 0010_KLST)
+  - Mercurie access: hypnotic_meditation perk ← 0007_KLST (Dream of Glass)
   - Narrative branch state
 
 Completion events are recorded to the Orrery.  The multiverse stack stores

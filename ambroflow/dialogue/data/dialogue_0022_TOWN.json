@@ -1,0 +1,55 @@
+{
+  "character_id": "0022_TOWN",
+  "paths": [
+    {
+      "path_id": "lavelle_greeting",
+      "character_id": "0022_TOWN",
+      "realm_id": "lapidus",
+      "required_witnesses": [],
+      "blocked_witnesses": [],
+      "priority": 5,
+      "lines": [
+        {
+          "speaker": "0022_TOWN",
+          "text": "If you're here about the laundry, the turnaround is three days, more if there's blood in it. If you're here about anything else, sit down and tell me something I don't already know."
+        }
+      ]
+    },
+    {
+      "path_id": "lavelle_explosives",
+      "character_id": "0022_TOWN",
+      "realm_id": "lapidus",
+      "required_witnesses": [],
+      "blocked_witnesses": [],
+      "priority": 10,
+      "lines": [
+        {
+          "speaker": "0022_TOWN",
+          "text": "I learned demolitions from a manual written for the royal engineers. It was in the temple library, misfiled under Moral Philosophy. Which tells you everything you need to know about whoever catalogued that collection."
+        }
+      ]
+    },
+    {
+      "path_id": "lavelle_checkpoint",
+      "character_id": "0022_TOWN",
+      "realm_id": "lapidus",
+      "required_witnesses": [],
+      "blocked_witnesses": ["0003_KLST"],
+      "priority": 20,
+      "lines": [
+        {
+          "speaker": "0022_TOWN",
+          "text": "There's a checkpoint at the sewer outlet. They rotate guards on an irregular schedule specifically so nobody can predict it. I have a gap mapped. I will share it when I know you won't do anything that gets Wells's section shut down."
+        },
+        {
+          "speaker": "player",
+          "text": "I understand. I'll be careful."
+        },
+        {
+          "speaker": "player",
+          "text": "I don't need the gap."
+        }
+      ]
+    }
+  ]
+}

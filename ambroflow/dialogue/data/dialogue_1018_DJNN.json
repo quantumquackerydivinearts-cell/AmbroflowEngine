@@ -1,0 +1,61 @@
+{
+  "character_id": "1018_DJNN",
+  "paths": [
+    {
+      "path_id": "drovitth_found_her",
+      "character_id": "1018_DJNN",
+      "realm_id": "sulphera",
+      "required_witnesses": ["0036_KLST"],
+      "blocked_witnesses": [],
+      "priority": 50,
+      "lines": [
+        {
+          "speaker": "1018_DJNN",
+          "text": "You found her. Good. She has been here for eleven years. Every one of them was structurally necessary. I have been watching the Orrery confirm this, one year at a time. It is a particular kind of patience -- not the kind that accepts delay, but the kind that recognizes the delay as the mechanism."
+        }
+      ]
+    },
+    {
+      "path_id": "drovitth_orrery",
+      "character_id": "1018_DJNN",
+      "realm_id": "sulphera",
+      "required_witnesses": ["0036_KLST"],
+      "blocked_witnesses": [],
+      "priority": 45,
+      "lines": [
+        {
+          "speaker": "1018_DJNN",
+          "text": "I built the Orrery to track the completion of one specific causal chain. The chain requires a child to be born in this ring, to two parents whose conjunction is arithmetically improbable but not impossible. The child requires that a loop begun two hundred years before closes here. I have been waiting for the loop to close. You are part of why it will."
+        }
+      ]
+    },
+    {
+      "path_id": "drovitth_saelith",
+      "character_id": "1018_DJNN",
+      "realm_id": "sulphera",
+      "required_witnesses": ["0036_KLST"],
+      "blocked_witnesses": [],
+      "priority": 40,
+      "lines": [
+        {
+          "speaker": "1018_DJNN",
+          "text": "The child's name will be Saelith. You do not know that name yet. You will. When you do, remember that Saelith's existence is retrospective proof that the entire chain was necessary -- every choice, every suffering, every apparent accident. That is what a Djinn born of three natures means: all of it was load-bearing."
+        }
+      ]
+    },
+    {
+      "path_id": "drovitth_hypatia",
+      "character_id": "1018_DJNN",
+      "realm_id": "sulphera",
+      "required_witnesses": ["0036_KLST"],
+      "blocked_witnesses": [],
+      "priority": 35,
+      "lines": [
+        {
+          "speaker": "1018_DJNN",
+          "text": "She became a demoness because the ring requires it and because she chose to. She is stubborn and she is exact, and love made her more so rather than less. I find that admirable in a structural sense. I am a Djinn. Structural admiration is the kind I am best equipped to give."
+        }
+      ]
+    }
+  ]
+}

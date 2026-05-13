@@ -84,6 +84,7 @@ from ..world.map      import WorldTileKind, Realm
 from ..world.player   import Direction
 from ..world.action_handlers import dispatch, ActionContext, ActionResult
 from ..world.world_graph      import WorldGraph
+from .renderer_bridge import load_renderer_bridge, TILE_SIZE
 
 if TYPE_CHECKING:
     from ..world.play import WorldPlay
@@ -102,6 +103,7 @@ _EV_TO_KEY: dict[str, int] = {
     "cancel":     27,           # _K_ESCAPE
     "fight":      ord("f"),     # 102
     "alchemy":    ord("z"),     # 122
+    "journal":    ord("j"),     # 106
     "menu":       27,           # treat menu as cancel
 }
 
@@ -180,6 +182,7 @@ _INTERIOR_ATLAS_COLORS = [
     ( 48,  52,  60),   # 13  REGISTER
     ( 72,  56,  94),   # 14  ALTAR
     ( 58,  42,  24),   # 15  BOOKSHELF
+    ( 98,  78,  50),   # 16  DESK (lighter oak — also used for stair step visual)
 ]
 
 def _make_interior_atlas() -> "Image.Image":
@@ -201,6 +204,7 @@ def _make_interior_atlas() -> "Image.Image":
 _HOME_KIND_ATLAS: dict = {
     _C.VOID:        6,
     _C.WALL:        3,
+    _C.WALL_FACE:   3,   # same atlas cell as WALL; distinct colour added via override below
     _C.FLOOR:       0,
     _C.DOOR:        0,
     _C.GRASS:       1,
@@ -211,17 +215,23 @@ _HOME_KIND_ATLAS: dict = {
 }
 
 # Zones that use the interior atlas palette
-_INTERIOR_ZONE_IDS = frozenset({"lapidus_wiltoll_home"})
+_INTERIOR_ZONE_IDS = frozenset({"lapidus_wiltoll_home", "player_home_upper"})
 
-_PLAYER_FILL   = (220, 190, 100)
-_PLAYER_SHADOW = ( 80,  60,  20)
-_NPC_FILL      = (160, 160, 180)
-_NPC_SHADOW    = ( 60,  60,  70)
-_NPC_OUTLINE   = (100, 100, 120)
-_HUD_TEXT      = (200, 180, 130)
-_HUD_ACCENT    = (200, 155,  50)
+# Entity and HUD colours sourced from renderer_bridge.py (LoKiel pre-decode).
+# Do not edit here — edit renderer_bridge.py; both renderers share the same values.
+from .renderer_bridge import (
+    PLAYER_FILL   as _PLAYER_FILL,
+    PLAYER_SHADOW as _PLAYER_SHADOW,
+    NPC_FILL      as _NPC_FILL,
+    NPC_SHADOW    as _NPC_SHADOW,
+    NPC_OUTLINE   as _NPC_OUTLINE,
+    HUD_TEXT      as _HUD_TEXT,
+    HUD_ACCENT    as _HUD_ACCENT,
+)
 
-TILE_SIZE = 32
+# Tile size sourced from renderer_bridge.ko Cannabis mode A (×2 for 2× display scale).
+# When the Kobra VM is available TILE_SIZE will be derived directly from the parsed .ko.
+TILE_SIZE = TILE_SIZE  # re-exported from renderer_bridge
 
 # Atlas cell ordering — must match _default_atlas indices in render/world.py.
 # Cells 0-15: base types; 16-18: specialty road/paving surfaces.
@@ -391,8 +401,16 @@ class GLWorldPlay:
                 atlas_tex, atlas_cols=len(_INTERIOR_ATLAS_COLORS), atlas_rows=1)
             self._wr.load_zone(zone, kind_to_atlas=_HOME_KIND_ATLAS)
             try:
-                from ..scenes.player_home import GROUND_FURNITURE
-                self._static_furniture = list(GROUND_FURNITURE)
+                from ..scenes.player_home import (
+                    get_player_home_furniture, get_player_home_interactions,
+                )
+                self._static_furniture = get_player_home_furniture(zone_id)
+                # Prefer .ko scene interactions if passed in (loaded from file),
+                # fall back to Python-defined list when no scene file exists.
+                if interaction_entities:
+                    self._entities = list(interaction_entities)
+                else:
+                    self._entities = get_player_home_interactions(zone_id)
             except Exception:
                 pass
         else:
@@ -509,12 +527,81 @@ class GLWorldPlay:
             systems     = self._systems,
         )
         result = dispatch(action_id, ctx)
+
         if result.kind == "scene_transition" and result.scene_id:
-            self.load_scene(result.scene_id, result.spawn_id or "spawn_point")
+            # Direct zone transition: resolve in WorldPlay's zone registry first.
+            # spawn_id may encode "x,y" for precise placement.
+            target_zone = self._wp._world.zones.get(result.scene_id)
+            if target_zone is not None:
+                tx, ty = target_zone.player_spawn
+                if result.spawn_id and "," in (result.spawn_id or ""):
+                    try:
+                        px, py = result.spawn_id.split(",", 1)
+                        tx, ty = int(px), int(py)
+                    except Exception:
+                        pass
+                self._wp._player.zone_id = result.scene_id
+                self._wp._player.x       = tx
+                self._wp._player.y       = ty
+                self._wp._zone           = target_zone
+            else:
+                self.load_scene(result.scene_id, result.spawn_id or "spawn_point")
+
         elif result.kind == "ui_open":
-            log.info("ui open requested: %s", result.ui)
+            from ..world.play import WorldMode
+            _UI_BEGIN = {
+                "alchemy":    "_begin_alchemy",
+                "journal":    "_begin_journal",
+                "lore_books": "_begin_journal",   # use journal as lore viewer
+                "meditation": "_begin_alchemy",   # alchemy overlay until MEDITATION mode
+                "smelt":      None,
+                "shop":       None,
+            }
+            _UI_MODE = {
+                "smelt": WorldMode.SMELT,
+                "shop":  WorldMode.SHOP,
+            }
+            method_name = _UI_BEGIN.get(result.ui)
+            if method_name:
+                fn = getattr(self._wp, method_name, None)
+                if fn:
+                    fn()
+            else:
+                mode = _UI_MODE.get(result.ui)
+                if mode is not None:
+                    self._wp._mode = mode
+
         elif result.kind == "save":
-            log.info("save_and_heal triggered")
+            self._wp._hint = "Rested."
+
+            # Akashic: flush save record into BreathOfKo
+            br = getattr(self._wp, "_breath", None)
+            if br is not None:
+                ar = getattr(br, "akashic_record", None)
+                if ar is not None:
+                    try:
+                        game_day = 0
+                        if self._wp._clock is not None:
+                            game_day = getattr(
+                                getattr(self._wp._clock, "date", None), "day", 0)
+                        ar.flush_save(
+                            zone_id  = self._wp._player.zone_id,
+                            game_day = game_day,
+                        )
+                    except Exception:
+                        pass
+
+            if self._wp._journal is not None:
+                try:
+                    from ..journal.journal import EntryKind
+                    self._wp._journal.write(
+                        EntryKind.OBSERVATION,
+                        "Rest at Home",
+                        "A moment of stillness in the apprentice's quarters.",
+                    )
+                except Exception:
+                    pass
+
         elif not result.ok:
             log.debug("action %r: %s", action_id, result.message)
 
@@ -587,10 +674,14 @@ class GLWorldPlay:
                     atlas_tex, atlas_cols=len(_INTERIOR_ATLAS_COLORS), atlas_rows=1)
                 self._wr.load_zone(zone, kind_to_atlas=_HOME_KIND_ATLAS)
                 try:
-                    from ..scenes.player_home import GROUND_FURNITURE
-                    self._static_furniture = list(GROUND_FURNITURE)
+                    from ..scenes.player_home import (
+                        get_player_home_furniture, get_player_home_interactions,
+                    )
+                    self._static_furniture = get_player_home_furniture(zone_id)
+                    self._entities         = get_player_home_interactions(zone_id)
                 except Exception:
                     self._static_furniture = []
+                    self._entities         = []
             else:
                 realm     = getattr(zone, "realm", None)
                 fill      = _REALM_FILL.get(realm, _LAP_FILL)
@@ -600,6 +691,7 @@ class GLWorldPlay:
                     atlas_tex, atlas_cols=len(_ATLAS_ORDER), atlas_rows=1)
                 self._wr.load_zone(zone)
                 self._static_furniture = []
+                self._entities         = []
             self._zone_id_cached = id(zone)
 
         # Refresh player + NPC furniture instances each frame
@@ -708,6 +800,7 @@ class GLWorldPlay:
             WorldMode.SMELT:         "_smelt_bytes",
             WorldMode.COMBAT:        "_combat_bytes",
             WorldMode.MAP_DISCOVERY: "_map_bytes",
+            WorldMode.JOURNAL:       "_journal_bytes",
         }
         attr = _BYTES_ATTR.get(mode)
         if attr:
