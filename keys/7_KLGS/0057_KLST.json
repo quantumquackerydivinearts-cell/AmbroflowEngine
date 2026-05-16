@@ -1,0 +1,66 @@
+[
+  {
+    "yeigo":   "lucion_divination_performed",
+    "shakshi": "Lucion performed the divination through Jabiru's knowledge — the God of Language and Stories identifies who belongs in the story's proper place",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "jabiru_divination_known",
+    "shakshi": "Jabiru provided the answer through his priest — language and knowledge as the tools that restore what was displaced",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "pythia_revealed",
+    "shakshi": "Pythia Solunikae named as the rightful temple occupant — the elder the player met in 0038 without knowing who she was",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "pythia_identity_resolved",
+    "shakshi": "pythia_identity_occluded from 0038 closes here — the player understands who they were talking to in the Alzedroswune territory",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "pythia_alzedroswune_choice_known",
+    "shakshi": "She chose the Alzedroswune over the temple when Saffron displaced her — the resistance community was not exile, it was preference",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "temple_rightful_occupant_named",
+    "shakshi": "The power vacuum from 0056 has an answer — the right person named by the right instrument",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "pythia_temple_installed",
+    "shakshi": "Pythia takes her place as the rightful priestess — someone who spent years with the Alzedroswune learning what the Azonithians forgot about civic bonds",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "priesthood_restored",
+    "shakshi": "The structure Saffron corrupted returns to its proper occupant — the priesthood is no longer the war machine's instrument",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  }
+]
