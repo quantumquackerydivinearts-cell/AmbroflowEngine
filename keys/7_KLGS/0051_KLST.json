@@ -1,0 +1,82 @@
+[
+  {
+    "yeigo":   "hypatia_lab_ransacked",
+    "shakshi": "The player arrived to find the lab broken into — inference required, no direct witness",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "luminyx_break_in_known",
+    "shakshi": "The player pieced together that Luminyx broke in and took what she needed",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "hypatia_notes_stolen",
+    "shakshi": "Luminyx took Hypatia's notes — what she learned from them shapes who she becomes in 1728",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "hypatia_amelia_wedding_crystal_known",
+    "shakshi": "A future wedding artifact present in the now — Hypatia and Amelia's wedding yet to be had, the crystal already existed here",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "luminyx_displaced_1728",
+    "shakshi": "Luminyx transported to Earth 1728AD during an eclipse — her mortal arc's hinge point, engineered by her own hand",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "luminyx_earth_arrival_known",
+    "shakshi": "Luminyx is now in the historical record, prior to her birth on Aeralune — the loop begins closing",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "eclipse_timing_known",
+    "shakshi": "The eclipse on Earth 1728 is the arrival point — series-spanning, relevant to Game 1's timeline split at 5237/1728",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "royal_radio_panic",
+    "shakshi": "The castle lost composure publicly — the royal information infrastructure registered something it could not manage",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "radio_panic_source_unknown",
+    "shakshi": "The panic's cause is not officially named — the player inferred it, the castle does not admit what happened",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "hypatia_amelia_wedding_imminent",
+    "shakshi": "The crystal's existence confirms the wedding will happen — Saelith's birth follows from it, the causal chain intact",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  }
+]
