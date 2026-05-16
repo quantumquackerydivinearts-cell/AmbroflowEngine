@@ -1,0 +1,50 @@
+[
+  {
+    "yeigo":   "vajil_met",
+    "shakshi": "Vajil met — the Dryad expert on Demigods, in the Woods of Mercurie",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "demigod_knowledge_received",
+    "shakshi": "Vajil taught the player who the Demigods are — the knowledge that precedes the relationship",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "shapieru_known",
+    "shakshi": "Shapieru known — Shaper of Cultures, Demigod, available as late game companion",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "lanzu_known",
+    "shakshi": "Lanzu known — son of Lakota and Zukoru, divine knowledge and demonic betrayal in one nature, available as late game companion",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "tagame_known",
+    "shakshi": "Tagame known — Demigoddess of Life, daughter of Negaya and Lakota, Kore's lover, available as late game companion",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "demigod_companion_available",
+    "shakshi": "The Demigods can now take up residence with the player — knowledge preceded relationship, trust is possible",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  }
+]
