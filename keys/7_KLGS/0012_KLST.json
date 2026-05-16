@@ -1,0 +1,90 @@
+[
+  {
+    "yeigo":   "mines_entered",
+    "shakshi": "The player went underground into the Mines of Mt. Hieronymus",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "mine_conditions_witnessed",
+    "shakshi": "The player witnessed the smog, the children working every role, the normalized system — no ventilation, dust-borne illness, no single villain to point to",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "children_separated_known",
+    "shakshi": "The player understands the children live underground with the Gnomes, separated from their parents, attending to all domestic and industrial labor",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kaelith_met",
+    "shakshi": "The player met Kaelith properly in the mines and heard his story",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kaelith_sacrifice_known",
+    "shakshi": "Kaelith took his own children's place in the mines — the one move available to him within the system",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "mining_taught",
+    "shakshi": "Kaelith taught the player to mine — the mines are now available as an ongoing activity for the rest of the game",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "gnome_coercion_known",
+    "shakshi": "The Gnomes are coerced into running this system — not willing participants. Series-relevant when the crystal weapon and 0022 land",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "gnome_care_witnessed",
+    "shakshi": "The Gnomes do their best to care for the children within their limits — their cures don't always reach human physiology but the intent is genuine",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "sick_children_helped",
+    "shakshi": "Medicine 75+ — the player reached children the Gnome cures could not",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "sick_children_witnessed",
+    "shakshi": "The illness was seen but not treated — medicine check failed or not attempted",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "ship_resources_gathered",
+    "shakshi": "The mining work is done — resources collected for the shipmaker, 0016 moves closer",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  }
+]
