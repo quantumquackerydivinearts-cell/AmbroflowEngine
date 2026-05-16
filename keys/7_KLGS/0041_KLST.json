@@ -1,0 +1,82 @@
+[
+  {
+    "yeigo":   "lectura_poison_collaboration",
+    "shakshi": "Lectura contributed ocean toxicology and salt water — Undine knowledge of what the sea does to iron",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "cyrus_poison_collaboration",
+    "shakshi": "Cyrus contributed Assassin knowledge of delivery and application — how to get it in",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kielum_favor_understood",
+    "shakshi": "The player understands why Nexiott has survived every prior attempt — Kielum's protection keeps his most useful operative in play",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "demonic_iron_acquired",
+    "shakshi": "Iron from Sulphera gathered — already touched the infernal register before the work begins",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "sulphur_furnace_purified",
+    "shakshi": "The demonic iron purified over sulphur in a furnace — fire as the first transformation",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "salt_water_rusted",
+    "shakshi": "The purified iron rusted by ocean salt water — surrender to water after surviving fire, Lectura's material contribution",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "rust_vial_collected",
+    "shakshi": "The rust brushed into a vial — the chemical trace of iron that went through fire and yielded to water",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "mercury_acquired",
+    "shakshi": "Mercury acquired — the great solvent and messenger, the mediating element that carries the rust",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_poison_complete",
+    "shakshi": "The formula complete — demonic iron rusted by salt water, rust mixed with mercury. Ready for delivery.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kielum_protection_countered",
+    "shakshi": "The demonic iron having passed through the infernal register makes the poison legible to Kielum's protection in a way natural toxins cannot be",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  }
+]
