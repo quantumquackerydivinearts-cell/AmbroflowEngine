@@ -1,0 +1,106 @@
+[
+  {
+    "yeigo":   "ship_launched",
+    "shakshi": "The vessel the player helped build finally left the Hieronymus Plateau",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "sophia_met",
+    "shakshi": "Sophia encountered — queen of the Assassin order, red and black with silver accent scales, ancient, Ko devotee, Drovitth's friend, knows all of humanity's foldings",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "sophia_breath_received",
+    "shakshi": "Sophia breathed into the player before the throw — the preparation that made survival possible, the depths suddenly less oppressive",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "sophia_threw_player",
+    "shakshi": "Sophia threw the player overboard — initiation, not violence",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "ocean_depths_entered",
+    "shakshi": "The player went under — the pull that began at the plateau edge in 0011 finally met",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "faygoru_saved_player",
+    "shakshi": "Faygoru intervened in the gap between consciousness and its absence — the steward of death chose not to take the player",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "faygoru_met",
+    "shakshi": "Faygoru met in the most intimate way possible — in the moment the player blacked out, without announcement",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "chazak_met",
+    "shakshi": "Chazak met on the shore of Mercurie — Greater Siren, Transcendental Meditation teacher, Moshize devotee",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "transcendental_meditation_learned",
+    "shakshi": "Chazak taught Transcendental Meditation after landfall on Mercurie's shore",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "depth_meditation_learned",
+    "shakshi": "The Depth Meditation perk gated in 0011 finally lands — earned in the depths Sophia forced",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "sophia_benevolence_known",
+    "shakshi": "The throw was initiation not harm — the player may or may not understand this immediately",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "mercurie_entered",
+    "shakshi": "First physical crossing into the Faewilds — journal exposure map begins from Chazak's beachfront outward",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "sophia_history_known",
+    "shakshi": "Sophia has been on Aeralune as long as humanity exists, knows the foldings and the arrival from Earth — the player will not learn this directly here",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  }
+]
