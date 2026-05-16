@@ -28,7 +28,11 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .key_registry import KeyRegistry
+    from .schema import Lock
 
 
 # ── Token types ───────────────────────────────────────────────────────────────
@@ -123,6 +127,32 @@ class SamosMyrScene:
     @property
     def va_targets(self) -> list[str]:
         return [op.target for op in self.closure_ops if op.op == "Va"]
+
+    def to_lock(
+        self,
+        registry: "KeyRegistry",
+        excludes: Optional[list[str]] = None,
+    ) -> "Lock":
+        """
+        Convert this scene's Cannabis entries to a Lock.
+
+        Cannabis entries → Lock.requires (via registry.validate_shygazun).
+        excludes: additional yeigo strings to exclude (from Ga() counter-scenes
+                  in the parent SamosMyrScript).
+        time_window is derived from TaShyMa seconds → hour.
+        """
+        from .schema import Lock
+        requires = [registry.validate_shygazun(c) for c in self.cannabis]
+        time_window = None
+        if self.temporal:
+            secs = self.temporal.get("seconds", 0)
+            hour = (secs // 60) % 24
+            time_window = (hour, (hour + 1) % 24)
+        return Lock(
+            requires=requires,
+            excludes=list(excludes or []),
+            time_window=time_window,
+        )
 
 
 # ── Cannabis symbol set ───────────────────────────────────────────────────────

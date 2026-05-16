@@ -36,22 +36,26 @@ from typing import Optional
 
 @dataclass(frozen=True)
 class YeigoLo:
-    yeigo:    str            # Akinenwun — canonical Shygazun identity
-    shakshi:  str            # meaning — English gloss derived from composition
-    kaelsuy:  str            # game_slug — e.g. "7_KLGS"
-    dyne:     bool = False   # propagates — broadcasts forward across games
-    anom:     bool = False   # spoiler — unconscious transmission / chiral awareness
-    andyf:    bool = False   # reversible — indeterminate forward reach via Va
+    yeigo:            str            # Akinenwun — canonical Shygazun identity
+    shakshi:          str            # meaning — English gloss derived from composition
+    kaelsuy:          str            # game_slug — e.g. "7_KLGS"
+    dyne:             bool = False   # propagates — broadcasts forward across games
+    anom:             bool = False   # spoiler — unconscious transmission / chiral awareness
+    andyf:            bool = False   # reversible — indeterminate forward reach via Va
+    shygazun_symbol:  Optional[str] = None  # Cannabis byte table symbol, e.g. "At"
+    shygazun_address: Optional[int] = None  # byte address in the table
 
     @classmethod
     def from_dict(cls, d: dict) -> "YeigoLo":
         return cls(
-            yeigo   = d["yeigo"],
-            shakshi = d["shakshi"],
-            kaelsuy = d["kaelsuy"],
-            dyne    = d.get("dyne",  False),
-            anom    = d.get("anom",  False),
-            andyf   = d.get("andyf", False),
+            yeigo            = d["yeigo"],
+            shakshi          = d["shakshi"],
+            kaelsuy          = d["kaelsuy"],
+            dyne             = d.get("dyne",             False),
+            anom             = d.get("anom",             False),
+            andyf            = d.get("andyf",            False),
+            shygazun_symbol  = d.get("shygazun_symbol"),
+            shygazun_address = d.get("shygazun_address"),
         )
 
     def to_dict(self) -> dict:
@@ -76,7 +80,8 @@ class KeyRegistry:
     """
 
     def __init__(self) -> None:
-        self._keys: dict[str, YeigoLo] = {}
+        self._keys:    dict[str, YeigoLo] = {}
+        self._symbols: dict[str, YeigoLo] = {}  # shygazun_symbol → YeigoLo
 
     def register(self, defn: YeigoLo) -> None:
         if defn.yeigo in self._keys:
@@ -85,6 +90,8 @@ class KeyRegistry:
                 f"(already registered for {self._keys[defn.yeigo].kaelsuy})"
             )
         self._keys[defn.yeigo] = defn
+        if defn.shygazun_symbol:
+            self._symbols[defn.shygazun_symbol] = defn
 
     def validate(self, yeigo: str) -> str:
         """Validate an Akinenwun. Raises if not registered. Returns yeigo."""
@@ -95,8 +102,26 @@ class KeyRegistry:
             )
         return yeigo
 
+    def validate_shygazun(self, symbol: str) -> str:
+        """
+        Look up a Cannabis byte table symbol and return its yeigo string.
+        Raises ValueError if the symbol has no registered mapping.
+        Used by SamosMyrBridge to convert Cannabis entries to Lock.requires.
+        """
+        defn = self._symbols.get(symbol)
+        if defn is None:
+            raise ValueError(
+                f"No key registered for Shygazun symbol {symbol!r} — "
+                f"add shygazun_symbol to the YeigoLo declaration"
+            )
+        return defn.yeigo
+
     def get(self, yeigo: str) -> Optional[YeigoLo]:
         return self._keys.get(yeigo)
+
+    def get_by_symbol(self, symbol: str) -> Optional[YeigoLo]:
+        """Look up a YeigoLo by its Cannabis byte table symbol."""
+        return self._symbols.get(symbol)
 
     def keys_for_game(self, kaelsuy: str) -> list[YeigoLo]:
         return [d for d in self._keys.values() if d.kaelsuy == kaelsuy]
