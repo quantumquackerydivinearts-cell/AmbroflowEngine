@@ -1,0 +1,58 @@
+[
+  {
+    "yeigo":   "fae_court_shrine_found",
+    "shakshi": "The player found Koga's shrine in the Fae court — only accessible to Assassin players with good Fae relations",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "koga_met",
+    "shakshi": "Koga met — Goddess of Magic and Mystery, teaches Chaos magic to those her flock accepts",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "fae_relations_sufficient",
+    "shakshi": "The player's accumulated conduct toward the Fae met Koga's threshold — no test, just the weight of how they moved through Mercurie",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "chaos_magic_learned",
+    "shakshi": "The art of using actions, environment, and the connections within them to affect chain reactions — augmented but not gated by the magic skill",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "chaos_magic_augmented",
+    "shakshi": "The player has magic skill trained — the cascades are more precise, the chain reactions more deliberate",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "koga_flock_accepted",
+    "shakshi": "The player is considered part of Koga's flock — accepted through conduct, not ceremony",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "plasma_freeze_prevented_assassination",
+    "shakshi": "The assassination of the right target prevented the plasma weapon from firing — Fae court intact, Koga's shrine reachable",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  }
+]
