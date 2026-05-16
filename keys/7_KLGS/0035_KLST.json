@@ -1,0 +1,66 @@
+[
+  {
+    "yeigo":   "greed_ring_cleared",
+    "shakshi": "Ring of Greed cleared — Mammon's domain traversed, token granted",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "envy_ring_cleared",
+    "shakshi": "Ring of Envy cleared — Leviathan's domain traversed, token granted",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "gluttony_ring_cleared",
+    "shakshi": "Ring of Gluttony cleared — Beelzebub's domain traversed, token granted",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "sloth_ring_cleared",
+    "shakshi": "Ring of Sloth cleared — Belphegor's domain traversed, token granted",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "wrath_ring_cleared",
+    "shakshi": "Ring of Wrath cleared — Satan's domain traversed, token granted",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "five_rings_cleared",
+    "shakshi": "The bulk of hell traversed — Greed, Envy, Gluttony, Sloth, Wrath all behind the player",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "sin_register_deepened",
+    "shakshi": "The player has moved through five expressions of sin from the inside — desire, envy, excess, stagnation, wrath no longer abstract",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "hypatia_proximity_growing",
+    "shakshi": "Each ring cleared brings the Orrery closer — the player can feel the direction even without seeing the destination",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  }
+]
