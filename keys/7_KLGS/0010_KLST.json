@@ -1,0 +1,58 @@
+[
+  {
+    "yeigo":   "alfir_lesson_received",
+    "shakshi": "Perfect Circles completed — Alfir's lesson on the Rings of Sulphera delivered",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "alfir_grief_known",
+    "shakshi": "Alfir lost a daughter and a wife — he shared this before teaching, it is intimate and not public knowledge",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "alfir_visits_sulphera",
+    "shakshi": "The player knows Alfir goes to the Visitor's Ring to see his family — the technique was born of grief and sustained by love",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "rings_explained",
+    "shakshi": "Alfir gave the player a working map of Sulphera's ring structure",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "infernal_meditation_learned",
+    "shakshi": "The Infernal Meditation perk is held — Sulphera access now open through the earned path",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "visitor_ring_known",
+    "shakshi": "The player knows the Visitor's Ring exists and what it is for — the human face of Sulphera",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "pure_desire_named",
+    "shakshi": "Alfir named pure desire as the condition for safe infernal travel — frames what happened in 0007 retroactively, shapes how Ko reads the player in subsequent dream sequences",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  }
+]
