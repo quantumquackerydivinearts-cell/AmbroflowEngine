@@ -1,0 +1,58 @@
+[
+  {
+    "yeigo":   "hue_met",
+    "shakshi": "Hue met the player as an Assassin client — Kore's brother, embedded in the Assassin camp 20 miles west of Castle Azoth",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "hue_invitation_accepted",
+    "shakshi": "The player accepted Hue's invitation to camp with the Assassins at the western plateau edge",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "hue_watching_player",
+    "shakshi": "Hue is reporting back to Kore — the invitation was intelligence gathering as much as hospitality",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "ocean_felt_first",
+    "shakshi": "At the western plateau edge at night the pull of the sea became real for the first time — always present, now undeniable",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "hieronymus_plateau_edge_reached",
+    "shakshi": "The player reached the western edge of Mt. Hieronymus plateau where the land drops to the sea — 20 miles past Castle Azoth",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "leave_plateau_urge",
+    "shakshi": "The desire to go beyond the plateau is now present and named — the seed that 0012 and 0016 grow from",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "depth_meditation_gate_open",
+    "shakshi": "The 0011 gate is open — Depth Meditation perk becomes available when Sophia throws the player overboard in 0016",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  }
+]
