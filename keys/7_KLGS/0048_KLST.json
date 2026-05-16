@@ -1,0 +1,82 @@
+[
+  {
+    "yeigo":   "bombast_completed",
+    "shakshi": "The Fae intel mission from 0014 closed — the player reported back to Bombastus at Castle Azoth",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "lucion_met",
+    "shakshi": "Lucion met — priest of Jabiru, God of language, stories and knowledge. Luminyx's teacher. The right teacher for the most narratively load-bearing mortal in the series.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "luminyx_met",
+    "shakshi": "Luminyx met — Hildegarde's daughter, mortal, not yet a spirit. The hinge point of the loop Drovitth watches from the Orrery.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "hildegarde_luminyx_lucion_known",
+    "shakshi": "The family and teaching triangle visible — Hildegarde's daughter, Lucion's student, both entangled with what the king is making war on",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kelly_filtered_intel",
+    "shakshi": "Kelly managed the information before it reached Bombastus — the same truth distorted differently depending on what the player built",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "hypatia_heretic_declared",
+    "shakshi": "Nexiott line outcome — clouded intelligence produced a heresy verdict. Hypatia is officially condemned.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "hypatia_pardoned",
+    "shakshi": "Fae/Assassin line outcome — clean intelligence produced a pardon. Hypatia is officially cleared.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "bombastus_intel_received",
+    "shakshi": "Bombastus got the information in the form Kelly allowed — his understanding of Hypatia permanently shaped by which line the player walked",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "luminyx_teacher_known",
+    "shakshi": "Lucion has been Luminyx's teacher — relevant to every subsequent encounter with either of them",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "hildegarde_family_depth_known",
+    "shakshi": "The queen's opposition to the war has roots deeper than politics — her daughter is entangled with the Fae, her trusted figure teaches the loop's hinge point",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  }
+]
