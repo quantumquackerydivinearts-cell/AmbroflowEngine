@@ -1,0 +1,66 @@
+[
+  {
+    "yeigo":   "philosophers_stone_attempted",
+    "shakshi": "The player declared the Great Work and began the attempt — the quest opening is the declaration of intent",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "sulphera_reagents_gathered",
+    "shakshi": "Rare materials from Sulphera collected for the stone",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "mercurie_reagents_gathered",
+    "shakshi": "Rare materials from Mercurie collected for the stone",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "lapidus_reagents_gathered",
+    "shakshi": "Rare materials from Lapidus collected for the stone",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "three_realm_reagents_complete",
+    "shakshi": "All three realms represented in the work — Sulphera, Mercurie, and Lapidus materials in hand",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "philosophers_stone_grade_achieved",
+    "shakshi": "The Great Work at an attempted grade — alchemy 100, metal transposition, all reagents, BreathOfKo sufficient. Cannot be sold on any market.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "magnum_opus_complete",
+    "shakshi": "The alchemical arc of the game closed — solve et coagula fully enacted. The player who lived the game rather than optimized it.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "philosophers_stone_unresolved",
+    "shakshi": "The quest is open and may stay open — not a failure, the Great Work continues beyond the game's frame",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  }
+]
