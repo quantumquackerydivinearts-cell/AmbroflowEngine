@@ -96,14 +96,6 @@
     "andyf":   false
   },
   {
-    "yeigo":   "amelia_dead",
-    "shakshi": "Amelia is dead — the causal chain to Saelith is severed, Luminyx's loop cannot close, the series fractures forward",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    true,
-    "andyf":   false
-  },
-  {
     "yeigo":   "plasma_weapon_deployed",
     "shakshi": "The weapon exists and has been used or attempted — present on all paths except sabotage",
     "kaelsuy": "7_KLGS",
