@@ -1,0 +1,114 @@
+[
+  {
+    "yeigo":   "kelly_debriefed",
+    "shakshi": "Chancellor Kelly debriefed the player in riddles following the canopy incident",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kingdom_division_known",
+    "shakshi": "The player knows the royal class is not unified on the war — not every member is aligned with Nexiott",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "priesthood_history_known",
+    "shakshi": "Kelly gave the player the political history of the priesthood and how it reached its current shape",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "alfir_eomann_mines_story_heard",
+    "shakshi": "Kelly told the story of young Alfir and Eomann wandering into Mt. Hieronymus and reaching the Faewilds",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "amelia_named",
+    "shakshi": "Amelia named for the first time — saved Alfir and Eomann in the Faewilds as boys",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "echo_named",
+    "shakshi": "Echo named for the first time — present with Amelia when the boys were found in the Faewilds",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "eomann_sworn_amelia",
+    "shakshi": "The player knows Eomann is sworn to Amelia — his oath dates to the Faewilds incident as boys",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "alfir_priesthood_origin_known",
+    "shakshi": "Eomann appointed Alfir to the priesthood when Alfir was in his 20s",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "saffron_replaced_alfir",
+    "shakshi": "The player knows Saffron removed Alfir as Kelly's advisor when his Fae connections became known",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_war_pretext_known",
+    "shakshi": "Nexiott's caravan business was built into the justification for the war against the Fae",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "rachelle_identified",
+    "shakshi": "Rachelle named as Alfir's student and Saffron's installed replacement advisor",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "alfir_trained_rachelle",
+    "shakshi": "Alfir trained his own replacement — Rachelle was his student before Saffron installed her",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kelly_not_nexiott",
+    "shakshi": "The player understands Kelly is not aligned with Nexiott's agenda",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kelly_trust_ambiguous",
+    "shakshi": "Kelly was forthcoming but remains a Chancellor who conceals things in riddles — his full motives are opaque",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  }
+]

@@ -1,0 +1,130 @@
+[
+  {
+    "yeigo":   "saffron_met",
+    "shakshi": "The player has met High Priestess Saffron",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "crystals_mission_accepted",
+    "shakshi": "The player accepted Saffron's mission to retrieve the crystals from the witches",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kore_undetected",
+    "shakshi": "The player stole the crystals without Kore detecting the theft",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kore_detected",
+    "shakshi": "Kore caught the player stealing the crystals",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kore_interrogated",
+    "shakshi": "Kore interrogated the player after catching the theft",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kore_allied",
+    "shakshi": "The player took Kore's side during interrogation",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   true
+  },
+  {
+    "yeigo":   "kore_refused",
+    "shakshi": "The player declined Kore's offer and stayed the course for Saffron",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kore_told_crystal_truth",
+    "shakshi": "Kore told the player the crystals come from the Gnomes and can make a plasma weapon",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "weapon_purpose_known",
+    "shakshi": "The player knows the crystals are refined into a plasma weapon — earliest via Kore, otherwise via 0005",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "gnome_crystal_origin_known",
+    "shakshi": "The player knows the crystals were given to the witches by the Gnomes",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "real_crystals_delivered",
+    "shakshi": "The player delivered the genuine crystals to Saffron",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "false_crystals_delivered",
+    "shakshi": "The player delivered Kore's false crystals to Saffron",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "saffron_satisfied",
+    "shakshi": "Saffron accepted the crystals without suspicion",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "saffron_deceived",
+    "shakshi": "Saffron received false crystals — she knows she was crossed",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "saffron_suspicious",
+    "shakshi": "Saffron suspects the player but has not acted yet",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "saffron_lied_crystal_purpose",
+    "shakshi": "Saffron withheld the true purpose of the crystals from the player",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  }
+]

@@ -1,50 +1,50 @@
 [
-  {
-    "yeigo":   "letter_received",
+{
+    "yeigo": "letter_received",
     "shakshi": "The player has received their summons to Castle Azoth",
     "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "left_home",
+    "dyne": false,
+    "anom": false,
+    "andyf": false
+},
+{
+    "yeigo": "left_home",
     "shakshi": "The player left home",
     "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "met_elsa",
-    "shakshi": "The player has met their neighbor, Elsa",
+    "dyne": false,
+    "anom": false,
+    "andyf": false
+},
+{
+    "yeigo": "met_elsa",
+    "shakshi":"The player has met their neighbor, Elsa",
     "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "met_sidhal",
-    "shakshi": "The player has met Sidhal, the forester and temple custodian",
+    "dyne": false,
+    "anom": false,
+    "andyf": false
+},
+{
+    "yeigo": "met_sidhal",
+    "shakshi":"The player has met Sidhal, the forrester and temple custodian",
     "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "arrived_castle_azoth",
+    "dyne": false,
+    "anom": false, 
+    "andyf": false
+},
+{
+    "yeigo": "arrived_castle_azoth",
     "shakshi": "The player has arrived at Castle Azoth",
     "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "found_hypatia_lab",
-    "shakshi": "The player has found Hypatia's lab in the towers of Castle Azoth",
+    "dyne": false,
+    "anom": false,
+    "andyf": false
+},
+{
+    "yeigo": "found_hypatia_lab",
+    "shakshi": "The player has found Hypatia's Lab in the towers of Castle Azoth",
     "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  }
+    "dyne": false,
+    "anom": false,
+    "andyf": false
+}
 ]

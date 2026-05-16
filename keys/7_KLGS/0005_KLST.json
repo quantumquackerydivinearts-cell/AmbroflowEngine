@@ -1,0 +1,74 @@
+[
+  {
+    "yeigo":   "klob_pipeline_learned",
+    "shakshi": "The player learned the KLOB manufacturing pipeline from Hypatia — technical basis for understanding the weapon throughout the game",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "hypatia_last_lesson",
+    "shakshi": "The player attended Hypatia's final teaching before she disappears into Sulphera",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "saffron_nexiott_overheard",
+    "shakshi": "The player witnessed Saffron and Nexiott's conversation under the canopy",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "fae_war_known",
+    "shakshi": "The player knows the Fae are the target of the weapon — completes the picture begun in 0004 if weapon_purpose_known was already held",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_identified",
+    "shakshi": "The player has put a face and name to Nexiott as a power behind the priesthood",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "almost_caught_canopy",
+    "shakshi": "The player was nearly discovered in the canopy halls before Kelly's arrival",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kelly_intervened",
+    "shakshi": "Chancellor Kelly appeared at the critical moment, triggering the transition into 0006",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kelly_knows_player_witnessed",
+    "shakshi": "Kelly is aware the player overheard Saffron and Nexiott — shapes all of Kelly's conduct in 0006",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kelly_motive_unknown",
+    "shakshi": "The player cannot determine whether Kelly's arrival was protective or coincidental",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  }
+]
