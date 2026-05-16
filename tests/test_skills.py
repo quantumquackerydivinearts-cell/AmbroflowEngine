@@ -27,7 +27,7 @@ def test_infernal_meditation_quest_gate():
 
 def test_alchemical_meditation_quest_gate():
     p = PERK_BY_ID["alchemical_meditation"]
-    assert p.required_quest == "0008_KLST"   # Bunsen For Hire
+    assert p.required_quest == "0002_KLST"   # Destiny Calls — Hypatia teaches before she descends
 
 
 def test_hypnotic_meditation_quest_gate():
