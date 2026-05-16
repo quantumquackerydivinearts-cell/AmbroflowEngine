@@ -1,0 +1,74 @@
+[
+  {
+    "yeigo":   "tymona_hostage_pretense",
+    "shakshi": "The false hostage situation used to get Nexiott onto the water — Tymona was never held",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_lured_sea",
+    "shakshi": "Nexiott brought onto the player's ship under false pretenses — the most informed man in the room, finally out of information",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_cruise_arranged",
+    "shakshi": "A survey of Mercurie as cover — the pretense held long enough to get him on the water",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "sophia_nexiott_taken",
+    "shakshi": "Sophia snatched Nexiott without warning — no trial, no speech, no final monologue",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_trenches",
+    "shakshi": "Nexiott in the ocean trenches — Sophia's territory, his ending. He never got a word in edgewise.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "sophia_debt_settled",
+    "shakshi": "The energy weapon wound paid in kind — Sophia took something from Nexiott that cost the player dearly, and now they are even",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "mercurie_ocean_access_restored",
+    "shakshi": "The ocean opens again — the Va trigger for sophia_trust_broken, the relationship repaired through Nexiott's death",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "sophia_trust_restored",
+    "shakshi": "The relationship with Sophia repaired — the peace offering accepted through action, not words",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_sea_ending_taken",
+    "shakshi": "The path for players who ran out of time, or turned on Nexiott after feeling played — distinct from the trap and assassination endings",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  }
+]
