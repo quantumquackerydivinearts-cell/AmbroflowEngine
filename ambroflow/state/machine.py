@@ -30,12 +30,18 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Optional
+from typing import Any, Optional, TYPE_CHECKING
 
 from ..ko.breath import BreathOfKo
 from ..ko.calibration import DreamCalibration
 from ..ko.vitriol import VITRIOLProfile
 from ..sanity.live import LiveSanity
+
+if TYPE_CHECKING:
+    from ..quests.keyring import KeyRing
+    from ..quests.scene_runner import SceneRunner
+    from ..quests.tracker import QuestTracker
+    from ..quests.schema import Beat, Scene
 
 
 class GamePhase(str, Enum):
@@ -109,9 +115,15 @@ class GameStateMachine:
         game_number: int,
         breath: BreathOfKo,
         orrery: Any,
+        scene_runner: Optional["SceneRunner"] = None,
+        quest_tracker: Optional["QuestTracker"] = None,
+        keyring: Optional["KeyRing"] = None,
     ) -> None:
-        self._breath = breath
-        self._orrery = orrery
+        self._breath        = breath
+        self._orrery        = orrery
+        self._scene_runner  = scene_runner
+        self._quest_tracker = quest_tracker
+        self._keyring       = keyring
         self._state  = GameState(
             game_id=game_id,
             game_number=game_number,
@@ -197,6 +209,54 @@ class GameStateMachine:
             "convergence_path": convergence_path,
             "breath_snapshot":  self._breath.snapshot(),
         })
+
+    # ── Key-lock integration ──────────────────────────────────────────────────
+
+    def enter_zone(self, zone_id: str) -> list["Scene"]:
+        """
+        Called when the player enters a zone.
+        Returns the list of scenes that can fire right now in that zone.
+        The game loop presents these to the player and calls fire_scene() when witnessed.
+        Returns empty list if no SceneRunner is wired.
+        """
+        if self._scene_runner is None:
+            return []
+        return self._scene_runner.available_scenes(zone_id)
+
+    def grant_key(self, key: str) -> bool:
+        """
+        Grant a key through the SceneRunner (so propagation fires).
+        Returns True if newly granted.
+        Falls back to direct KeyRing grant if no SceneRunner is wired.
+        """
+        if self._scene_runner is not None:
+            return self._scene_runner.grant_key(key)
+        if self._keyring is not None:
+            return self._keyring.grant(key)
+        return False
+
+    def fire_scene(self, scene: "Scene") -> list[str]:
+        """Fire a scene and return newly granted keys."""
+        if self._scene_runner is None:
+            return []
+        return self._scene_runner.fire_scene(scene)
+
+    def fire_beat(self, beat: "Beat") -> list[str]:
+        """Fire a beat and return newly granted keys."""
+        if self._scene_runner is None:
+            return []
+        return self._scene_runner.fire_beat(beat)
+
+    def set_hour(self, hour: int) -> None:
+        """Update the in-game hour for time-gated scene evaluation."""
+        if self._scene_runner is not None:
+            self._scene_runner.set_hour(hour)
+
+    def has_key(self, key: str) -> bool:
+        """Check whether the player currently holds a key."""
+        if self._keyring is not None:
+            return self._keyring.has(key)
+        return False
 
     # ── Starting condition generation ─────────────────────────────────────────
 
