@@ -1,0 +1,90 @@
+[
+  {
+    "yeigo":   "st_alaro_met",
+    "shakshi": "St. Alaro met — Radio Demon of Pride, trades in signal and reach, deals only with those who move through the world without mortal killing",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "st_alaro_deal_offered",
+    "shakshi": "Dominion over Lapidus airwaves offered in exchange for a permanent mark on the BreathOfKo",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "st_alaro_deal_accepted",
+    "shakshi": "The player agreed — the radio path of the secret ending is active",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "bok_mark_st_alaro",
+    "shakshi": "A permanent impression on the player's fractal state — invisible to the player, visible to anyone who reads the BoK",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "lapidus_airwaves_dominion",
+    "shakshi": "Control of Lapidus broadcast infrastructure — the speaking path, distinct from the Colt .45 killing path",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "telecom_hijack_capable",
+    "shakshi": "Series-spanning ability to hijack telecom technologies across games — demons do not count, direct mortal killing does. Nexiott must fall by the people's hands.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "radio_path_open",
+    "shakshi": "The secret ending's radio path active — the player speaks rather than shoots",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "telecom_hijack_pacifism_gated",
+    "shakshi": "The ability is lost if the player directly kills a mortal in subsequent games — killing demons is maintenance, not violence. The distinction is cosmological.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "mystic_blood_lock",
+    "shakshi": "Completing Mystic Blood ends the telecom hijack capability permanently — the sanctioned kill game closes the signal path",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "mortal_kill_pacifism_broken",
+    "shakshi": "The player directly killed a mortal — the telecom hijack capability is lost across all subsequent games",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "st_alaro_deal_refused",
+    "shakshi": "The player declined — the radio path closes, the Colt .45 path remains the secret ending route",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  }
+]
