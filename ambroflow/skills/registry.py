@@ -65,12 +65,13 @@ MEDITATION_PERKS: tuple[PerkDef, ...] = (
         id="alchemical_meditation",
         name="Alchemical Meditation",
         required_skill="meditation",
-        required_quest="0008_KLST",    # Bunsen For Hire
+        required_quest="0002_KLST",    # Destiny Calls — Hypatia teaches before she disappears
         required_perks=(),
         effect=(
             "Meditation as transmutation process — the inner coil mirrors the outer work. "
             "Boosts Alchemical sanity. When both meditation and alchemy skills are trained, "
-            "each reinforces the other. Hypatia's native method."
+            "each reinforces the other. Taught by Hypatia in 0002_KLST before she descends — "
+            "the last thing she gives the apprentice beside the dagger."
         ),
         sanity_delta={"alchemical": 0.06},
         stack_event="skill.perk.alchemical_meditation.unlocked",

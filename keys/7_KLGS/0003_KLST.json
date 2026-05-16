@@ -1,0 +1,66 @@
+[
+  {
+    "yeigo":   "met_joannah",
+    "shakshi": "The player has met Joannah in the warrens",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "met_james",
+    "shakshi": "The player has met James, aqueduct worker and Tyrone's lover",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "met_tyrone",
+    "shakshi": "The player has met Tyrone, aqueduct worker and James's lover",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "met_genovise",
+    "shakshi": "The player has met Genovise and found her occult shop — black market access point",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "met_wells",
+    "shakshi": "The player has met Wells at Serpent's Pass",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "met_lavelle",
+    "shakshi": "The player has met Lavelle at Serpent's Pass",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "warrens_traversed",
+    "shakshi": "The player has passed through Hopefare Road into Azonithia's deep reaches",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "black_market_known",
+    "shakshi": "The player knows the black market exists and where it operates",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  }
+]

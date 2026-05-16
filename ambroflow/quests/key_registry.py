@@ -130,7 +130,7 @@ def load_registry(keys_dir: str | Path) -> KeyRegistry:
     if not keys_path.exists():
         return registry
 
-    for path in sorted(keys_path.glob("*.json")):
+    for path in sorted(keys_path.glob("**/*.json")):
         entries = json.loads(path.read_text(encoding="utf-8"))
         if not isinstance(entries, list):
             raise ValueError(f"{path}: expected JSON array, got {type(entries).__name__}")

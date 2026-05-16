@@ -1,0 +1,50 @@
+[
+  {
+    "yeigo":   "hypatia_met",
+    "shakshi": "The player has met Hypatia before her disappearance",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "dagger_received",
+    "shakshi": "The player holds Hypatia's dagger — the last thing she gave before descending",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "alchemical_meditation_taught",
+    "shakshi": "Hypatia taught the player Alchemical Meditation before she left",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "hypatia_taught_skills",
+    "shakshi": "Hypatia presided over the player's skill definition — branch marker for downstream dialogue",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "skills_defined",
+    "shakshi": "The player's starting skills are set — by Hypatia or by Ko if she was missed",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "hypatia_advised_kelly_eomann",
+    "shakshi": "Hypatia advised the player to listen carefully to Chancellor Kelly and Duke Eomann",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  }
+]
