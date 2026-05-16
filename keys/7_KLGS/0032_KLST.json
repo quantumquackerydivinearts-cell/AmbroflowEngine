@@ -1,0 +1,50 @@
+[
+  {
+    "yeigo":   "mona_altar_found",
+    "shakshi": "The player found Mona's altar in the Fae court temple — different shrine, same sacred space as Koga's",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "mona_met",
+    "shakshi": "Mona met — Goddess of Play and Torment, unified. For Faekin, play IS torment and torment IS play.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "assassin_standing_sufficient",
+    "shakshi": "Good relations with Asmoth confirmed — the gate Mona reads, distinct from the Fae conduct Koga reads",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "warriordom_learned",
+    "shakshi": "The philosophy of engagement as play and torment as delight — affects dialogue and approach, lighter and faster than human warriordom, paradoxically more dangerous",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "faekin_combat_register_known",
+    "shakshi": "The player understands the unified play-torment register — retroactively reframes every Fae confrontation already had and changes how future ones read",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "mona_flock_accepted",
+    "shakshi": "Accepted into Mona's register — through Assassin standing, not Fae conduct",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  }
+]
