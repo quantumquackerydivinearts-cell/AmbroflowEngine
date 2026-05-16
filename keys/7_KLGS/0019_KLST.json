@@ -1,0 +1,90 @@
+[
+  {
+    "yeigo":   "keshi_met",
+    "shakshi": "Keshi encountered — the Gift Horse, Djinn, Demon of Destruction of Growth. His gifts corrupt through silence, not deception.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "keshi_deal_offered",
+    "shakshi": "Keshi offered a unilateral 30-point skill boost across all skills in exchange for an unnamed life — the player does not choose whom",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "keshi_deal_accepted",
+    "shakshi": "The player accepted Keshi's deal — consenting to a death they did not understand",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "skill_boost_keshi",
+    "shakshi": "30 points added across all skills — Keshi's gift landed exactly as offered",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "keshi_plague_released",
+    "shakshi": "A mysterious plague now sweeps Azonithia — the player does not know they caused it, the connection between deal and death is invisible",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "hue_plague_exposed",
+    "shakshi": "Hue is most likely to die — slow and brutal. The player almost certainly does not connect this to the deal.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "keshi_cost_unknown",
+    "shakshi": "The player accepted without understanding the cost — Keshi did not explain, the gift arrived and so did the plague",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "keshi_deal_refused",
+    "shakshi": "The player refused Keshi's deal — protected by instinct or principle rather than knowledge",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "plague_prevented",
+    "shakshi": "Refusal prevented the plague entirely — Azonithia is protected",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "keshi_silence_experienced",
+    "shakshi": "Keshi did not explain himself — the player carries the encounter without a frame for what happened",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "lucifer_charge_unresolved",
+    "shakshi": "The responsibility Lucifer placed on the player was not escaped — with or without the deal, it remains",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  }
+]
