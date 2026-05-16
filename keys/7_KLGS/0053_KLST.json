@@ -1,0 +1,74 @@
+[
+  {
+    "yeigo":   "nexiott_deathtrap_fired",
+    "shakshi": "The runic trap activated in Castle Azoth — 0037 and 0041 converging in a single moment",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_poison_delivered",
+    "shakshi": "The demonic iron rust-mercury poison on the spike tips did its work — what the spikes didn't finish, the poison did",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_dead",
+    "shakshi": "Nexiott is dead — killed in his own house by the architecture of his own power turned against him",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kielum_lapidus_operative_gone",
+    "shakshi": "Kielum's most useful operative in Lapidus is dead — the war machine loses its human driver",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_died_own_territory",
+    "shakshi": "He died where he believed he was safe — the trap is the punishment his architecture deserved",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "player_not_direct_instrument",
+    "shakshi": "The player set the conditions, the trap fired, the poison worked — St. Alaro's pacifism constraint holds, telecom hijack intact",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_line_ended",
+    "shakshi": "The Nexiott line of quests closes — the caravan empire without its architect",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "caravan_empire_leaderless",
+    "shakshi": "The infrastructure exists but the driver is gone — what happens to it propagates forward into subsequent games",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "alfir_revenge_complete",
+    "shakshi": "What Alfir was taking back is taken — he may not say so, the player may not name it",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  }
+]
