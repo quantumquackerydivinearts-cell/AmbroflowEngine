@@ -1,0 +1,90 @@
+[
+  {
+    "yeigo":   "shakzefan_summoned",
+    "shakshi": "Lucifer directed the player to Shakzefan regardless of the advice he gave — all paths through the Pride Ring point here",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "visitor_ring_returned",
+    "shakshi": "The player returned to the Visitor's Ring — where Alfir visits his family, where Shakzefan receives",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "shakzefan_met",
+    "shakshi": "Shakzefan encountered — Goddess of growth and loss, civilizational register, the personal losses made the player legible to her",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "shakzefan_introduction_received",
+    "shakshi": "Shakzefan introduced herself and her domain — growth and loss at civilizational scale is her native register",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "shakzefan_devotion_offered",
+    "shakshi": "The potential for devotion was presented — the choice is entirely internal, no one in the overworld will know what was said here",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "shakzefan_path_committed",
+    "shakshi": "The player committed to a devotional path with Shakzefan — reversible, devotion can be broken",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   true
+  },
+  {
+    "yeigo":   "shakzefan_path_declined",
+    "shakshi": "The player did not commit to devotion — the offer may remain available",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "shakzefan_path_open",
+    "shakshi": "The offer of devotion remains available — no commitment made yet, neither accepted nor refused",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "war_civilizational_scale_known",
+    "shakshi": "Shakzefan named what the war means at her scale — growth severed, loss without transformation, civilizational wound",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "sides_understood",
+    "shakshi": "The player now has enough to understand what choosing a side in the war actually means",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "shakzefan_worship_available",
+    "shakshi": "The devotion path is now accessible for 0017/0018/0026 quests — only present if path committed",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  }
+]
