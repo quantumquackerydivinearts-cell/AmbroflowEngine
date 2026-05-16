@@ -1,0 +1,98 @@
+[
+  {
+    "yeigo":   "amelia_kill_mission_accepted",
+    "shakshi": "The player accepted Nexiott's mission to kill Fae Queen Amelia",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_amelia_framing_known",
+    "shakshi": "Nexiott framed Amelia as a destabilizing threat — her methodology fills Azonithia with strange dreams that violate the order his caravans maintain for the people",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "amelia_mission_open",
+    "shakshi": "The mission to reach Amelia is active and unresolved — remains open until 0030 Plasma Freeze forces a resolution",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "amelia_reached",
+    "shakshi": "The player got close enough to Amelia for an encounter before the weapon existed",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "amelia_met",
+    "shakshi": "Amelia encountered in person — the Fae Queen whose survival holds the causal chain intact",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_plans_exposed_amelia",
+    "shakshi": "Amelia told the player what Nexiott is actually doing — the weapon, the war, the real purpose",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "amelia_silence_held",
+    "shakshi": "Amelia did not reveal Hypatia's location or Saelith regardless of pressure — the player may not notice what she withheld",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "amelia_side_taken",
+    "shakshi": "The player chose to protect Amelia — reversible if 0030 forces the kill",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   true
+  },
+  {
+    "yeigo":   "amelia_betrayed",
+    "shakshi": "The player sided with Nexiott after reaching Amelia",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "amelia_not_acted",
+    "shakshi": "The player reached Amelia and chose neither side — mission still open, no commitment made",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "amelia_dead",
+    "shakshi": "Amelia is dead — the causal chain to Saelith is severed, Luminyx's loop cannot close, the series fractures forward",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "echo_saelith_aware",
+    "shakshi": "Echo already knows Saelith's potentiality — sensed before the pregnancy, they have been planning. The player will not learn this directly but it shapes Echo in person",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    true,
+    "andyf":   false
+  }
+]
