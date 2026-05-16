@@ -1,0 +1,98 @@
+[
+  {
+    "yeigo":   "warrens_returned",
+    "shakshi": "The player returned to Lapidus and the warrens — changed by everything they have seen, the warrens unchanged",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "plights_witnessed",
+    "shakshi": "The full picture of what the war is doing to the warren community — every thread landing on a specific body",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "joannah_dispatcher_known",
+    "shakshi": "Joannah dispatches Nexiott's caravans — she is inside the machine, her labor sustains the system harming her husband",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "wells_infrastructure_trouble",
+    "shakshi": "Wells's aqueduct is failing — downstream consequence of the mine operation straining the plateau's infrastructure",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "lavelle_child_in_mines",
+    "shakshi": "Lavelle's oldest child is underground in the mines",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "wells_children_in_mines",
+    "shakshi": "Three of Wells and Janine's oldest are in the mines — their youngest remain at the temple school and will stay there",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "sidhal_marcia_fertility_known",
+    "shakshi": "Mine proximity is affecting Sidhal and Marcia's ability to conceive — intimate, not public knowledge",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "genovise_supply_chain_broken",
+    "shakshi": "Nexiott's caravan control is strangling Genovise's black market supply chain",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "james_tyrone_accused",
+    "shakshi": "James and Tyrone have been accused of witchcraft by the priests — the accusation is a tool, not a conviction",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "warren_plights_understood",
+    "shakshi": "The player has the full picture of what the war's infrastructure is doing to these specific people",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "warren_action_decided",
+    "shakshi": "The player made a decision about what to do with what they know — the decision itself lives in branch keys of subsequent quests",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_economic_reach_known",
+    "shakshi": "Nexiott's caravan control is now visible as the mechanism behind multiple plights simultaneously — dispatcher, supply chain, infrastructure, children",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  }
+]
