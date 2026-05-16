@@ -1,0 +1,66 @@
+[
+  {
+    "yeigo":   "demigods_world_integrated",
+    "shakshi": "The three Demigods are free roaming agents in Lapidus — going to work in the world the player built or broke",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "shapieru_lapidus_active",
+    "shakshi": "Shapieru working to stabilize or grow whatever cultural fragments remain after 59 quests",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "tagame_lapidus_active",
+    "shakshi": "Tagame tending to life in a world that has been through war, plague, plasma weapons, and demonic infiltration",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "lanzu_lapidus_active",
+    "shakshi": "Lanzu navigating his dual nature — divine knowledge and demonic betrayal — in the world the player shaped",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "quest_cleanup_window",
+    "shakshi": "The last opportunity to close threads before Ko's judgment — things started but not finished, relationships left open",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "world_state_visible",
+    "shakshi": "What the Demigods can do is shaped by what the player built or broke — their activity mirrors the world's health",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "lapidus_stabilization_possible",
+    "shakshi": "The world can stabilize from here if enough foundations were laid — the condition Game 8 inherits on the canonical path",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "lapidus_instability_persists",
+    "shakshi": "If foundations were not laid, the Demigods work against ongoing damage — the condition Game 8 inherits on the broken path",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  }
+]
