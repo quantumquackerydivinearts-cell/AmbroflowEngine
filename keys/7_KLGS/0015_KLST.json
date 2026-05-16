@@ -1,0 +1,90 @@
+[
+  {
+    "yeigo":   "lucifer_dream_received",
+    "shakshi": "Lucifer's call came through in dream — the player was close enough to Sulphera to hear it",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "pride_ring_entered",
+    "shakshi": "The player descended into the Ring of Pride — Ring 1, 5 floors, throne of pride",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "lucifer_met",
+    "shakshi": "Lucifer encountered — sovereign prisoner of the Pride Ring, knows every human soul, reads the fractal natively",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "lucifer_sovereign_known",
+    "shakshi": "The player understands Lucifer's position — condemned sovereign, rules demons, lives with sinners, has made peace with his sentence",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "lucifer_peace_known",
+    "shakshi": "Lucifer wants creative use of free will without waste — not escape, but quality of attention within confinement",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "bok_read_lucifer",
+    "shakshi": "Lucifer read the player's BreathOfKo and disclosed what he saw — the fractal state at this moment is permanently recorded as significant",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "bok_lucifer_disclosure",
+    "shakshi": "What Lucifer saw in the fractal — oracular, full meaning only becomes legible when something downstream confirms it",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "lucifer_advice_received",
+    "shakshi": "Oracular advice received — calibrated to the player's BreathOfKo state at the moment of encounter, content varies per player",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "open_future_named",
+    "shakshi": "Lucifer named the situation — every apocalyptic prediction has passed by thousands of years, humanity has an open future it did not expect to have",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "fate_in_hands_named",
+    "shakshi": "Lucifer told the player directly that fate has left itself in their hands — the charge is explicit",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "pride_ring_cleared",
+    "shakshi": "The player navigated the Ring of Pride and its dungeon — Lucifer token granted, path to Ring of Greed open",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  }
+]
