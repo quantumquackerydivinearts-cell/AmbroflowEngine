@@ -1,0 +1,66 @@
+[
+  {
+    "yeigo":   "wrath_ring_reentered",
+    "shakshi": "The player returned to the ring already cleared in 0035 — it has been swamped with what was left behind",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "othieru_encountered",
+    "shakshi": "Othieru manifest — Blood Ball, Demon of Abandon, Kielum's partner, animator of the accumulated dead",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "blood_marionettes_witnessed",
+    "shakshi": "The accumulated dead of the player's run given form — recognizable as themselves, animated by Othieru, specific not abstract",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "killed_characters_manifest",
+    "shakshi": "The player sees exactly who they have killed — sparse or crowded depending on the run",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "othieru_battle_joined",
+    "shakshi": "The fight began — Axiozul's benediction behind the player, permadeath ahead",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "othieru_defeated",
+    "shakshi": "Othieru killed — the Wrath Ring cleared of his presence, Kielum's network diminished by one",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kielum_network_engaged",
+    "shakshi": "First direct engagement with Kielum's demonic network — a preview of the final conflict, the network becoming visible",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "voracity_permadeath_risked",
+    "shakshi": "The player entered knowing the stakes — Axiozul told them death is not the end, the game immediately tests whether they believe it",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  }
+]
