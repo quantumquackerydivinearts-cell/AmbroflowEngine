@@ -1,0 +1,82 @@
+[
+  {
+    "yeigo":   "alfir_witch_plot_joined",
+    "shakshi": "The player entered the witching hour conspiracy — Alfir leads, Kore and Forest assist",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "forest_met_properly",
+    "shakshi": "The Forest Witch formally met in conspiratorial context — the folded Mercurie map and knowledge of Castle Azoth's passages now in play",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "castle_azoth_infiltrated",
+    "shakshi": "The witches and player inside Nexiott's house — his own territory the site of his undoing",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "runes_set_player",
+    "shakshi": "The player took point and set the runes — Chaos magic made them the architect of the trap",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "runes_set_witches",
+    "shakshi": "Alfir, Kore, and Forest set the runes while the player provided cover — the work was theirs, the safety was the player's to maintain",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_deathtrap_prepared",
+    "shakshi": "The trap is set — Nexiott's house transformed into a weapon pointed at him, regardless of who led the runing",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "castle_azoth_runed",
+    "shakshi": "Castle Azoth is now a runic deathtrap — the architecture of Nexiott's power turned against him",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_assassination_plotted",
+    "shakshi": "The killing is planned and the method is ready — Nexiott dies in his own house by his own territory",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "priesthood_overthrow_plotted",
+    "shakshi": "Not just Nexiott but the structure he represents — the broader conspiracy is named",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "alfir_revenge_arc_open",
+    "shakshi": "Alfir is taking back what was taken from him — his community, his appointment, his people's safety. The player witnesses this but may not name it.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  }
+]
