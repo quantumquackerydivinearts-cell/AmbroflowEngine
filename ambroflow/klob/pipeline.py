@@ -135,6 +135,7 @@ class ManufacturingRecipe:
     name:            human-readable name
     steps:           ordered list of RecipeStep
     alchemy_rank:    minimum alchemy skill rank required (0 = no requirement)
+    hack_rank:       minimum hack skill rank required (0 = no requirement)
     perk_required:   perk ID required, e.g. "alchemical_meditation" (None = no perk)
     grants_key:      yeigo key granted on completion (None = no key grant)
     description:     what the recipe produces and why it matters
@@ -142,10 +143,11 @@ class ManufacturingRecipe:
     id:              str
     name:            str
     steps:           list[RecipeStep]
-    alchemy_rank:    int          = 0
+    alchemy_rank:    int           = 0
+    hack_rank:       int           = 0
     perk_required:   Optional[str] = None
     grants_key:      Optional[str] = None
-    description:     str          = ""
+    description:     str           = ""
 
     @property
     def final_output_id(self) -> str:
@@ -155,10 +157,17 @@ class ManufacturingRecipe:
     def final_output_name(self) -> str:
         return self.steps[-1].output_name if self.steps else ""
 
-    def eligible(self, alchemy_rank: int, held_perks: set[str]) -> tuple[bool, str]:
+    def eligible(
+        self,
+        alchemy_rank: int,
+        held_perks: set[str],
+        hack_rank: int = 0,
+    ) -> tuple[bool, str]:
         """Check player eligibility before checking ingredients/tools."""
         if alchemy_rank < self.alchemy_rank:
             return False, f"Requires alchemy rank {self.alchemy_rank} (have {alchemy_rank})"
+        if hack_rank < self.hack_rank:
+            return False, f"Requires hack rank {self.hack_rank} (have {hack_rank})"
         if self.perk_required and self.perk_required not in held_perks:
             return False, f"Requires perk: {self.perk_required}"
         return True, ""
@@ -848,6 +857,88 @@ BREW_ABSINTHE = ManufacturingRecipe(
 )
 
 
+# ── Electronics family (Hack-gated) ──────────────────────────────────────────
+# Traditional crystal radio uses Quartz as the resonator, Copper for the coil.
+# Transmitter adds Iron for the coil core.
+# Full Radio assembles both units.
+
+_ELECTRONICS_TOOLS = ToolRequirement(
+    operation           = "smithing",
+    required_ids        = ("0016_KLOB", "0015_KLOB"),  # Lathe + Lathe Chuck (precision winding)
+    required_categories = (),
+)
+
+BUILD_RECEIVER = ManufacturingRecipe(
+    id          = "build_receiver",
+    name        = "Build Receiver",
+    hack_rank   = 35,
+    grants_key  = "receiver_built",
+    description = (
+        "Crystal radio receiver — Copper coil wound on a Quartz crystal resonator, "
+        "set in a Wood housing. Passive: receives signal without transmitting."
+    ),
+    steps = [
+        RecipeStep(
+            name           = "Wind copper coil around quartz crystal in wood housing",
+            operation      = "smithing",
+            ingredient_ids = ["2004_KLOB", "3005_KLOB", "1016_KLOB"],
+            # Copper + Quartz + Wood
+            tool_req       = _ELECTRONICS_TOOLS,
+            output_id      = "0081_KLIT",
+            output_name    = "Receiver",
+            consumes       = True,
+        ),
+    ],
+)
+
+BUILD_TRANSMITTER = ManufacturingRecipe(
+    id          = "build_transmitter",
+    name        = "Build Transmitter",
+    hack_rank   = 55,
+    grants_key  = "transmitter_built",
+    description = (
+        "Signal transmitter — Copper winding on Iron core, Quartz crystal for frequency "
+        "stability, Wood housing. Active: sends signal into the Lapidus airwave infrastructure."
+    ),
+    steps = [
+        RecipeStep(
+            name           = "Wind copper on iron core with quartz stabiliser",
+            operation      = "smithing",
+            ingredient_ids = ["2004_KLOB", "2002_KLOB", "3005_KLOB", "1016_KLOB"],
+            # Copper + Iron + Quartz + Wood
+            tool_req       = _ELECTRONICS_TOOLS,
+            output_id      = "0082_KLIT",
+            output_name    = "Transmitter",
+            consumes       = True,
+        ),
+    ],
+)
+
+BUILD_RADIO = ManufacturingRecipe(
+    id          = "build_radio",
+    name        = "Build Radio",
+    hack_rank   = 80,
+    grants_key  = "radio_built",
+    description = (
+        "Full radio unit — Receiver and Transmitter assembled with additional Copper wiring. "
+        "The physical counterpart to St. Alaro's broadcast deal. "
+        "Connects to the Lapidus airwave infrastructure without the BoK mark."
+    ),
+    steps = [
+        RecipeStep(
+            name           = "Assemble receiver and transmitter with copper wiring",
+            operation      = "smithing",
+            ingredient_ids = ["0081_KLIT", "0082_KLIT", "2004_KLOB"],
+            # Receiver + Transmitter + Copper (additional wiring)
+            tool_req       = _ELECTRONICS_TOOLS,
+            output_id      = "0083_KLIT",
+            output_name    = "Radio",
+            consumes       = True,
+        ),
+    ],
+)
+
+
 # ── Canonical recipe registry ─────────────────────────────────────────────────
 
 _ALL_NAMED = (
@@ -858,6 +949,7 @@ _ALL_NAMED = (
     MAKE_GUNPOWDER, BREW_HEALTH_POTION, MAKE_CAUSTIC_LYE,
     MAKE_INK, MAKE_REFINED_SAND, MAKE_PAPER,
     DISTILL_AQUA_VITAE, BREW_ABSINTHE,
+    BUILD_RECEIVER, BUILD_TRANSMITTER, BUILD_RADIO,
 )
 
 NAMED_RECIPES: dict[str, ManufacturingRecipe] = {

@@ -86,5 +86,29 @@
     "dyne":    false,
     "anom":    false,
     "andyf":   false
+  },
+  {
+    "yeigo":   "receiver_built",
+    "shakshi": "The player crafted a crystal radio receiver — Hack 35, passive signal reception",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "transmitter_built",
+    "shakshi": "The player crafted a signal transmitter — Hack 55, connects to Lapidus airwave infrastructure",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "radio_built",
+    "shakshi": "The player built a full radio unit — Hack 80, physical counterpart to St. Alaro's deal, no BoK mark required",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
   }
 ]

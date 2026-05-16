@@ -11,6 +11,7 @@ from ambroflow.klob.registry import (
 from ambroflow.klob.pipeline import (
     ToolRequirement, RecipeStep, ManufacturingRecipe,
     INFERNAL_SALVE, NEXIOTT_POISON, COLT_45,
+    BUILD_RECEIVER, BUILD_TRANSMITTER, BUILD_RADIO,
     metal_transposition_recipe, get_recipe, all_recipes,
     OPERATION_TOOL_CATEGORIES,
 )
@@ -237,8 +238,59 @@ def test_all_recipes():
     assert "brew_health_potion" in ids
     assert "distill_aqua_vitae" in ids
     assert "brew_absinthe" in ids
-    # All 21 named recipes registered
-    assert len(recipes) == 21
+    # Electronics family
+    assert "build_receiver" in ids
+    assert "build_transmitter" in ids
+    assert "build_radio" in ids
+    # All 24 named recipes registered
+    assert len(recipes) == 24
+
+
+# ── Electronics ──────────────────────────────────────────────────────────────
+
+def test_receiver_recipe():
+    assert BUILD_RECEIVER.hack_rank == 35
+    assert BUILD_RECEIVER.grants_key == "receiver_built"
+    assert BUILD_RECEIVER.final_output_id == "0081_KLIT"
+    assert len(BUILD_RECEIVER.steps) == 1
+    # Quartz (3005_KLOB) and Copper (2004_KLOB) required
+    assert "3005_KLOB" in BUILD_RECEIVER.steps[0].ingredient_ids
+    assert "2004_KLOB" in BUILD_RECEIVER.steps[0].ingredient_ids
+
+
+def test_transmitter_recipe():
+    assert BUILD_TRANSMITTER.hack_rank == 55
+    assert BUILD_TRANSMITTER.grants_key == "transmitter_built"
+    assert BUILD_TRANSMITTER.final_output_id == "0082_KLIT"
+    # Iron (2002_KLOB) added for coil core
+    assert "2002_KLOB" in BUILD_TRANSMITTER.steps[0].ingredient_ids
+
+
+def test_radio_recipe():
+    assert BUILD_RADIO.hack_rank == 80
+    assert BUILD_RADIO.grants_key == "radio_built"
+    assert BUILD_RADIO.final_output_id == "0083_KLIT"
+    # Radio assembles Receiver + Transmitter
+    assert "0081_KLIT" in BUILD_RADIO.steps[0].ingredient_ids
+    assert "0082_KLIT" in BUILD_RADIO.steps[0].ingredient_ids
+
+
+def test_electronics_hack_gate():
+    # Receiver requires Hack 35
+    ok, reason = BUILD_RECEIVER.eligible(alchemy_rank=0, held_perks=set(), hack_rank=20)
+    assert ok is False
+    assert "hack" in reason.lower()
+
+    ok, _ = BUILD_RECEIVER.eligible(alchemy_rank=0, held_perks=set(), hack_rank=35)
+    assert ok is True
+
+
+def test_radio_ladder_progression():
+    # Radio requires Hack 80 — a player with only 55 cannot build it
+    ok, reason = BUILD_RADIO.eligible(alchemy_rank=0, held_perks=set(), hack_rank=55)
+    assert ok is False
+    ok, _ = BUILD_RADIO.eligible(alchemy_rank=0, held_perks=set(), hack_rank=80)
+    assert ok is True
 
 
 # ── Operation categories ──────────────────────────────────────────────────────
