@@ -1,0 +1,82 @@
+[
+  {
+    "yeigo":   "giann_found",
+    "shakshi": "The player found Giann at the Fae Tree in the center of Mercurie — Heart of Kael, he receives rather than pursues",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "giann_keshi_sibling_known",
+    "shakshi": "Giann and Keshi are siblings — opposing poles of the same generative force. He knows what his sister does when she sees an opportunity.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "giann_boon_received",
+    "shakshi": "Giann gave the player a genuine boon — a tool that requires the player to do something with it, not a shortcut",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "plague_cure_known",
+    "shakshi": "Giann gave knowledge of a cure for Keshi's plague — requires alchemy rank 65 to act on. No knowledge of who is infected.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "plague_cure_path_open",
+    "shakshi": "The player has the cure formula and sufficient alchemy rank — can now find and treat the infected if they connect the plague to the deal",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "plague_cure_blocked_rank",
+    "shakshi": "The player has the cure formula but insufficient alchemy rank — must train to 65 before acting on it",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "metal_transposition_learned",
+    "shakshi": "Giann's boon for players who refused Keshi — transmute any metal upward one grade at the cost of density. Generative rather than extractive.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "keshi_giann_contrast_witnessed",
+    "shakshi": "The player has now encountered both siblings — one pursued, one received. One offered power without knowledge, one offered knowledge or craft. The contrast is complete.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "fae_tree_found",
+    "shakshi": "The Fae Tree at the center of Mercurie located — a landmark in the Faewilds journal exposure map",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "level_system_understood",
+    "shakshi": "The player understands the level-up system — 10 skill points and a perk point per level, distributed via journal",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  }
+]

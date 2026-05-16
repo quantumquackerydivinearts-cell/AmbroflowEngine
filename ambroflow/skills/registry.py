@@ -170,8 +170,23 @@ SKILLS: tuple[SkillDef, ...] = (
     SkillDef("medicine",        "Medicine",        100, "R", "terrestrial", ()),
     SkillDef("melee_weapons",   "Melee Weapons",   100, "V", "terrestrial", ()),
     SkillDef("repair",          "Repair",          100, "T", "alchemical",  ()),
-    SkillDef("alchemy",         "Alchemy",         100, "R", "alchemical",  (),
-             note="Hypatia's primary skill. Synergizes with alchemical_meditation perk."),
+    SkillDef("alchemy",         "Alchemy",         100, "R", "alchemical",
+             (PerkDef(
+                 id="metal_transposition",
+                 name="Metal Transposition",
+                 required_skill="alchemy",
+                 required_quest="0020_KLST",    # Wish Upon a Falling Star — Giann's boon (deal refused path)
+                 required_perks=(),
+                 effect=(
+                     "Transmute any metal upward one grade at the cost of density. "
+                     "Giann's gift to players who refused Keshi's deal — generative rather than extractive. "
+                     "Iron→Steel, Steel→Silver-grade, Silver→Gold-grade. Density loss is permanent."
+                 ),
+                 sanity_delta={"alchemical": 0.05},
+                 stack_event="skill.perk.metal_transposition.unlocked",
+                 gates=None,
+             ),),
+             note="Hypatia's primary skill. Synergizes with alchemical_meditation perk. Giann's metal_transposition perk available via 0020_KLST (deal refused path)."),
     SkillDef("sneak",           "Sneak",           100, "L", "narrative",   ()),
     SkillDef("hack",            "Hack",            100, "I", "alchemical",  ()),
     SkillDef("speech",          "Speech",          100, "L", "narrative",   ()),
