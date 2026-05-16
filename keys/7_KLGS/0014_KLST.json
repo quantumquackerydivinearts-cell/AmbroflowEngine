@@ -1,0 +1,82 @@
+[
+  {
+    "yeigo":   "bombastus_met",
+    "shakshi": "King Bombastus met the player — the legitimate sovereign, operating on curated incomplete information",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "bombastus_mission_accepted",
+    "shakshi": "The player accepted Bombastus's mission to gather intel on the Fae court and find Hypatia",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "bombastus_war_stance_known",
+    "shakshi": "Bombastus is on board with the war but taking a diplomatic approach first while gathering intel — lost as to what is actually happening",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "hildegarde_opposition_known",
+    "shakshi": "Queen Hildegarde is against the war — first named context for her position, the royal family is internally fractured",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "weapon_warning_given",
+    "shakshi": "The player told Bombastus something is being built to hurt Amelia — all they could say without technological context",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_saffron_flagged",
+    "shakshi": "The player warned Bombastus that something stinks about Nexiott and Saffron",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "warning_not_heard",
+    "shakshi": "Bombastus did not act on the warning — the player did the right thing and it bounced",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "bombastus_kelly_managed",
+    "shakshi": "Kelly controls what Bombastus knows and can handle — the player may sense this but cannot name it yet",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "bombastus_hypatia_faewilds",
+    "shakshi": "Bombastus believes Hypatia is in the Faewilds — the player knows this is wrong but cannot correct it without revealing more than they have",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "fae_intel_mission_open",
+    "shakshi": "The player is now officially gathering intelligence for the king alongside everything else they are carrying",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  }
+]
