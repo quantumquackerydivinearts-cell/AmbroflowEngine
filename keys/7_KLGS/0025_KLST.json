@@ -1,0 +1,90 @@
+[
+  {
+    "yeigo":   "cyrus_met",
+    "shakshi": "Cyrus met — Assassin, present at the night meeting with Sophia, Asmoth, and Hue",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "assassination_meeting_held",
+    "shakshi": "The night meeting convened — Sophia, Asmoth, Cyrus, Hue all present, listening while the player unloads everything gathered since 0001",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "intelligence_delivered",
+    "shakshi": "The player delivered their full accumulated intelligence to the Assassin council — what they knew shaped what target was nameable",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "saffron_targeted",
+    "shakshi": "The player named Saffron — requires sufficient priesthood intelligence",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_targeted",
+    "shakshi": "The player named Nexiott — requires sufficient caravan and war intelligence",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "bombastus_targeted",
+    "shakshi": "The player named King Bombastus — requires understanding his enabling role in the war",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "royl_line_targeted",
+    "shakshi": "The player named the whole royal line — requires the full picture, rarest and most consequential",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "assassination_target_set",
+    "shakshi": "The target is named and the order is given — the act is not yet done",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "sophia_assassination_witness",
+    "shakshi": "Sophia heard everything and said nothing she did not need to say",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "player_intelligence_weight_known",
+    "shakshi": "The meeting revealed how much the player's gathered knowledge actually matters — players who missed keys walked in lighter",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "assassination_pending",
+    "shakshi": "The target is named, the act is not yet done — resolves in 0053 or 0054",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  }
+]
