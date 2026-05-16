@@ -1,0 +1,82 @@
+[
+  {
+    "yeigo":   "ko_final_dream",
+    "shakshi": "The last dream Ko gives — distinct from all calibration sessions, this is the closing of the labyrinth she built",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "ko_great_tale_heard",
+    "shakshi": "Ko told her story — the entire labyrinth was Ko telling it, now it is told",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "judgment_rendered",
+    "shakshi": "The judgment between ending and purgatory has been rendered — three in-game years have passed and Ko has read what was built",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "ending_achieved",
+    "shakshi": "The world has an ending — safe enough for Saelith to be born, the war resolved, civic bonds present. Ko recognizes it.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "purgatory_own_making",
+    "shakshi": "The world is still at war, still consuming children, still aimed at Amelia — the player lives in what they did not finish. Ko recognizes this too.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "credits_scene",
+    "shakshi": "The world pauses to acknowledge what was made — between the judgment and the restoration, a moment of record",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "dreams_ended",
+    "shakshi": "No more Ko in the night — the dream calibration sessions are done, what was built from them persists without further input",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "world_continues",
+    "shakshi": "The world keeps going without the player being its center — the post-game restored to where it was, the player in it",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "player_own_devices",
+    "shakshi": "The player is left to move through what remains — the ending is not an ending, it is a condition",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "game7_complete",
+    "shakshi": "7_KLGS closed — the BoK carries forward, the propagating keys carry forward, Game 8 inherits what was built or broken",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  }
+]
