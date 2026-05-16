@@ -1,0 +1,66 @@
+[
+  {
+    "yeigo":   "asmoth_faewilds_met",
+    "shakshi": "Asmoth in the Faewilds before the final conflict — a different register than the camp or the induction ceremony",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "asmoth_origin_told",
+    "shakshi": "Asmoth told his own story before the confrontation — who he is before something that might kill either of them",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "asmoth_orphan_known",
+    "shakshi": "Asmoth is an orphan of Kielum's second war — the player now understands what the chief is made of",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kielum_met",
+    "shakshi": "Kielum — Demon of Conquest, two prior wars on Aeralune, the approaching conflict is his third engagement",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kielum_wars_known",
+    "shakshi": "The 300-year history of Azonithian and Azoth society shaped by Kielum's repeated conquests — a survivor's account, not scholarship",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "azonithian_azoth_history_known",
+    "shakshi": "The full 300-year arc delivered by Asmoth — the history is inside his grief, filtered through what it cost him",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kielum_final_conflict_approaching",
+    "shakshi": "The confrontation is imminent — Asmoth told this story now because it may be the last chance to tell it",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "asmoth_personal_stakes_known",
+    "shakshi": "The player understands what this fight means to Asmoth specifically — not just the cause, the cost",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  }
+]
