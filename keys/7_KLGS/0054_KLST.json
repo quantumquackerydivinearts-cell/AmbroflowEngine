@@ -1,0 +1,66 @@
+[
+  {
+    "yeigo":   "castle_azoth_defense_joined",
+    "shakshi": "The player took position at the front of Castle Azoth — inverse formation from 0030, Lanvaki at the rear this time",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "lanvaki_rear_held",
+    "shakshi": "Lanvaki and the soldiers held the rear while the player faced the frontal assault",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "assassin_assault_repelled",
+    "shakshi": "The player successfully defended the frontal assault — the castle gates held",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "assassins_defeated_castle",
+    "shakshi": "The Assassin order took a significant loss at Castle Azoth — the assault broken at the gates",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_line_castle_secured",
+    "shakshi": "The castle held for Nexiott's line — the defense completed",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "asmoth_assault_led",
+    "shakshi": "Asmoth led the assault — the man who forgave without forgetting, now the enemy at the gate",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "hue_assault_participant",
+    "shakshi": "Hue was in the assault — the same man who invited the player to camp at the western plateau edge in 0011",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_noble_district_known",
+    "shakshi": "Nexiott lives adjacent to the castle in the noble district — not in the castle itself. The castle defense and the eventual deathtrap are separate locations.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  }
+]
