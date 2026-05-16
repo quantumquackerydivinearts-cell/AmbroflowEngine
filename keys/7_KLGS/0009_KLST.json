@@ -1,0 +1,90 @@
+[
+  {
+    "yeigo":   "imp_arrived",
+    "shakshi": "The imp came to the player's shop at the witching hour seeking Hypatia's dagger",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "imp_identity_known",
+    "shakshi": "The player recognised the imp as the disguised customer from 0008 — only available if imp_disguise_detected was granted",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "imp_killed",
+    "shakshi": "The player killed the imp in an attempt to take the crystal by force",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "crystal_stolen_broken",
+    "shakshi": "The crystal shattered when taken from the imp's corpse — this route to Sulphera access is closed",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "dagger_surrendered",
+    "shakshi": "The player traded Hypatia's dagger — the last thing she gave — for the Asmodean Crystal",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "crystal_received",
+    "shakshi": "The player holds an Asmodean Crystal — single use, sufficient to enter the Pride Ring without Infernal Meditation",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "infernal_salve_path_open",
+    "shakshi": "Both crystal_dust_saved and crystal_received are held — the full alchemical chain to finding Hypatia is complete",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "absinthe_given",
+    "shakshi": "The player gave the imp a bottle of absinthe — he departed satisfied",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "crystal_route_closed",
+    "shakshi": "The imp departed happy with the absinthe — the crystal route is permanently closed without hostility",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "imp_departed",
+    "shakshi": "The imp is no longer present — outcome resolved regardless of path taken",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "sulphera_access_imminent",
+    "shakshi": "The player holds the crystal — one step from entering the rings",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  }
+]
