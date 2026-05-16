@@ -1,0 +1,58 @@
+[
+  {
+    "yeigo":   "sophia_history_session",
+    "shakshi": "Sophia sat with the player and gave the major beats of human history — witness testimony, not scholarship",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "human_self_destruction_known",
+    "shakshi": "The player knows humanity attempted to destroy itself multiple times — in broad strokes, without the internal logic of why",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "earth_origin_confirmed",
+    "shakshi": "Humanity came from Earth — space-faring colony species. Now explicit, not implied.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "aeralune_arrival_known",
+    "shakshi": "The player knows the broad shape of how humanity reached Aeralune — the arc without the texture of Games 1-6",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "sophia_outside_perspective_known",
+    "shakshi": "Sophia has the facts without the phenomenology — she watched but was never inside the species. The player may notice the limit or may not.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "games_1_6_occluded",
+    "shakshi": "The specific content of the prior six games was withheld deliberately — the arc is visible, the texture is not",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "human_history_weight_known",
+    "shakshi": "Everything happening in Azonithia is downstream of a very long human story — the player now carries that frame",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  }
+]
