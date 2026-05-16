@@ -1,0 +1,58 @@
+[
+  {
+    "yeigo":   "envy_ring_reentered",
+    "shakshi": "The player returned to the ring cleared in 0035 — Kaganue has made it his, the demonic network reorganizes around cleared space",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kaganue_met",
+    "shakshi": "Kaganue met — Demon of Doublespeak, Ko's prophet, insane but not hostile. Says true things in a way that makes them sound false.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kaganue_dialogue_completed",
+    "shakshi": "The conversation ran its course — the player had to hold the register long enough to hear what was actually being said",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "ko_sun_death_known",
+    "shakshi": "Ko was the Sun, she died, she became the Moon — cosmological fact delivered by a madman who cannot lie even when he sounds like he is",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "ko_death_continuity_known",
+    "shakshi": "Ko as a death and continuation — what she is now is what survived the dying. Every Ko encounter reads differently from here.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "doublespeak_truth_received",
+    "shakshi": "The truth sounds like a lie because it is too large — the player may not believe it at first even though they heard it clearly",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "ko_solar_origin_known",
+    "shakshi": "The Sun is gone, the Moon is what remains — the ground of Ko's dream sequences has always been a death. The calibration sessions were always with a survivor.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  }
+]
