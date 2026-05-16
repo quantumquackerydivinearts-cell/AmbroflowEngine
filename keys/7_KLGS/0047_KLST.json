@@ -32,8 +32,8 @@
     "andyf":   false
   },
   {
-    "yeigo":   "lapidus_airwaves_dominion",
-    "shakshi": "Control of Lapidus broadcast infrastructure — the speaking path, distinct from the Colt .45 killing path",
+    "yeigo":   "all_telecom_dominion",
+    "shakshi": "St. Alaro's grant — dominion over all telecom stacks across the series at a level equivalent to Hack 300, which is impossible through skill progression. Categorically beyond what player-built electronics can reach.",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
@@ -41,7 +41,7 @@
   },
   {
     "yeigo":   "telecom_hijack_capable",
-    "shakshi": "Series-spanning ability to hijack telecom technologies across games — demons do not count, direct mortal killing does. Nexiott must fall by the people's hands.",
+    "shakshi": "Series-spanning ability to hijack all telecom stacks across all 31 games — not Lapidus airwaves specifically, all of it. The BoK mark is the price of this scale. Demons do not count toward the pacifism gate. Nexiott must fall by the people.",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
@@ -105,7 +105,7 @@
   },
   {
     "yeigo":   "radio_built",
-    "shakshi": "The player built a full radio unit — Hack 80, physical counterpart to St. Alaro's deal, no BoK mark required",
+    "shakshi": "The player built a full radio unit — Hack 80 player-tier capability, local transmission only. Not comparable to St. Alaro's dominion. Basic skill expression.",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,

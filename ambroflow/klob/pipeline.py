@@ -22,10 +22,13 @@ completion keys when recipes finish).
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Optional
 
-from .registry import klob_registry, KlobObject
+from .registry import klob_registry
+
+if TYPE_CHECKING:
+    from ..inventory.manager import Inventory
 
 
 # ── Operation categories ──────────────────────────────────────────────────────
@@ -921,8 +924,9 @@ BUILD_RADIO = ManufacturingRecipe(
     grants_key  = "radio_built",
     description = (
         "Full radio unit — Receiver and Transmitter assembled with additional Copper wiring. "
-        "The physical counterpart to St. Alaro's broadcast deal. "
-        "Connects to the Lapidus airwave infrastructure without the BoK mark."
+        "Player-tier local transmission. Not comparable to St. Alaro's all-telecom dominion "
+        "— that operates at a scale equivalent to Hack 300, which no skill rank can reach. "
+        "Basic electronics skill expression. Game 6 will build on this toward OS and web work."
     ),
     steps = [
         RecipeStep(
