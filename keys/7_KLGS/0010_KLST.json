@@ -54,5 +54,13 @@
     "dyne":    false,
     "anom":    true,
     "andyf":   false
+  },
+  {
+    "yeigo":   "infernal_salve_made",
+    "shakshi": "The player crafted Infernal Salve from crystal dust — the alchemical chain from 0007 materialised into a tool for descent",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
   }
 ]
