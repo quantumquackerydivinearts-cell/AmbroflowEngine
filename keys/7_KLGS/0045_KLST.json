@@ -62,5 +62,13 @@
     "dyne":    true,
     "anom":    false,
     "andyf":   false
+  },
+  {
+    "yeigo":   "gold_bullet_crafted",
+    "shakshi": "A gold bullet cast and turned — ammunition for the Colt .45, the only thing that can kill Sophia",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
   }
 ]

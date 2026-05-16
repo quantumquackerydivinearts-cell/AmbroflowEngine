@@ -223,11 +223,22 @@ def test_get_recipe():
 
 def test_all_recipes():
     recipes = all_recipes()
-    assert len(recipes) == 3
     ids = {r.id for r in recipes}
+    # Original quest recipes
     assert "infernal_salve" in ids
     assert "nexiott_poison" in ids
     assert "colt_45" in ids
+    # Smithing family
+    assert "forge_dagger" in ids
+    assert "forge_sword" in ids
+    assert "forge_gold_bullet" in ids
+    # Alchemy / distillation
+    assert "make_gunpowder" in ids
+    assert "brew_health_potion" in ids
+    assert "distill_aqua_vitae" in ids
+    assert "brew_absinthe" in ids
+    # All 21 named recipes registered
+    assert len(recipes) == 21
 
 
 # ── Operation categories ──────────────────────────────────────────────────────

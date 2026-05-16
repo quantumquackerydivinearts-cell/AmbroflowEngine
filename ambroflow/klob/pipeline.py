@@ -116,7 +116,8 @@ class RecipeStep:
         for ing_id in self.ingredient_ids:
             if not inventory.has(ing_id):
                 reg = klob_registry()
-                name = (reg.get(ing_id) or type("", (), {"name": ing_id})()).name
+                ing_obj = reg.get(ing_id)
+                name: str = ing_obj.name if ing_obj is not None else ing_id
                 return False, f"Missing ingredient: {name} ({ing_id})"
         if not self.tool_req.satisfied_by(held_tools):
             return False, f"Missing tools for operation: {self.operation}"
@@ -364,10 +365,503 @@ def metal_transposition_recipe(input_id: str) -> Optional[ManufacturingRecipe]:
     )
 
 
+# ── Smelting family ───────────────────────────────────────────────────────────
+# Each metal KLOB → typed ingot KLIT via Furnace + Crucible + Crucible Tongs.
+# KLIT output IDs: Iron=0040, Copper=0041, Gold=0042, Silver=0043,
+#                  Lead=0044, Tin=0045, Nickel=0046
+
+_SMELT_TABLE: dict[str, tuple[str, str, int]] = {
+    # klob_id → (klit_id, ingot_name, min_alchemy_rank)
+    "2002_KLOB": ("0040_KLIT", "Iron Ingot",   10),
+    "2004_KLOB": ("0041_KLIT", "Copper Ingot",  10),
+    "2003_KLOB": ("0042_KLIT", "Gold Ingot",    25),
+    "2006_KLOB": ("0043_KLIT", "Silver Ingot",  20),
+    "2007_KLOB": ("0044_KLIT", "Lead Ingot",    10),
+    "2001_KLOB": ("0045_KLIT", "Tin Ingot",     10),
+    "2008_KLOB": ("0046_KLIT", "Nickel Ingot",  15),
+}
+
+_SMELT_TOOLS = ToolRequirement(
+    operation           = "melting",
+    required_ids        = ("0030_KLOB", "0007_KLOB", "0010_KLOB"),  # Furnace+Crucible+Tongs
+    required_categories = (),
+)
+
+
+def smelt_recipe(klob_id: str) -> Optional[ManufacturingRecipe]:
+    """Return the smelting recipe for a raw metal KLOB → typed Ingot KLIT."""
+    if klob_id not in _SMELT_TABLE:
+        return None
+    klit_id, ingot_name, rank = _SMELT_TABLE[klob_id]
+    reg = klob_registry()
+    obj = reg.get(klob_id)
+    metal_name: str = obj.name if obj is not None else klob_id
+    return ManufacturingRecipe(
+        id           = f"smelt_{klob_id}",
+        name         = f"Smelt {metal_name}",
+        alchemy_rank = rank,
+        description  = f"Heat {metal_name} in crucible to produce a {ingot_name}.",
+        steps = [
+            RecipeStep(
+                name           = f"Smelt {metal_name} in crucible",
+                operation      = "melting",
+                ingredient_ids = [klob_id],
+                tool_req       = _SMELT_TOOLS,
+                output_id      = klit_id,
+                output_name    = ingot_name,
+                consumes       = True,
+            ),
+        ],
+    )
+
+
+# ── Smithing family ────────────────────────────────────────────────────────────
+
+_FORGE_TOOLS = ToolRequirement(
+    operation           = "smithing",
+    required_ids        = ("0013_KLOB", "0014_KLOB"),  # Anvil + Hammer
+    required_categories = (),
+)
+
+FORGE_DAGGER = ManufacturingRecipe(
+    id           = "forge_dagger",
+    name         = "Forge Iron Dagger",
+    alchemy_rank = 0,
+    description  = "Hammer an iron ingot into a dagger blade on the anvil.",
+    steps = [
+        RecipeStep(
+            name           = "Hammer ingot into blade",
+            operation      = "smithing",
+            ingredient_ids = ["0040_KLIT"],   # Iron Ingot
+            tool_req       = _FORGE_TOOLS,
+            output_id      = "0014_KLIT",
+            output_name    = "Dagger",
+            consumes       = True,
+        ),
+    ],
+)
+
+FORGE_SWORD = ManufacturingRecipe(
+    id           = "forge_sword",
+    name         = "Forge Iron Sword",
+    alchemy_rank = 15,
+    description  = "Two iron ingots worked into a sword blank, then shaped.",
+    steps = [
+        RecipeStep(
+            name           = "Forge sword blank from two ingots",
+            operation      = "smithing",
+            ingredient_ids = ["0040_KLIT", "0040_KLIT"],   # 2× Iron Ingot
+            tool_req       = ToolRequirement(
+                operation           = "smithing",
+                required_ids        = ("0013_KLOB", "0014_KLOB", "0017_KLOB"),  # Anvil+Hammer+Chisel
+                required_categories = (),
+            ),
+            output_id      = "0015_KLIT",
+            output_name    = "Sword",
+            consumes       = True,
+        ),
+    ],
+)
+
+FORGE_IRON_ARROW = ManufacturingRecipe(
+    id           = "forge_iron_arrow",
+    name         = "Forge Iron Arrows",
+    alchemy_rank = 0,
+    description  = "Iron ingot worked into arrowheads, set on wood shafts.",
+    steps = [
+        RecipeStep(
+            name           = "Shape arrowhead and set on shaft",
+            operation      = "smithing",
+            ingredient_ids = ["0040_KLIT", "1016_KLOB"],  # Iron Ingot + Wood
+            tool_req       = _FORGE_TOOLS,
+            output_id      = "0061_KLIT",
+            output_name    = "Iron Arrow",
+            consumes       = True,
+        ),
+    ],
+)
+
+KNAP_FLINT_ARROW = ManufacturingRecipe(
+    id           = "knap_flint_arrow",
+    name         = "Knap Flint Arrows",
+    alchemy_rank = 0,
+    description  = "Flint knapped into arrowheads, no heat required.",
+    steps = [
+        RecipeStep(
+            name           = "Knap flint tip and set on shaft",
+            operation      = "smithing",
+            ingredient_ids = ["1017_KLOB", "1016_KLOB"],  # Flint + Wood
+            tool_req       = ToolRequirement(
+                operation           = "smithing",
+                required_ids        = ("0014_KLOB",),  # Hammer only — no anvil for knapping
+                required_categories = (),
+            ),
+            output_id      = "0062_KLIT",
+            output_name    = "Flint Arrow",
+            consumes       = True,
+        ),
+    ],
+)
+
+FORGE_GOLD_COIN = ManufacturingRecipe(
+    id           = "forge_gold_coin",
+    name         = "Mint Gold Coin",
+    alchemy_rank = 20,
+    description  = "Gold ingot stamped into coins using ingot mold and hammer.",
+    steps = [
+        RecipeStep(
+            name           = "Stamp gold into coins",
+            operation      = "casting",
+            ingredient_ids = ["0042_KLIT"],   # Gold Ingot
+            tool_req       = ToolRequirement(
+                operation           = "casting",
+                required_ids        = ("0012_KLOB", "0014_KLOB"),  # Ingot Mold + Hammer
+                required_categories = (),
+            ),
+            output_id      = "0050_KLIT",
+            output_name    = "Gold Coin",
+            consumes       = True,
+        ),
+    ],
+)
+
+FORGE_SILVER_COIN = ManufacturingRecipe(
+    id           = "forge_silver_coin",
+    name         = "Mint Silver Coin",
+    alchemy_rank = 15,
+    description  = "Silver ingot stamped into coins.",
+    steps = [
+        RecipeStep(
+            name           = "Stamp silver into coins",
+            operation      = "casting",
+            ingredient_ids = ["0043_KLIT"],   # Silver Ingot
+            tool_req       = ToolRequirement(
+                operation           = "casting",
+                required_ids        = ("0012_KLOB", "0014_KLOB"),
+                required_categories = (),
+            ),
+            output_id      = "0051_KLIT",
+            output_name    = "Silver Coin",
+            consumes       = True,
+        ),
+    ],
+)
+
+FORGE_COPPER_COIN = ManufacturingRecipe(
+    id           = "forge_copper_coin",
+    name         = "Mint Copper Coin",
+    alchemy_rank = 10,
+    description  = "Copper ingot stamped into coins.",
+    steps = [
+        RecipeStep(
+            name           = "Stamp copper into coins",
+            operation      = "casting",
+            ingredient_ids = ["0041_KLIT"],   # Copper Ingot
+            tool_req       = ToolRequirement(
+                operation           = "casting",
+                required_ids        = ("0012_KLOB", "0014_KLOB"),
+                required_categories = (),
+            ),
+            output_id      = "0052_KLIT",
+            output_name    = "Copper Coin",
+            consumes       = True,
+        ),
+    ],
+)
+
+FORGE_RING = ManufacturingRecipe(
+    id           = "forge_ring",
+    name         = "Turn a Ring",
+    alchemy_rank = 20,
+    description  = "Gold or silver ingot turned on lathe into a ring.",
+    steps = [
+        RecipeStep(
+            name           = "Turn ring on lathe from ingot",
+            operation      = "smithing",
+            ingredient_ids = ["0042_KLIT", "0018_KLOB"],  # Gold Ingot + Ring Blank
+            tool_req       = ToolRequirement(
+                operation           = "smithing",
+                required_ids        = ("0015_KLOB", "0016_KLOB"),  # Lathe Chuck + Lathe
+                required_categories = (),
+            ),
+            output_id      = "0011_KLIT",
+            output_name    = "Ring",
+            consumes       = True,
+        ),
+    ],
+)
+
+FORGE_NECKLACE = ManufacturingRecipe(
+    id           = "forge_necklace",
+    name         = "Hammer a Necklace",
+    alchemy_rank = 20,
+    description  = "Gold ingot worked into a pendant necklace.",
+    steps = [
+        RecipeStep(
+            name           = "Work ingot into pendant and chain",
+            operation      = "smithing",
+            ingredient_ids = ["0042_KLIT"],   # Gold Ingot
+            tool_req       = ToolRequirement(
+                operation           = "smithing",
+                required_ids        = ("0013_KLOB", "0014_KLOB", "0017_KLOB"),
+                required_categories = (),
+            ),
+            output_id      = "0010_KLIT",
+            output_name    = "Necklace",
+            consumes       = True,
+        ),
+    ],
+)
+
+FORGE_GOLD_BULLET = ManufacturingRecipe(
+    id           = "forge_gold_bullet",
+    name         = "Cast Gold Bullet",
+    alchemy_rank = 40,
+    grants_key   = "gold_bullet_crafted",
+    description  = "Gold ingot precision-cast into a bullet for the Colt .45. Only thing that can kill Sophia.",
+    steps = [
+        RecipeStep(
+            name           = "Cast and turn gold bullet",
+            operation      = "casting",
+            ingredient_ids = ["0042_KLIT"],   # Gold Ingot
+            tool_req       = ToolRequirement(
+                operation           = "casting",
+                required_ids        = ("0030_KLOB", "0012_KLOB", "0016_KLOB"),  # Furnace+Ingot Mold+Lathe
+                required_categories = (),
+            ),
+            output_id      = "0060_KLIT",
+            output_name    = "Gold Bullet",
+            consumes       = True,
+        ),
+    ],
+)
+
+
+# ── Alchemy / chemistry family ────────────────────────────────────────────────
+
+MAKE_GUNPOWDER = ManufacturingRecipe(
+    id           = "make_gunpowder",
+    name         = "Grind Gunpowder",
+    alchemy_rank = 20,
+    description  = "Traditional formula: Saltpeter + Sulphur + Charcoal ground together. 75/10/15 ratio.",
+    steps = [
+        RecipeStep(
+            name           = "Grind saltpeter, sulphur, charcoal",
+            operation      = "grinding",
+            ingredient_ids = ["1006_KLOB", "1007_KLOB", "1008_KLOB"],  # Saltpeter+Sulphur+Charcoal
+            tool_req       = ToolRequirement(
+                operation           = "grinding",
+                required_ids        = ("8000_KLOB", "2000_KLOB"),
+                required_categories = (),
+            ),
+            output_id      = "0070_KLIT",
+            output_name    = "Gunpowder",
+            consumes       = True,
+        ),
+    ],
+)
+
+BREW_HEALTH_POTION = ManufacturingRecipe(
+    id           = "brew_health_potion",
+    name         = "Brew Health Potion",
+    alchemy_rank = 15,
+    perk_required= "alchemical_meditation",
+    description  = "Lotus Flower steeped in water and heated — the ground of being made medicinal.",
+    steps = [
+        RecipeStep(
+            name           = "Steep lotus flower in water and heat",
+            operation      = "heating",
+            ingredient_ids = ["0007_KLIT", "1015_KLOB", "0005_KLOB"],  # Lotus Flower+Water+Reagent Bottle
+            tool_req       = ToolRequirement(
+                operation           = "heating",
+                required_ids        = ("0030_KLOB",),
+                required_categories = (),
+            ),
+            output_id      = "0035_KLIT",
+            output_name    = "Health Potion",
+            consumes       = True,
+        ),
+    ],
+)
+
+MAKE_CAUSTIC_LYE = ManufacturingRecipe(
+    id           = "make_caustic_lye",
+    name         = "Make Caustic Lye",
+    alchemy_rank = 10,
+    description  = "Wood ash leached with water and reduced by heat — traditional soap-maker's lye.",
+    steps = [
+        RecipeStep(
+            name           = "Leach ashes with water in jar and heat",
+            operation      = "heating",
+            ingredient_ids = ["1009_KLOB", "1015_KLOB", "0009_KLOB"],  # Ashes+Water+Jar
+            tool_req       = ToolRequirement(
+                operation           = "heating",
+                required_ids        = ("0030_KLOB",),
+                required_categories = (),
+            ),
+            output_id      = "1010_KLOB",   # Caustic Lye KLOB (closes its own production loop)
+            output_name    = "Caustic Lye",
+            consumes       = True,
+        ),
+    ],
+)
+
+MAKE_INK = ManufacturingRecipe(
+    id           = "make_ink",
+    name         = "Make Ink",
+    alchemy_rank = 5,
+    description  = "Carbon ink from ashes and water — traditional lampblack method.",
+    steps = [
+        RecipeStep(
+            name           = "Mix ashes with water in jar",
+            operation      = "mixing",
+            ingredient_ids = ["1009_KLOB", "1015_KLOB", "0009_KLOB"],  # Ashes+Water+Jar
+            tool_req       = ToolRequirement(
+                operation           = "mixing",
+                required_categories = ("vessel",),
+            ),
+            output_id      = "5003_KLOB",   # Ink KLOB
+            output_name    = "Ink",
+            consumes       = True,
+        ),
+    ],
+)
+
+MAKE_REFINED_SAND = ManufacturingRecipe(
+    id           = "make_refined_sand",
+    name         = "Refine Sand",
+    alchemy_rank = 5,
+    description  = "Sand ground and sifted through diatom earth to remove impurities.",
+    steps = [
+        RecipeStep(
+            name           = "Grind sand and filter",
+            operation      = "grinding",
+            ingredient_ids = ["1001_KLOB", "1003_KLOB"],  # Sand + Diatom Earth
+            tool_req       = ToolRequirement(
+                operation           = "grinding",
+                required_ids        = ("8000_KLOB", "2000_KLOB"),
+                required_categories = (),
+            ),
+            output_id      = "1002_KLOB",   # Refined Sand KLOB
+            output_name    = "Refined Sand",
+            consumes       = True,
+        ),
+    ],
+)
+
+MAKE_PAPER = ManufacturingRecipe(
+    id           = "make_paper",
+    name         = "Make Paper",
+    alchemy_rank = 10,
+    description  = "Pulp treated with caustic lye, filtered through diatom earth, pressed flat.",
+    steps = [
+        RecipeStep(
+            name           = "Treat pulp with lye",
+            operation      = "mixing",
+            ingredient_ids = ["5001_KLOB", "1010_KLOB"],  # Pulp + Caustic Lye
+            tool_req       = ToolRequirement(
+                operation           = "mixing",
+                required_categories = ("vessel",),
+            ),
+            output_id      = "5001_KLOB",
+            output_name    = "Treated Pulp",
+            consumes       = False,
+        ),
+        RecipeStep(
+            name           = "Filter and press into sheets",
+            operation      = "filtering",
+            ingredient_ids = ["5001_KLOB", "1003_KLOB"],  # Treated Pulp + Diatom Earth
+            tool_req       = ToolRequirement(
+                operation           = "filtering",
+                required_categories = ("filtering",),
+            ),
+            output_id      = "5002_KLOB",   # Paper KLOB
+            output_name    = "Paper",
+            consumes       = True,
+        ),
+    ],
+)
+
+
+# ── Distillation family ───────────────────────────────────────────────────────
+
+DISTILL_AQUA_VITAE = ManufacturingRecipe(
+    id           = "distill_aqua_vitae",
+    name         = "Distill Aqua Vitae",
+    alchemy_rank = 25,
+    perk_required= "alchemical_meditation",
+    description  = "White wine distilled through retort and furnace into high-proof spirit. Basis for Absinthe.",
+    steps = [
+        RecipeStep(
+            name           = "Distill white wine through retort",
+            operation      = "heating",
+            ingredient_ids = ["0027_KLIT", "0003_KLOB"],  # White Wine + Retort
+            tool_req       = ToolRequirement(
+                operation           = "heating",
+                required_ids        = ("0030_KLOB", "0003_KLOB"),  # Furnace + Retort
+                required_categories = (),
+            ),
+            output_id      = "0028_KLIT",
+            output_name    = "Aqua Vitae",
+            consumes       = True,
+        ),
+    ],
+)
+
+BREW_ABSINTHE = ManufacturingRecipe(
+    id           = "brew_absinthe",
+    name         = "Brew Absinthe",
+    alchemy_rank = 30,
+    description  = (
+        "Traditional method: macerate wormwood, anise, and fennel in aqua vitae, "
+        "then distill. The green fairy."
+    ),
+    steps = [
+        RecipeStep(
+            name           = "Macerate herbs in aqua vitae",
+            operation      = "mixing",
+            ingredient_ids = ["0028_KLIT", "0024_KLIT", "0025_KLIT", "0026_KLIT"],
+            # Aqua Vitae + Wormwood + Anise + Fennel
+            tool_req       = ToolRequirement(
+                operation           = "mixing",
+                required_ids        = ("0008_KLOB",),  # Bottle
+                required_categories = (),
+            ),
+            output_id      = "0028_KLIT",
+            output_name    = "Herb-Macerated Spirit",
+            consumes       = False,
+        ),
+        RecipeStep(
+            name           = "Distill macerated spirit",
+            operation      = "heating",
+            ingredient_ids = ["0028_KLIT", "0003_KLOB"],  # Macerated Spirit + Retort
+            tool_req       = ToolRequirement(
+                operation           = "heating",
+                required_ids        = ("0030_KLOB", "0003_KLOB"),
+                required_categories = (),
+            ),
+            output_id      = "0023_KLIT",
+            output_name    = "Absinthe",
+            consumes       = True,
+        ),
+    ],
+)
+
+
 # ── Canonical recipe registry ─────────────────────────────────────────────────
 
+_ALL_NAMED = (
+    INFERNAL_SALVE, NEXIOTT_POISON, COLT_45,
+    FORGE_DAGGER, FORGE_SWORD, FORGE_IRON_ARROW, KNAP_FLINT_ARROW,
+    FORGE_GOLD_COIN, FORGE_SILVER_COIN, FORGE_COPPER_COIN,
+    FORGE_RING, FORGE_NECKLACE, FORGE_GOLD_BULLET,
+    MAKE_GUNPOWDER, BREW_HEALTH_POTION, MAKE_CAUSTIC_LYE,
+    MAKE_INK, MAKE_REFINED_SAND, MAKE_PAPER,
+    DISTILL_AQUA_VITAE, BREW_ABSINTHE,
+)
+
 NAMED_RECIPES: dict[str, ManufacturingRecipe] = {
-    r.id: r for r in (INFERNAL_SALVE, NEXIOTT_POISON, COLT_45)
+    r.id: r for r in _ALL_NAMED
 }
 
 
