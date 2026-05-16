@@ -1,0 +1,74 @@
+[
+  {
+    "yeigo":   "tymona_met",
+    "shakshi": "Tymona met — Dryad, Nexiott's exception, in her own territory in the Dryad zone of Mercurie",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "dryad_zone_entered",
+    "shakshi": "The player fought on Tymona's ground — the Dryad zone of Mercurie, her territory",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "tymona_fight_joined",
+    "shakshi": "The fight to submission began — not to the death, to the point where she will speak",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "tymona_submitted",
+    "shakshi": "The player won — Tymona will speak now",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "tymona_fight_lost",
+    "shakshi": "The player was beaten — the confession does not come, Nexiott's source stays hidden",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_tymona_affair_known",
+    "shakshi": "The affair confirmed — the intelligence pipeline that fed 0028 has a name and a face now",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_sophia_intelligence_source_known",
+    "shakshi": "Nexiott knew about Sophia through Tymona — the 0028 loop closes, the source of his intelligence about the Assassin order named",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "tymona_exception_understood",
+    "shakshi": "A Dryad who hates humans made one exception, and that exception fed the war machine — the player may or may not register the full weight of that",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_two_year_deception_known",
+    "shakshi": "The player was fooled about Nexiott for two in-game years — the title lands, everything they understood about him was shaped by what he chose to reveal",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  }
+]
