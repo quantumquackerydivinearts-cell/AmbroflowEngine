@@ -1,0 +1,58 @@
+[
+  {
+    "yeigo":   "sulphera_vision_first",
+    "shakshi": "The player's first contact with Sulphera's register — through dream, before any earned access. Sulphera noticed the player before the player sought it.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "asmodean_crystal_dreamed",
+    "shakshi": "An Asmodean crystal formed in the vision from the player's longing — real enough to briefly manifest",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "crystal_dissolved",
+    "shakshi": "The crystal did not hold — dissolved by morning, the player was not ready to carry it yet",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "alchemy_trained_at_dream",
+    "shakshi": "The player had sufficient alchemy training when the crystal dissolved — gate condition for recognising the dust's value",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "crystal_dust_saved",
+    "shakshi": "The player saved the crystal dust — primary reagent for Infernal Salve and the alchemical chain to finding Hypatia",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "crystal_dust_lost",
+    "shakshi": "The dust was swept away unnoticed — the primary alchemical chain to Hypatia is broken, 0009's imp is the only remaining route",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "hypnotic_meditation_available",
+    "shakshi": "The dream sequence of 0007 opens the Hypnotic Meditation perk gate",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  }
+]

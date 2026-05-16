@@ -1,0 +1,106 @@
+[
+  {
+    "yeigo":   "hypatia_absence_noticed",
+    "shakshi": "The player received notice of Hypatia's absence and understands she is gone — not delayed, gone",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "alfir_sought",
+    "shakshi": "The player sought out Alfir for guidance in lieu of Hypatia",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "alfir_met_properly",
+    "shakshi": "Formal first meeting with Alfir — distinct from any prior awareness of him",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "alfir_suspicion_known",
+    "shakshi": "Alfir has suspicions about why Hypatia left but cannot confirm or deny — he knows more than he says",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "shop_established",
+    "shakshi": "The player has a functioning home shop on Wiltoll Lane",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "market_sign_acquired",
+    "shakshi": "The player acquired a sign from the market — the threshold of independent practice crossed",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "shipmaker_met",
+    "shakshi": "The Alzedroswune shipmaker came to the shop seeking a blacksmith — first contact with that community",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "shipmaker_alzedroswune_known",
+    "shakshi": "The player knows the shipmaker is from Alzedroswune territory",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "imp_disguised_encountered",
+    "shakshi": "The player encountered the imp in human disguise as a shop customer",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "imp_disguise_detected",
+    "shakshi": "The player noticed something wrong with the disguised imp — gated on alchemy skill, not available to all players",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "contracts_underway",
+    "shakshi": "The player has taken on work from the network — townsfolk, nobles, priesthood, witches, assassins",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "goods_smuggled_sulphera",
+    "shakshi": "The player's goods reached Sulphera through the black market pipeline — gate key for 0009_KLST",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "sulphera_network_accessed",
+    "shakshi": "The black market smuggling pipeline now runs through the player's shop",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  }
+]
