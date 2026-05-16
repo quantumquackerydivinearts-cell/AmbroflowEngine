@@ -1,0 +1,58 @@
+[
+  {
+    "yeigo":   "axiozul_met",
+    "shakshi": "Axiozul met — Child of Lakota, timeless, immortal, axolotl. In the Royal Ring where the most consequential things happen.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "royal_ring_axiozul_known",
+    "shakshi": "She is here in the innermost space for reasons that belong to what she is — Lakota's child, at home in Sulphera's deepest register",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "death_not_end_known",
+    "shakshi": "Whatever comes next, death is not the end — the player carries this explicitly now, delivered by someone for whom it is simply true",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "sulphera_receives_all",
+    "shakshi": "The dead wind up here regardless — Sulphera is not a punishment, it is a destination. Everyone arrives.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "final_arc_mortality_acknowledged",
+    "shakshi": "The player has been told directly that they and others may die in what follows — the warning half of the benediction",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "axiozul_benediction_received",
+    "shakshi": "Permission to continue, acknowledgment that what matters persists past the dying — the benediction half",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "genocide_futility_known",
+    "shakshi": "All the dead wind up in Sulphera anyways — the genocide route's logic collapses quietly here for players who can hear it",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  }
+]
