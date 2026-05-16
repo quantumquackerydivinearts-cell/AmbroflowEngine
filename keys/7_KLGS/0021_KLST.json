@@ -1,0 +1,58 @@
+[
+  {
+    "yeigo":   "orrery_named_sophia",
+    "shakshi": "Sophia told the player the Orrery exists — the knowledge to ask Lucifer about it comes from her",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "orrery_purpose_known",
+    "shakshi": "The player understands what the Orrery does — tracks the causal chain that includes Saelith, Hypatia, Luminyx",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "lucifer_asked_orrery",
+    "shakshi": "The player asked Lucifer about the Orrery — the question required carrying Sophia's disclosure into the Pride Ring conversation",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "orrery_glimpsed",
+    "shakshi": "Lucifer showed the player the Orrery from the top of his castle — seen but unreachable, the Royal Ring visible in the distance",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "royal_ring_visible",
+    "shakshi": "The player saw where they need to go — the destination is now real and fifteen quests away simultaneously",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "orrery_unglimpsed",
+    "shakshi": "The player did not ask or did not know to ask — they carry Sophia's words without the visual confirmation",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "orrery_horizon_established",
+    "shakshi": "The Orrery is now a known destination — the alchemical chain to reach it is already partially in the player's hands",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  }
+]
