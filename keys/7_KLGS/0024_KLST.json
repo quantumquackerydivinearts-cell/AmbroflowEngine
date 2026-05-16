@@ -1,0 +1,74 @@
+[
+  {
+    "yeigo":   "bounties_announced",
+    "shakshi": "Saffron declared bounties on witches — casting wide, no specific targets, indiscriminate reach",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "saffron_bounty_reach_known",
+    "shakshi": "The player understands the bounties are indiscriminate — Saffron does not know who has taken which oath",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "oath_held",
+    "shakshi": "The player kept the Assassin oath under pressure — Asmoth knows",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "oath_broken",
+    "shakshi": "The player broke the Assassin oath — immediate consequence, no confrontation, just absence",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "assassin_shop_access_lost",
+    "shakshi": "The order stops visiting the shop — James, Tyrone, Hue, the warren Assassin network all go quiet. No announcement.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "assassin_network_severed",
+    "shakshi": "The warren network running through the Assassin camp is gone — the player caused this by breaking the oath",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_line_confirmed",
+    "shakshi": "The player is now firmly inside Nexiott's operation — the oath break confirmed the alignment",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "witch_bounty_stance_taken",
+    "shakshi": "The player's position on the bounties is now a fact in the world — not a private consideration any longer",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "neutrality_ended",
+    "shakshi": "Sitting in the middle is no longer structurally possible — Saffron's bounties collapsed the space between sides",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  }
+]
