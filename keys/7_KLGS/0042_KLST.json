@@ -1,0 +1,58 @@
+[
+  {
+    "yeigo":   "rachelle_met",
+    "shakshi": "Rachelle met — Alfir's student, Saffron's installed advisor, Shakzefan's devotee. Three things simultaneously.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "rachelle_devotee_recognized",
+    "shakshi": "Rachelle recognized the player as a fellow Shakzefan devotee — the only gate for this quest, the only thing that opens the conversation",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "alfir_rachelle_connection_known",
+    "shakshi": "Alfir trained Rachelle, the devotion carried forward through the teaching even as the political appointment went wrong",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "rachelle_stakes_testimony",
+    "shakshi": "Rachelle told the player what is at stake from Shakzefan's register — not who wins but what the war costs the empire's capacity for transformation",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "empire_transformation_capacity_known",
+    "shakshi": "An empire that fights this war this way becomes unable to grow through loss — it can only lose. Shakzefan's concern made explicit.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "rachelle_apolitical_register",
+    "shakshi": "She spoke without political motive, from devotion alone — the player may not register how rare this is in context of everything else they have heard",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "shakzefan_concern_transmitted",
+    "shakshi": "The Goddess's concern reached the player through her devotee — a different kind of transmission than the direct encounter in 0017",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  }
+]
