@@ -1,58 +1,122 @@
 [
   {
-    "yeigo":   "saffron_dirt_delivered",
-    "shakshi": "The player brought everything accumulated since 0001 to Bombastus — the weight of it too substantial for even Kelly to manage",
+    "yeigo":   "kielum_poison_inflicted",
+    "shakshi": "Kielum poisoned the player before the final confrontation — his last tactical move",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "kelly_approved_disclosure",
-    "shakshi": "Kelly judged the moment had arrived and let the information through unmanaged — the first time in the game",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "bombastus_informed_fully",
-    "shakshi": "For the first time in the game Bombastus received complete information — the player may not register how unprecedented this is",
+    "yeigo":   "binary_choice_forced",
+    "shakshi": "The poisoned state forced the choice between orders — manufactured urgency without full capacity",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
-    "anom":    true,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "saffron_ousted",
-    "shakshi": "Saffron removed from the priesthood — the manufactured reality that sustained the war's justification falls with official weight",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "propaganda_officially_collapsed",
-    "shakshi": "The propaganda that began in 0004 falls officially — Bombastus's voice behind the collapse rather than just the player's broadcast",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "priesthood_power_vacuum",
-    "shakshi": "The structure Saffron held is now open — who fills it is the question 0057 answers",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "kelly_showed_hand",
-    "shakshi": "Kelly let something through unmanaged — the player may understand now that Kelly has been managing toward this moment the whole time",
+    "yeigo":   "kielum_leverage_active",
+    "shakshi": "The player is compromised — the choice under duress, the same mechanism as Nexiott's caravan order",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "poison_purged",
+    "shakshi": "Meditation, medicine, and alchemy sufficient — the player fought off Kielum's poison",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kielum_leverage_lost",
+    "shakshi": "Kielum's last tactical move failed — the player circumvented the forced binary",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "choice_from_strength",
+    "shakshi": "The binary available from sovereignty — the urgency gone, the options unchanged, the pressure absent",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "asmoth_killed",
+    "shakshi": "Asmoth dead — the man who forgave without forgetting",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "cyrus_killed",
+    "shakshi": "Cyrus dead — Assassin, present at the night meeting in 0025",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "hue_killed",
+    "shakshi": "Hue dead — Kore's brother, the man who invited the player to camp at the western plateau edge in 0011",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "assassin_order_destroyed",
+    "shakshi": "The order that inducted the player is gone — the oath sworn in 0023 has no home left",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "lanvaki_killed",
+    "shakshi": "Captain Lanvaki dead — carried the plasma rifle in 0030, held the rear in 0054",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "akande_killed",
+    "shakshi": "Sgt. Akande dead — one of the three Heroes of the Azoth Soldiery",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kilesha_killed",
+    "shakshi": "Pvt. Kilesha dead — one of the three Heroes of the Azoth Soldiery",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "azoth_soldiery_heroes_gone",
+    "shakshi": "The three Heroes of the Azoth Soldiery dead — the military arm of Nexiott's order without its named leaders",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "binary_declined",
+    "shakshi": "The player from strength found the choice unnecessary — neither order imposed, the binary made negligible",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
     "andyf":   false
   }
 ]

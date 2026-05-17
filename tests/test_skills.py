@@ -37,7 +37,7 @@ def test_hypnotic_meditation_quest_gate():
 
 def test_zen_meditation_quest_gate():
     p = PERK_BY_ID["zen_meditation"]
-    assert p.required_quest == "0026_KLST"   # Good Grief
+    assert p.required_quest == "0027_KLST"   # Good Grief
 
 
 def test_breathwork_has_no_quest_gate():

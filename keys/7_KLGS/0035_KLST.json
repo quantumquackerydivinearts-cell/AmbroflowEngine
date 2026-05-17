@@ -1,66 +1,74 @@
 [
   {
-    "yeigo":   "greed_ring_cleared",
-    "shakshi": "Ring of Greed cleared — Mammon's domain traversed, token granted",
+    "yeigo":   "broadcast_executed",
+    "shakshi": "The player used Joannah's dispatch network in their own voice — named declaration using the accused's infrastructure",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "envy_ring_cleared",
-    "shakshi": "Ring of Envy cleared — Leviathan's domain traversed, token granted",
+    "yeigo":   "nexiott_child_labor_exposed",
+    "shakshi": "The mine conditions, the children, the quota notices — all of it broadcast to everyone in Azonithia",
     "kaelsuy": "7_KLGS",
-    "dyne":    false,
+    "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "gluttony_ring_cleared",
-    "shakshi": "Ring of Gluttony cleared — Beelzebub's domain traversed, token granted",
+    "yeigo":   "propaganda_subverted",
+    "shakshi": "Nexiott's narrative about the mines is publicly broken — the caravan order's story about itself cannot hold",
     "kaelsuy": "7_KLGS",
-    "dyne":    false,
+    "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "sloth_ring_cleared",
-    "shakshi": "Ring of Sloth cleared — Belphegor's domain traversed, token granted",
+    "yeigo":   "player_voice_identified",
+    "shakshi": "Nexiott knows immediately who broadcast — the player's own voice, no ambiguity, no deniability",
     "kaelsuy": "7_KLGS",
-    "dyne":    false,
+    "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "wrath_ring_cleared",
-    "shakshi": "Ring of Wrath cleared — Satan's domain traversed, token granted",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "five_rings_cleared",
-    "shakshi": "The bulk of hell traversed — Greed, Envy, Gluttony, Sloth, Wrath all behind the player",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "sin_register_deepened",
-    "shakshi": "The player has moved through five expressions of sin from the inside — desire, envy, excess, stagnation, wrath no longer abstract",
+    "yeigo":   "joannah_taken_hostage",
+    "shakshi": "Joannah taken hostage by Nexiott — guilty by proximity, punished for her position, she had nothing to do with it",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    true,
     "andyf":   false
   },
   {
-    "yeigo":   "hypatia_proximity_growing",
-    "shakshi": "Each ring cleared brings the Orrery closer — the player can feel the direction even without seeing the destination",
+    "yeigo":   "assassins_freed_joannah",
+    "shakshi": "The Assassin order broke Joannah out with no trouble — their capability demonstrated quietly",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
-    "anom":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "joannah_safe",
+    "shakshi": "Joannah is out and safe — the player carries the knowledge of what she paid for something she did not do",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_player_enemy",
+    "shakshi": "Open hostility with Nexiott — no more caravan contracts, no more missions, the relationship is public war",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "player_position_public",
+    "shakshi": "The player's alignment is a public fact in Azonithia — whatever ambiguity remained after 0024 is gone",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
     "andyf":   false
   }
 ]

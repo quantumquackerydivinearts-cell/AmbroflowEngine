@@ -146,7 +146,7 @@ MEDITATION_PERKS: tuple[PerkDef, ...] = (
         id="zen_meditation",
         name="Zen Meditation",
         required_skill="meditation",
-        required_quest="0026_KLST",    # Good Grief
+        required_quest="0027_KLST",    # Good Grief
         required_perks=(),
         effect=(
             "Presence without object. Reduces encounter-induced Narrative dissonance — "

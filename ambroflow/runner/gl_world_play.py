@@ -215,7 +215,11 @@ _HOME_KIND_ATLAS: dict = {
 }
 
 # Zones that use the interior atlas palette
-_INTERIOR_ZONE_IDS = frozenset({"lapidus_wiltoll_home", "player_home_upper"})
+_INTERIOR_ZONE_IDS = frozenset({
+    "player_home_ground",   # canonical 48-wide Kobra home (ground floor)
+    "player_home_upper",    # canonical 48-wide Kobra home (study)
+    "lapidus_wiltoll_home", # legacy alias — kept so old save states don't break
+})
 
 # Entity and HUD colours sourced from renderer_bridge.py (LoKiel pre-decode).
 # Do not edit here — edit renderer_bridge.py; both renderers share the same values.

@@ -438,9 +438,14 @@ class WorldPlay:
                 self._end_alchemy()
             elif self._mode == WorldMode.JOURNAL:
                 self._end_journal()
+            elif self._mode in (WorldMode.VENDOR, WorldMode.SHOP):
+                # VENDOR is WorldPlay's internal shop mode; SHOP is set directly
+                # by the GL layer — both dismiss the overlay and return to free roam.
+                self._end_vendor()
+            elif self._mode == WorldMode.SMELT:
+                self._mode = WorldMode.WORLD
             elif self._mode == WorldMode.COMBAT:
                 if self._combat_loop is None:
-                    # Prompt not yet confirmed — abort cleanly
                     self._abort_combat()
                 # else: flee is handled in the COMBAT block below
             else:

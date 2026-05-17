@@ -48,7 +48,7 @@ LINEAGE_OPTIONS: tuple[LineageOption, ...] = (
             "The city is your body's memory, not your mind's."
         ),
         ko_note="The ground under you is the ground you grew in.",
-        starting_items=["Wormwood (x2)", "Local Market Token"],
+        starting_items=["Wormwood (x2)", "June Market Token"],
         unlocks=["azonithian_native_dialogue"],
     ),
     LineageOption(
@@ -179,15 +179,19 @@ class ChargenState:
     Mutable state accumulated during character creation.
     Passed between screens as the player makes choices.
 
-    name:           player-entered name
-    gender_id:      selected gender option id
-    lineage_id:     selected lineage option id
-    player_vitriol: manually-assigned VITRIOL stats (empty until assigned)
+    name:                player-entered name
+    gender_id:           selected gender option id
+    lineage_id:          selected lineage option id
+    player_vitriol:      manually-assigned VITRIOL stats (empty until assigned)
+    vitriol_skill_ranks: auto-derived starting ranks from VITRIOL (computed in SKILL_SELECT)
+    tag_picks:           up to 2 skill IDs chosen for an additional +1 rank boost
     """
-    name:           str              = ""
-    gender_id:      str              = ""
-    lineage_id:     str              = ""
-    player_vitriol: dict[str, int]   = field(default_factory=dict)
+    name:                str              = ""
+    gender_id:           str              = ""
+    lineage_id:          str              = ""
+    player_vitriol:      dict[str, int]   = field(default_factory=dict)
+    vitriol_skill_ranks: dict[str, int]   = field(default_factory=dict)
+    tag_picks:           list[str]        = field(default_factory=list)
 
     def is_complete(self) -> bool:
         from ambroflow.ko.vitriol import VITRIOL_STATS

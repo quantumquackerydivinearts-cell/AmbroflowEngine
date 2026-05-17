@@ -45,6 +45,11 @@ from ambroflow.scenes.player_home import (
     PLAYER_HOME_GROUND, PLAYER_HOME_WORLD,
     FurniturePlacement, GROUND_FURNITURE,
 )
+from ambroflow.scenes.home_zone import (
+    KNOCK_TILES       as _KNOCK_TILES,
+    COURIER_TILE      as _COURIER_TILE,
+    BEDROOM_SPAWN     as _BEDROOM_SPAWN,
+)
 
 
 # ── Canonical text ────────────────────────────────────────────────────────────
@@ -350,12 +355,10 @@ class FateKnocksScene:
         beat = scene.check_beat(px, py)  # call after each player move
     """
 
-    # Tile that fires the knock — player approaching the front door
-    KNOCK_TILES: frozenset[tuple[int, int]] = frozenset({(22, 10), (22, 11)})
-    # Tile that fires the courier meeting — standing on the door tile
-    COURIER_TILE: tuple[int, int] = (22, 12)
-    # Player wakes in the bedroom, near the bed
-    SPAWN: tuple[int, int] = (17, 3)
+    # Canonical 40-wide coordinates — sourced from home_zone.py
+    KNOCK_TILES:  frozenset[tuple[int, int]] = _KNOCK_TILES
+    COURIER_TILE: tuple[int, int]            = _COURIER_TILE
+    SPAWN:        tuple[int, int]            = _BEDROOM_SPAWN
 
     def __init__(self) -> None:
         self._fired: set[str] = set()

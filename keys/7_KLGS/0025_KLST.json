@@ -1,90 +1,74 @@
 [
   {
-    "yeigo":   "cyrus_met",
-    "shakshi": "Cyrus met — Assassin, present at the night meeting with Sophia, Asmoth, and Hue",
+    "yeigo":   "bounties_announced",
+    "shakshi": "Saffron declared bounties on witches — casting wide, no specific targets, indiscriminate reach",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "assassination_meeting_held",
-    "shakshi": "The night meeting convened — Sophia, Asmoth, Cyrus, Hue all present, listening while the player unloads everything gathered since 0001",
+    "yeigo":   "saffron_bounty_reach_known",
+    "shakshi": "The player understands the bounties are indiscriminate — Saffron does not know who has taken which oath",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "intelligence_delivered",
-    "shakshi": "The player delivered their full accumulated intelligence to the Assassin council — what they knew shaped what target was nameable",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "saffron_targeted",
-    "shakshi": "The player named Saffron — requires sufficient priesthood intelligence",
+    "yeigo":   "oath_held",
+    "shakshi": "The player kept the Assassin oath under pressure — Asmoth knows",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "nexiott_targeted",
-    "shakshi": "The player named Nexiott — requires sufficient caravan and war intelligence",
+    "yeigo":   "oath_broken",
+    "shakshi": "The player broke the Assassin oath — immediate consequence, no confrontation, just absence",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "bombastus_targeted",
-    "shakshi": "The player named King Bombastus — requires understanding his enabling role in the war",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "royl_line_targeted",
-    "shakshi": "The player named the whole royal line — requires the full picture, rarest and most consequential",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "assassination_target_set",
-    "shakshi": "The target is named and the order is given — the act is not yet done",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "sophia_assassination_witness",
-    "shakshi": "Sophia heard everything and said nothing she did not need to say",
+    "yeigo":   "assassin_shop_access_lost",
+    "shakshi": "The order stops visiting the shop — James, Tyrone, Hue, the warren Assassin network all go quiet. No announcement.",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    true,
     "andyf":   false
   },
   {
-    "yeigo":   "player_intelligence_weight_known",
-    "shakshi": "The meeting revealed how much the player's gathered knowledge actually matters — players who missed keys walked in lighter",
+    "yeigo":   "assassin_network_severed",
+    "shakshi": "The warren network running through the Assassin camp is gone — the player caused this by breaking the oath",
     "kaelsuy": "7_KLGS",
-    "dyne":    false,
+    "dyne":    true,
     "anom":    true,
     "andyf":   false
   },
   {
-    "yeigo":   "assassination_pending",
-    "shakshi": "The target is named, the act is not yet done — resolves in 0053 or 0054",
+    "yeigo":   "nexiott_line_confirmed",
+    "shakshi": "The player is now firmly inside Nexiott's operation — the oath break confirmed the alignment",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "witch_bounty_stance_taken",
+    "shakshi": "The player's position on the bounties is now a fact in the world — not a private consideration any longer",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "neutrality_ended",
+    "shakshi": "Sitting in the middle is no longer structurally possible — Saffron's bounties collapsed the space between sides",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
     "andyf":   false
   }
 ]

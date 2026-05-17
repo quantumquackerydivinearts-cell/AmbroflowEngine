@@ -1,129 +1,89 @@
 [
   {
-    "yeigo":   "genovise_necromancy_request",
-    "shakshi": "Genovise asked the player to find Savvi for necromantic ingredients — only available near him and Lakota in the Visitor's Ring",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "necromantic_ingredients_sought",
-    "shakshi": "The player is looking for something that only exists near Savvi and Lakota",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "savvi_found",
-    "shakshi": "The player found Savvi near Lakota in the Visitor's Ring of Sulphera",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "savvi_met",
-    "shakshi": "Savvi met — Salamander, arms dealer, unapologetic, Lakota's son. The grief belongs to the player, not to him.",
+    "yeigo":   "cyrus_met",
+    "shakshi": "Cyrus met — Assassin, present at the night meeting with Sophia, Asmoth, and Hue",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "lakota_met",
-    "shakshi": "Lakota met — cosmologically connected, Tagame's parent, Lanzu's parent, Savvi's parent. Present in the Visitor's Ring.",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "savvi_lakota_proximity_known",
-    "shakshi": "Savvi is usually near his father in the Visitor's Ring — their presence here is habitual",
+    "yeigo":   "assassination_meeting_held",
+    "shakshi": "The night meeting convened — Sophia, Asmoth, Cyrus, Hue all present, listening while the player unloads everything gathered since 0001",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "savvi_arms_dealing_known",
-    "shakshi": "The player learned Savvi deals arms in Lapidus — stated plainly, without apology",
+    "yeigo":   "intelligence_delivered",
+    "shakshi": "The player delivered their full accumulated intelligence to the Assassin council — what they knew shaped what target was nameable",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "savvi_sulpheran_order_known",
-    "shakshi": "Savvi is ushering a Sulpheran order into Lapidus — series-spanning consequence of his work",
+    "yeigo":   "saffron_targeted",
+    "shakshi": "The player named Saffron — requires sufficient priesthood intelligence",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "savvi_deathbringer_known",
-    "shakshi": "Savvi's role as deathbringer in Lapidus named plainly and without apology by the man himself",
+    "yeigo":   "nexiott_targeted",
+    "shakshi": "The player named Nexiott — requires sufficient caravan and war intelligence",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "genovise_savvi_connection_known",
-    "shakshi": "The black market the player has used since 0003 runs through a Salamander arms dealer — Genovise's supply chain was always his",
+    "yeigo":   "bombastus_targeted",
+    "shakshi": "The player named King Bombastus — requires understanding his enabling role in the war",
     "kaelsuy": "7_KLGS",
-    "dyne":    false,
+    "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "black_market_depth_known",
-    "shakshi": "What the player's shop has been part of since the beginning — the full depth of the pipeline now visible",
+    "yeigo":   "royl_line_targeted",
+    "shakshi": "The player named the whole royal line — requires the full picture, rarest and most consequential",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "assassination_target_set",
+    "shakshi": "The target is named and the order is given — the act is not yet done",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "sophia_assassination_witness",
+    "shakshi": "Sophia heard everything and said nothing she did not need to say",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    true,
     "andyf":   false
   },
   {
-    "yeigo":   "good_grief_witnessed",
-    "shakshi": "The player sat with the plain truth of what Savvi is and what Lapidus is becoming — grief as the gate",
+    "yeigo":   "player_intelligence_weight_known",
+    "shakshi": "The meeting revealed how much the player's gathered knowledge actually matters — players who missed keys walked in lighter",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
-    "anom":    false,
+    "anom":    true,
     "andyf":   false
   },
   {
-    "yeigo":   "zen_meditation_available",
-    "shakshi": "Grief as the prerequisite — the Zen Meditation perk gate opens here",
+    "yeigo":   "assassination_pending",
+    "shakshi": "The target is named, the act is not yet done — resolves in 0053 or 0054",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "necromantic_ingredients_acquired",
-    "shakshi": "Savvi provided the ingredients Genovise needed for the necromantic rite",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "necromancy_learned_lakota",
-    "shakshi": "Lakota taught the player necromancy directly — a deeper path than acquiring ingredients alone",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "necromancy_available",
-    "shakshi": "Necromancy is now accessible — via Lakota's direct teaching or Genovise's completed rite, either path grants this",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
     "anom":    false,
     "andyf":   false
   }

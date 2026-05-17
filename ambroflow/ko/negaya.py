@@ -26,7 +26,7 @@ Duration model
 
 Resolution
 ----------
-Shakzefan worship path → quests 0017_KLST / 0026_KLST → Axiozul (1011_SALA)
+Shakzefan worship path → quests 0017_KLST / 0027_KLST → Axiozul (1011_SALA)
 → Lakota (2018_GODS) → necromancy ritual → `negaya_appeased` flag set.
 Necromancy fills Negaya's void ontologically: absence terminated through knowing.
 """

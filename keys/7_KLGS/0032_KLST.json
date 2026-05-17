@@ -1,47 +1,55 @@
 [
   {
-    "yeigo":   "mona_altar_found",
-    "shakshi": "The player found Mona's altar in the Fae court temple — different shrine, same sacred space as Koga's",
+    "yeigo":   "fae_court_shrine_found",
+    "shakshi": "The player found Koga's shrine in the Fae court — only accessible to Assassin players with good Fae relations",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "mona_met",
-    "shakshi": "Mona met — Goddess of Play and Torment, unified. For Faekin, play IS torment and torment IS play.",
+    "yeigo":   "koga_met",
+    "shakshi": "Koga met — Goddess of Magic and Mystery, teaches Chaos magic to those her flock accepts",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "assassin_standing_sufficient",
-    "shakshi": "Good relations with Asmoth confirmed — the gate Mona reads, distinct from the Fae conduct Koga reads",
+    "yeigo":   "fae_relations_sufficient",
+    "shakshi": "The player's accumulated conduct toward the Fae met Koga's threshold — no test, just the weight of how they moved through Mercurie",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "warriordom_learned",
-    "shakshi": "The philosophy of engagement as play and torment as delight — affects dialogue and approach, lighter and faster than human warriordom, paradoxically more dangerous",
+    "yeigo":   "chaos_magic_learned",
+    "shakshi": "The art of using actions, environment, and the connections within them to affect chain reactions — augmented but not gated by the magic skill",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "faekin_combat_register_known",
-    "shakshi": "The player understands the unified play-torment register — retroactively reframes every Fae confrontation already had and changes how future ones read",
+    "yeigo":   "chaos_magic_augmented",
+    "shakshi": "The player has magic skill trained — the cascades are more precise, the chain reactions more deliberate",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "koga_flock_accepted",
+    "shakshi": "The player is considered part of Koga's flock — accepted through conduct, not ceremony",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "mona_flock_accepted",
-    "shakshi": "Accepted into Mona's register — through Assassin standing, not Fae conduct",
+    "yeigo":   "plasma_freeze_prevented_assassination",
+    "shakshi": "The assassination of the right target prevented the plasma weapon from firing — Fae court intact, Koga's shrine reachable",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,

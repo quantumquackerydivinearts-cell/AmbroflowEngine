@@ -214,6 +214,29 @@ class GLApp:
         elif self._screen == "IN_GAME" and self._game_flow is not None:
             frame = self._game_flow.current_frame()
 
+        elif self._screen == "LOADING" and _PIL:
+            try:
+                from PIL import Image, ImageDraw
+                from .screens.common import _load_font, text_size, to_png
+                from .screens import palette as P
+                img  = Image.new("RGB", (W, H), (4, 3, 8))
+                draw = ImageDraw.Draw(img)
+                font = _load_font(18)
+                text = "Loading…"
+                tw, _ = text_size(draw, text, font)
+                draw.text(
+                    ((W - tw) // 2, H // 2 - 10),
+                    text,
+                    fill=(P.KO_GOLD[0], P.KO_GOLD[1], P.KO_GOLD[2]),
+                    font=font,
+                )
+                import io
+                buf = io.BytesIO()
+                img.save(buf, format="PNG")
+                frame = buf.getvalue()
+            except Exception:
+                pass
+
         if frame:
             self._upload_frame(frame)
 
@@ -357,14 +380,10 @@ class GLApp:
             self._go("GAME_SELECT")
 
     def _init_starting_inventory(self) -> None:
-        """Collect home item spawns into _starting_inventory at free-roam start."""
+        """Populate _starting_inventory from game7_start canonical starting state."""
         try:
-            from ..world.zones.lapidus import build_wiltoll_home
-            home = build_wiltoll_home()
-            inv: dict = {}
-            for spawn in home.item_spawns:
-                inv[spawn.item_id] = inv.get(spawn.item_id, 0) + spawn.qty
-            self._starting_inventory = inv
+            from ..runner.game7_start import game7_starting_inventory
+            self._starting_inventory = game7_starting_inventory()
         except Exception:
             pass
 
@@ -420,7 +439,12 @@ class GLApp:
             if self._game_flow is not None:
                 self._game_flow.phase = FlowPhase.DONE
                 self._game_flow = None
-            self._launch_world_play(ui)
+            # Show loading screen for one frame before the heavy WorldPlay build
+            self._screen = "LOADING"
+
+    def _handle_loading(self, ui: "UIRenderer") -> None:
+        """Render one loading frame then immediately build WorldPlay."""
+        self._launch_world_play(ui)
 
     def _launch_world_play(self, ui: "UIRenderer") -> None:
         """Build WorldPlay + GLWorldPlay and transition to WORLD_PLAY screen."""
@@ -443,6 +467,10 @@ class GLApp:
                     inv.add(item_id, qty)
                 except Exception:
                     pass
+
+            # Skill ranks derived from VITRIOL + chargen tag picks
+            from ..runner.game7_start import game7_starting_skill_ranks
+            _skill_ranks = game7_starting_skill_ranks(chargen)
 
             orrery = OrreryClient(
                 workspace_id = self._player_id or "anon",
@@ -467,15 +495,16 @@ class GLApp:
                 journal         = journal,
                 breath          = self._active_breath,
             )
-            # Post-FateKnocks: player enters world inside their home
-            home_id = "lapidus_wiltoll_home"
-            if home_id in world_map.zones:
-                home   = world_map.zones[home_id]
-                sx, sy = home.player_spawn
-                wp._player.zone_id = home_id
-                wp._player.x       = sx
-                wp._player.y       = sy
-                wp._zone           = home
+            # Post-FateKnocks: player exits through the home's front door onto
+            # Wiltoll Lane.  Spawn at the exterior lane position in front of
+            # the home entrance (cols 3-4, row 8 of lapidus_wiltoll_lane).
+            lane_id = "lapidus_wiltoll_lane"
+            if lane_id in world_map.zones:
+                lane   = world_map.zones[lane_id]
+                wp._player.zone_id = lane_id
+                wp._player.x       = 3
+                wp._player.y       = 8
+                wp._zone           = lane
         except Exception:
             _log.error("WorldPlay init failed:\n%s", traceback.format_exc())
             self._go("GAME_SELECT")
@@ -585,6 +614,8 @@ class GLApp:
                     self._handle_in_game(events)
                 elif self._screen == "FATE_GL":
                     self._handle_fate_gl(events, ui)
+                elif self._screen == "LOADING":
+                    self._handle_loading(ui)
                 elif self._screen == "WORLD_PLAY":
                     self._handle_world_play(events)
 

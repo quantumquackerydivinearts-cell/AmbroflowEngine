@@ -10,6 +10,8 @@ ID groupings:
   0001-0029   Lab equipment (tools, vessels)
   0020-0024   Spoons (stirring)
   0030        Furnace (heat)
+  0040        Water Flask (material)
+  0073-0077   Botanical / consumable ingredients
   1001-1099   Processing materials and chemicals
   2001-2099   Metals
   3001-3099   Minerals
@@ -92,6 +94,20 @@ ALL_OBJECTS: tuple[KlobObject, ...] = (
 
     # ── Heat equipment ────────────────────────────────────────────────────────
     KlobObject("0030_KLOB", "Furnace",              "heat"),
+
+    # ── Botanical / consumable ingredients ────────────────────────────────────
+    KlobObject("0040_KLOB", "Water Flask",          "material",
+               note="Purified water in a sealed flask — base solvent for tinctures"),
+    KlobObject("0073_KLOB", "Herb (Common)",        "material",
+               note="Common dried herb — mild temporal field, base reduction ingredient"),
+    KlobObject("0074_KLOB", "Herb (Restorative)",   "material",
+               note="Dried herb with mental-axis affinity — noise reduction, restorative"),
+    KlobObject("0075_KLOB", "Binding Wax",          "material",
+               note="Rendered wax — cohesive agent, fixes field resonance in salves"),
+    KlobObject("0076_KLOB", "Raw Desire Stone",     "material",
+               note="Unrefined Asmodean crystal — spatial field, high intensity unfocused"),
+    KlobObject("0077_KLOB", "Asmodean Essence",     "material",
+               note="Refined desire-field liquid — concentrated spatial-axis reagent"),
 
     # ── Processing materials ──────────────────────────────────────────────────
     KlobObject("1001_KLOB", "Sand",                 "material"),

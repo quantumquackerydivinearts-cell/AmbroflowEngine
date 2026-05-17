@@ -1,26 +1,58 @@
 [
   {
-    "yeigo":   "sophia_assassination_mission_accepted",
-    "shakshi": "The player agreed to Nexiott's test run — framed as assassination, actually a field test of the energy weapon",
+    "yeigo":   "sophia_history_session",
+    "shakshi": "Sophia sat with the player and gave the major beats of human history — witness testimony, not scholarship",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "weapon_test_target_known",
-    "shakshi": "The player is providing weapons testing data to Nexiott's military program — Sophia is the test dummy, the weapon is what he actually cares about",
+    "yeigo":   "human_self_destruction_known",
+    "shakshi": "The player knows humanity attempted to destroy itself multiple times — in broad strokes, without the internal logic of why",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "earth_origin_confirmed",
+    "shakshi": "Humanity came from Earth — space-faring colony species. Now explicit, not implied.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "aeralune_arrival_known",
+    "shakshi": "The player knows the broad shape of how humanity reached Aeralune — the arc without the texture of Games 1-6",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "sophia_outside_perspective_known",
+    "shakshi": "Sophia has the facts without the phenomenology — she watched but was never inside the species. The player may notice the limit or may not.",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    true,
     "andyf":   false
   },
   {
-    "yeigo":   "sophia_kill_conditions_known",
-    "shakshi": "All witches dead plus the .45 gold bullet required to kill Sophia — the full cost visible only to players who pursue it",
+    "yeigo":   "games_1_6_occluded",
+    "shakshi": "The specific content of the prior six games was withheld deliberately — the arc is visible, the texture is not",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "human_history_weight_known",
+    "shakshi": "Everything happening in Azonithia is downstream of a very long human story — the player now carries that frame",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
     "andyf":   false
   }
 ]

@@ -1,114 +1,74 @@
 [
   {
-    "yeigo":   "st_alaro_met",
-    "shakshi": "St. Alaro met — Radio Demon of Pride, trades in signal and reach, deals only with those who move through the world without mortal killing",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "st_alaro_deal_offered",
-    "shakshi": "Dominion over Lapidus airwaves offered in exchange for a permanent mark on the BreathOfKo",
+    "yeigo":   "zukoru_dream_infiltrated",
+    "shakshi": "Zukoru entered the player's dreams the moment Othieru fell — he wasted no time",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "st_alaro_deal_accepted",
-    "shakshi": "The player agreed — the radio path of the secret ending is active",
+    "yeigo":   "zukoru_taunted",
+    "shakshi": "The deaths of millions threatened, the Great Obscenity of Game 1 echoed — Zukoru uses what he knows as a weapon",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "bok_mark_st_alaro",
-    "shakshi": "A permanent impression on the player's fractal state — invisible to the player, visible to anyone who reads the BoK",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    true,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "all_telecom_dominion",
-    "shakshi": "St. Alaro's grant — dominion over all telecom stacks across the series at a level equivalent to Hack 300, which is impossible through skill progression. Categorically beyond what player-built electronics can reach.",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "telecom_hijack_capable",
-    "shakshi": "Series-spanning ability to hijack all telecom stacks across all 31 games — not Lapidus airwaves specifically, all of it. The BoK mark is the price of this scale. Demons do not count toward the pacifism gate. Nexiott must fall by the people.",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "radio_path_open",
-    "shakshi": "The secret ending's radio path active — the player speaks rather than shoots",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "telecom_hijack_pacifism_gated",
-    "shakshi": "The ability is lost if the player directly kills a mortal in subsequent games — killing demons is maintenance, not violence. The distinction is cosmological.",
+    "yeigo":   "game1_echo_felt",
+    "shakshi": "The player may not have the context for what Zukoru's taunting references but the weight is present — the games cost something",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    true,
     "andyf":   false
   },
   {
-    "yeigo":   "mystic_blood_lock",
-    "shakshi": "Completing Mystic Blood ends the telecom hijack capability permanently — the sanctioned kill game closes the signal path",
+    "yeigo":   "sloth_ring_destination_known",
+    "shakshi": "The dream sent the player to the Sloth Ring — that is where Zukoru is and where this ends",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "sloth_ring_reentered",
+    "shakshi": "The player returned to the ring cleared in 0035 — Zukoru has made it his",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "zukoru_confronted",
+    "shakshi": "Zukoru confronted — the originating demon of betrayal, alone, in the Sloth Ring. No alliance comes with the player.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "zukoru_defeated",
+    "shakshi": "Zukoru killed — the dream invasion ended, Kielum's network diminished further",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kielum_network_collapsed",
+    "shakshi": "Both Othieru and Zukoru down — the network significantly weakened before the final conflict with Kielum himself",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "betrayal_demon_faced",
+    "shakshi": "The originating demon of betrayal — everything betrayed across the game is in that room with the player even if neither names it",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    true,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "mortal_kill_pacifism_broken",
-    "shakshi": "The player directly killed a mortal — the telecom hijack capability is lost across all subsequent games",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    true,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "st_alaro_deal_refused",
-    "shakshi": "The player declined — the radio path closes, the Colt .45 path remains the secret ending route",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "receiver_built",
-    "shakshi": "The player crafted a crystal radio receiver — Hack 35, passive signal reception",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "transmitter_built",
-    "shakshi": "The player crafted a signal transmitter — Hack 55, connects to Lapidus airwave infrastructure",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "radio_built",
-    "shakshi": "The player built a full radio unit — Hack 80 player-tier capability, local transmission only. Not comparable to St. Alaro's dominion. Basic skill expression.",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
     "andyf":   false
   }
 ]

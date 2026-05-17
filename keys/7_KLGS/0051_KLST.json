@@ -1,82 +1,74 @@
 [
   {
-    "yeigo":   "hypatia_lab_ransacked",
-    "shakshi": "The player arrived to find the lab broken into — inference required, no direct witness",
+    "yeigo":   "envy_ring_reentered",
+    "shakshi": "The player returned to the ring cleared in 0035 — Kaganue has made it his, the demonic network reorganizes around cleared space",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "luminyx_break_in_known",
-    "shakshi": "The player pieced together that Luminyx broke in and took what she needed",
+    "yeigo":   "kaganue_met",
+    "shakshi": "Kaganue met — Demon of Doublespeak, Ko's prophet, insane but not hostile. Says true things in a way that makes them sound false.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "kaganue_dialogue_completed",
+    "shakshi": "The conversation ran its course — the player had to hold the register long enough to hear what was actually being said",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "hypatia_notes_stolen",
-    "shakshi": "Luminyx took Hypatia's notes — what she learned from them shapes who she becomes in 1728",
+    "yeigo":   "ko_sun_death_known",
+    "shakshi": "Ko was the Sun, she died, she became the Moon — cosmological fact delivered by a madman who cannot lie even when he sounds like he is",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "hypatia_amelia_wedding_crystal_known",
-    "shakshi": "A future wedding artifact present in the now — Hypatia and Amelia's wedding yet to be had, the crystal already existed here",
+    "yeigo":   "ko_death_continuity_known",
+    "shakshi": "Ko as a death and continuation — what she is now is what survived the dying. Every Ko encounter reads differently from here.",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "luminyx_displaced_1728",
-    "shakshi": "Luminyx transported to Earth 1728AD during an eclipse — her mortal arc's hinge point, engineered by her own hand",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "luminyx_earth_arrival_known",
-    "shakshi": "Luminyx is now in the historical record, prior to her birth on Aeralune — the loop begins closing",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "eclipse_timing_known",
-    "shakshi": "The eclipse on Earth 1728 is the arrival point — series-spanning, relevant to Game 1's timeline split at 5237/1728",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "royal_radio_panic",
-    "shakshi": "The castle lost composure publicly — the royal information infrastructure registered something it could not manage",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "radio_panic_source_unknown",
-    "shakshi": "The panic's cause is not officially named — the player inferred it, the castle does not admit what happened",
+    "yeigo":   "doublespeak_truth_received",
+    "shakshi": "The truth sounds like a lie because it is too large — the player may not believe it at first even though they heard it clearly",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    true,
     "andyf":   false
   },
   {
-    "yeigo":   "hypatia_amelia_wedding_imminent",
-    "shakshi": "The crystal's existence confirms the wedding will happen — Saelith's birth follows from it, the causal chain intact",
+    "yeigo":   "ko_solar_origin_known",
+    "shakshi": "The Sun is gone, the Moon is what remains — the ground of Ko's dream sequences has always been a death. The calibration sessions were always with a survivor.",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "Drekadrekoe",
+    "shakshi": "generative recognition meets trace-recognition — the helix binding that creates novelty from what has already accumulated / the Kaganue priesthood as double helix event where two strands meeting generates something neither was alone and recognizes everything the body has already been / Beast Dreka (byte 634) + Beast Drekoe (byte 635)",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "Jakyta",
+    "shakshi": "frontal acknowledgment that seeds the next cycle — the king's recognition of the priesthood as the link between traversals / what stands at the institutional threshold and carries Mind+ forward / Sakura Ja (byte 50) + Serpent Kyt (byte 616) + AppleBlossom A (byte 98)",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    true,
     "andyf":   false
   }
 ]

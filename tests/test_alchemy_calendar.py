@@ -251,7 +251,7 @@ def test_seasonal_boost_raises_resonance_in_peak_season():
     reading  = _make_reading("0034_KLIT", permeability=0.7)
     approach = TreatmentApproach(approach_mode="presence")
     presence = PresenceState(permeability=0.7, epiphanic_charge=0.0)
-    inv      = {"0073_KLOB": 5, "0040_KLOB": 5, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv      = {"0073_KLOB": 5, "0040_KLOB": 5, "8000_KLOB": 1, "2000_KLOB": 1}
 
     ctx_temporal  = get_alchemy_calendar_context(AeraluneDate(1, 50))   # nigredo — temporal peak
     ctx_antiphase = get_alchemy_calendar_context(AeraluneDate(1, 144))  # albedo — mental peak, temporal -0.05
@@ -274,7 +274,7 @@ def test_epiphany_threshold_lowered_on_anchor():
     approach = TreatmentApproach(approach_mode="presence")
     # Charge at exactly the required level; resonance just above 0.70 but below 0.85
     presence = PresenceState(permeability=1.0, epiphanic_charge=0.80)
-    inv      = {"0073_KLOB": 5, "0040_KLOB": 5, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv      = {"0073_KLOB": 5, "0040_KLOB": 5, "8000_KLOB": 1, "2000_KLOB": 1}
 
     ctx_anchor  = get_alchemy_calendar_context(AeraluneDate(1, WINTER_SOLSTICE))   # threshold 0.60
     ctx_normal  = get_alchemy_calendar_context(AeraluneDate(1, 50))                # threshold 0.85
@@ -299,7 +299,7 @@ def test_formula_bonus_from_alzedroswune():
     reading  = _make_reading("0036_KLIT", permeability=0.8)
     approach = TreatmentApproach(approach_mode="formula")
     presence = PresenceState(permeability=0.8)
-    inv      = {"0076_KLOB": 5, "0077_KLOB": 5, "0001_KLOB": 1, "0002_KLOB": 1, "0010_KLOB": 1, "0017_KLOB": 1}
+    inv      = {"0076_KLOB": 5, "0077_KLOB": 5, "8000_KLOB": 1, "2000_KLOB": 1, "0030_KLOB": 1, "0007_KLOB": 1}
 
     ctx_alz    = get_alchemy_calendar_context(AeraluneDate(1, 240))   # citrinitas, alz present
     ctx_no_alz = get_alchemy_calendar_context(AeraluneDate(1, 385))   # Vrwumane — alz absent, but subject unlocked
@@ -361,7 +361,7 @@ def test_season_recorded_in_orrery():
     reading  = _make_reading("0034_KLIT")
     approach = TreatmentApproach(approach_mode="presence")
     presence = PresenceState(permeability=0.8)
-    inv      = {"0073_KLOB": 5, "0040_KLOB": 5, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv      = {"0073_KLOB": 5, "0040_KLOB": 5, "8000_KLOB": 1, "2000_KLOB": 1}
     cal      = get_alchemy_calendar_context(AeraluneDate(1, 50))
 
     system.treat("0034_KLIT", "0000_0451", reading, approach, presence, inv,

@@ -76,6 +76,9 @@ _ATLAS_COLORS = [
     ( 48,  52,  60),   # 13  REGISTER   dark metal
     ( 72,  56,  94),   # 14  ALTAR      violet
     ( 58,  42,  24),   # 15  BOOKSHELF  aged oak
+    ( 66,  48,  28),   # 16  DESK       medium oak (writing desk / Study)
+    (140, 130, 110),   # 17  MORTAR     pale stone bowl
+    ( 54,  46,  36),   # 18  WORKBENCH  dark oak bench (fine-processing / distillation)
 ]
 
 _CELL = 32
@@ -260,7 +263,7 @@ class FateKnocksGLPlay:
         "stairs_down":  "stairs_down",
     }
     # Counter tiles (foyer shop) → open_shop_ui
-    _COUNTER_Z = 9   # z-row of the shop counter
+    _COUNTER_Z = 10  # z-row of the shop counter (z=9 is open navigation row)
 
     # Floor definitions
     _FLOORS = [

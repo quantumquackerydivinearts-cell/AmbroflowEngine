@@ -1,66 +1,98 @@
 [
   {
-    "yeigo":   "asmoth_faewilds_met",
-    "shakshi": "Asmoth in the Faewilds before the final conflict — a different register than the camp or the induction ceremony",
+    "yeigo":   "alzedroswune_territory_entered",
+    "shakshi": "Alzedroswune lands accessed through Forest's direction — the territory Hypatia came from",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "alzedroswune_met",
+    "shakshi": "The Nomads of Alzedros as a people — a community in resistance, not just individuals passing through Azonithia",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "alzedroswune_craft_market_found",
+    "shakshi": "The specialized craft market — distinct from the Azonithian market economy the player has been operating in since 0008",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "asmoth_origin_told",
-    "shakshi": "Asmoth told his own story before the confrontation — who he is before something that might kill either of them",
+    "yeigo":   "shipwright_home_found",
+    "shakshi": "The shipmaker from 0008 met in his home context — community member, not shop visitor, a person with a trade network and a people",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "asmoth_orphan_known",
-    "shakshi": "Asmoth is an orphan of Kielum's second war — the player now understands what the chief is made of",
+    "yeigo":   "shipwright_alzedroswune_context_known",
+    "shakshi": "Who the shipwright is among his people — the full picture of who came to the player's shop in 0008",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "pythia_met",
+    "shakshi": "The community elder met — reads the player as a type by rumor alone, their road legible without being known",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "pythia_elder_known",
+    "shakshi": "Pythia presented as the Alzedroswune elder — her temple identity withheld until 0057",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "pythia_struggle_testimony",
+    "shakshi": "The struggle against empire is older than Pythia by thousands of years — always goes the same way with rhyming exceptions",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "empire_rhyme_known",
+    "shakshi": "Empires fall in ways that tell you what they couldn't do because it's against their nature — the frame for everything the player has been doing",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "player_read_as_type",
+    "shakshi": "Pythia read the player's road as kin to the struggle by rumor alone — legible without being individually known",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    true,
     "andyf":   false
   },
   {
-    "yeigo":   "kielum_met",
-    "shakshi": "Kielum — Demon of Conquest, two prior wars on Aeralune, the approaching conflict is his third engagement",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "kielum_wars_known",
-    "shakshi": "The 300-year history of Azonithian and Azoth society shaped by Kielum's repeated conquests — a survivor's account, not scholarship",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "azonithian_azoth_history_known",
-    "shakshi": "The full 300-year arc delivered by Asmoth — the history is inside his grief, filtered through what it cost him",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "kielum_final_conflict_approaching",
-    "shakshi": "The confrontation is imminent — Asmoth told this story now because it may be the last chance to tell it",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "asmoth_personal_stakes_known",
-    "shakshi": "The player understands what this fight means to Asmoth specifically — not just the cause, the cost",
+    "yeigo":   "pythia_identity_occluded",
+    "shakshi": "The rightful temple occupant is standing in front of the player and neither of them names it — 0057 is where this resolves",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "civic_bonds_learned",
+    "shakshi": "What the Azonithians forgot — the Alzedroswune remember it because they had to, resistance as the carrier of civic memory",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
     "andyf":   false
   }
 ]

@@ -1,55 +1,111 @@
 [
   {
-    "yeigo":   "fae_court_shrine_found",
-    "shakshi": "The player found Koga's shrine in the Fae court — only accessible to Assassin players with good Fae relations",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "koga_met",
-    "shakshi": "Koga met — Goddess of Magic and Mystery, teaches Chaos magic to those her flock accepts",
+    "yeigo":   "lanvaki_met",
+    "shakshi": "Captain Lanvaki met — carrying the assembled plasma rifle at the front of Nexiott's caravan",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "fae_relations_sufficient",
-    "shakshi": "The player's accumulated conduct toward the Fae met Koga's threshold — no test, just the weight of how they moved through Mercurie",
+    "yeigo":   "mine_caravan_marched",
+    "shakshi": "The player marched through the mines as part of Nexiott's operation — past the Gnomes and the children, out into Fae territory",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "chaos_magic_learned",
-    "shakshi": "The art of using actions, environment, and the connections within them to affect chain reactions — augmented but not gated by the magic skill",
+    "yeigo":   "plasma_rifle_assembled",
+    "shakshi": "The weapon built from the crystals is real and present — the alchemical chain from 0004 to here complete",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "chaos_magic_augmented",
-    "shakshi": "The player has magic skill trained — the cascades are more precise, the chain reactions more deliberate",
+    "yeigo":   "weapon_sabotaged",
+    "shakshi": "The player intervened and prevented or corrupted the firing — Mercurie protected",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "koga_flock_accepted",
-    "shakshi": "The player is considered part of Koga's flock — accepted through conduct, not ceremony",
+    "yeigo":   "mercurie_protected",
+    "shakshi": "Mercurie intact, the Faerie Court survived — the sabotage held",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "plasma_freeze_prevented_assassination",
-    "shakshi": "The assassination of the right target prevented the plasma weapon from firing — Fae court intact, Koga's shrine reachable",
+    "yeigo":   "amelia_mission_closed_sabotage",
+    "shakshi": "The mission Nexiott gave in 0013 resolved without the kill — amelia_mission_open closed",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "plasma_freeze_fired",
+    "shakshi": "The weapon discharged — the plasma rifle fired into Mercurie",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "mercurie_quarter_frozen",
+    "shakshi": "A quarter of Mercurie frozen — hundreds of Fae dead, the realm permanently scarred",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "faerie_court_destroyed",
+    "shakshi": "The Faerie Court is unlivable — Amelia's seat of power collapsed by the weapon",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "amelia_mission_closed_witness",
+    "shakshi": "The mission closes without the player's direct hand — the weapon fired without them pulling the trigger",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "lanvaki_overpowered",
+    "shakshi": "The player wrested the plasma rifle from Captain Lanvaki — a deliberate act of violence against their own side",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "amelia_killed_player",
+    "shakshi": "The player fired on Amelia directly — the only moment in the game where the 0013 mission can be executed by the player's own hand",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "plasma_weapon_deployed",
+    "shakshi": "The weapon exists and has been used or attempted — present on all paths except sabotage",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_war_escalated",
+    "shakshi": "Nexiott escalated to weapons deployment regardless of outcome — the war has a new character now",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,

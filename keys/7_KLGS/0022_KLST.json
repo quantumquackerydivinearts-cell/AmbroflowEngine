@@ -1,66 +1,10 @@
 [
   {
-    "yeigo":   "nexiott_gnome_mission_accepted",
-    "shakshi": "The player accepted Nexiott's mission to enforce new quotas on the Gnomes — only available to players who have not committed against the war",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "gnome_houses_trashed",
-    "shakshi": "The player destroyed the children's housework in the Gnome quarters",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "quota_notices_delivered",
-    "shakshi": "New metal quota notices left on every Gnome door — bureaucratic violence dressed as administration",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "gnome_oppression_performed",
-    "shakshi": "The act is complete — the task was the task, the game does not comment",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "gnome_children_burdened",
-    "shakshi": "The children must redo the housework and meet harder quotas simultaneously — the player caused this directly",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    true,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "nexiott_line_deepened",
-    "shakshi": "The player is now materially inside Nexiott's operation — not adjacent to it, inside it",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "gnome_oppressor_unknown",
-    "shakshi": "The Gnomes, children, Joannah, and Sidhal do not know who did it — the player's shop relationships are intact on the surface",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    true,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "gnome_crystal_oppressor",
-    "shakshi": "The player who holds gnome_crystal_origin_known just oppressed the people whose gift became the weapon — the irony is invisible to everyone including potentially the player",
+    "yeigo":   "Odkot",
+    "shakshi": "unspecified signal deposited as unconscious trace — the ground Kaganue laid before comprehension existed / noise received that becomes foundation / Cannabis Od (byte 190) + Serpent Kot (byte 613)",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    true,
-    "andyf":   false
+    "andyf":   true
   }
 ]

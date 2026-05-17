@@ -11,7 +11,6 @@ from __future__ import annotations
 from ..map import WorldMap
 from .lapidus import (
     build_wiltoll_lane,
-    build_wiltoll_home,
     build_market_interior,
     build_litleaf_thoroughfare,
     build_azonithia_slum,
@@ -50,13 +49,11 @@ def build_game7_world() -> WorldMap:
         lapidus_azonithia_temple        Goldshoot Street / slate (temple)
         lapidus_azonithia_market        June Street / ceramic (market)
         lapidus_azonithia_slum          Hopefare Street / yellow brick (slums)
-        lapidus_wiltoll_lane            Player home — starting zone
-          ↕ N (Litleaf fork)
-        lapidus_litleaf_thoroughfare    N–S connecting road
-          ↕ E
-        lapidus_mt_elaene_trail         Forest trail toward Mt. Elaene
-        lapidus_wiltoll_home  ↕ stairs
-        player_home_upper               Study / Library (upper floor)
+        lapidus_wiltoll_lane            Player home lane — starting zone
+          ↕ N (home door cols 3-4, row 8)
+        player_home_ground              Player home interior (48 × 13, Kobra-canonical)
+          ↕ stair up (11, 2)
+        player_home_upper               Study / Library (upper floor, 48 × 10)
 
     Stubs (show "(nothing that way yet)"):
         lapidus_dirt_trail              West of Castle Azoth — ocean-bound trail
@@ -66,10 +63,17 @@ def build_game7_world() -> WorldMap:
         lapidus_heartvein_interior      Heartvein Heights
         lapidus_mt_elaene_summit        Mt. Elaene / Elaene desert gateway
     """
+    from ...scenes.home_zone import PLAYER_HOME_GROUND, PLAYER_HOME_UPPER
+    from .warrens import build_all_warren_zones
+
     zones_list = [
-        # Lapidus
+        # Lapidus — exterior
         build_wiltoll_lane(),
-        build_wiltoll_home(),
+        # Canonical home (Kobra-generated, replaces lapidus_wiltoll_home)
+        PLAYER_HOME_GROUND,
+        PLAYER_HOME_UPPER,
+        # Warren district — 9 warrens + Cestii Alley + Serpent's Pass
+        *build_all_warren_zones(),
         build_market_interior(),
         build_litleaf_thoroughfare(),
         build_azonithia_slum(),
@@ -94,12 +98,6 @@ def build_game7_world() -> WorldMap:
         build_visitor_ring(),
         *build_sulphera_ring_entries(),
     ]
-    try:
-        from ...scenes.player_home import PLAYER_HOME_UPPER
-        zones_list.append(PLAYER_HOME_UPPER)
-    except Exception:
-        pass
-
     return WorldMap(
         zones={z.zone_id: z for z in zones_list},
         starting_zone_id="lapidus_wiltoll_lane",

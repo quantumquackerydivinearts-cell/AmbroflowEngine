@@ -1,79 +1,111 @@
 [
   {
-    "yeigo":   "bombast_completed",
-    "shakshi": "The Fae intel mission from 0014 closed — the player reported back to Bombastus at Castle Azoth",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "lucion_met",
-    "shakshi": "Lucion met — priest of Jabiru, God of language, stories and knowledge. Luminyx's teacher. The right teacher for the most narratively load-bearing mortal in the series.",
+    "yeigo":   "st_alaro_met",
+    "shakshi": "St. Alaro met — Radio Demon of Pride, trades in signal and reach, deals only with those who move through the world without mortal killing",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "luminyx_met",
-    "shakshi": "Luminyx met — Hildegarde's daughter, mortal, not yet a spirit. The hinge point of the loop Drovitth watches from the Orrery.",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "hildegarde_luminyx_lucion_known",
-    "shakshi": "The family and teaching triangle visible — Hildegarde's daughter, Lucion's student, both entangled with what the king is making war on",
+    "yeigo":   "st_alaro_deal_offered",
+    "shakshi": "Dominion over Lapidus airwaves offered in exchange for a permanent mark on the BreathOfKo",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "kelly_filtered_intel",
-    "shakshi": "Kelly managed the information before it reached Bombastus — the same truth distorted differently depending on what the player built",
+    "yeigo":   "st_alaro_deal_accepted",
+    "shakshi": "The player agreed — the radio path of the secret ending is active",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "bok_mark_st_alaro",
+    "shakshi": "A permanent impression on the player's fractal state — invisible to the player, visible to anyone who reads the BoK",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "all_telecom_dominion",
+    "shakshi": "St. Alaro's grant — dominion over all telecom stacks across the series at a level equivalent to Hack 300, which is impossible through skill progression. Categorically beyond what player-built electronics can reach.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "telecom_hijack_capable",
+    "shakshi": "Series-spanning ability to hijack all telecom stacks across all 31 games — not Lapidus airwaves specifically, all of it. The BoK mark is the price of this scale. Demons do not count toward the pacifism gate. Nexiott must fall by the people.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "radio_path_open",
+    "shakshi": "The secret ending's radio path active — the player speaks rather than shoots",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "telecom_hijack_pacifism_gated",
+    "shakshi": "The ability is lost if the player directly kills a mortal in subsequent games — killing demons is maintenance, not violence. The distinction is cosmological.",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    true,
     "andyf":   false
   },
   {
-    "yeigo":   "hypatia_heretic_declared",
-    "shakshi": "Nexiott line outcome — clouded intelligence produced a heresy verdict. Hypatia is officially condemned.",
+    "yeigo":   "mystic_blood_lock",
+    "shakshi": "Completing Mystic Blood ends the telecom hijack capability permanently — the sanctioned kill game closes the signal path",
     "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
+    "dyne":    false,
+    "anom":    true,
     "andyf":   false
   },
   {
-    "yeigo":   "hypatia_pardoned",
-    "shakshi": "Fae/Assassin line outcome — clean intelligence produced a pardon. Hypatia is officially cleared.",
+    "yeigo":   "mortal_kill_pacifism_broken",
+    "shakshi": "The player directly killed a mortal — the telecom hijack capability is lost across all subsequent games",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
-    "anom":    false,
+    "anom":    true,
     "andyf":   false
   },
   {
-    "yeigo":   "bombastus_intel_received",
-    "shakshi": "Bombastus got the information in the form Kelly allowed — his understanding of Hypatia permanently shaped by which line the player walked",
+    "yeigo":   "st_alaro_deal_refused",
+    "shakshi": "The player declined — the radio path closes, the Colt .45 path remains the secret ending route",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "luminyx_teacher_known",
-    "shakshi": "Lucion has been Luminyx's teacher — relevant to every subsequent encounter with either of them",
+    "yeigo":   "receiver_built",
+    "shakshi": "The player crafted a crystal radio receiver — Hack 35, passive signal reception",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "transmitter_built",
+    "shakshi": "The player crafted a signal transmitter — Hack 55, connects to Lapidus airwave infrastructure",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "hildegarde_family_depth_known",
-    "shakshi": "The queen's opposition to the war has roots deeper than politics — her daughter is entangled with the Fae, her trusted figure teaches the loop's hinge point",
+    "yeigo":   "radio_built",
+    "shakshi": "The player built a full radio unit — Hack 80 player-tier capability, local transmission only. Not comparable to St. Alaro's dominion. Basic skill expression.",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,

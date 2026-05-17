@@ -509,6 +509,117 @@ def render_vitriol_assignment_sheet(
     return buf.getvalue()
 
 
+# ── Skill selector (SKILL_SELECT phase) ──────────────────────────────────────
+
+# VITRIOL letter → display colour (matches stat identity)
+_LETTER_COLOR: dict[str, tuple] = {
+    "V": (190,  60,  60),   # vitality — blood red
+    "I": (120,  90, 200),   # introspection / ingenuity — violet
+    "T": (140, 100,  50),   # tactility — earth brown
+    "R": ( 60, 170, 180),   # reflectivity — cyan water
+    "O": (200, 165,  40),   # ostentation — gold
+    "L": ( 60, 165,  80),   # levity — air green
+}
+
+
+def render_skill_select_screen(
+    skill_opts:  list,           # list of (skill_id, name, vitriol_letter, base_rank)
+    cursor_idx:  int,
+    tag_picks:   list[str],      # selected skill IDs
+    max_picks:   int,
+    vitriol:     dict[str, int],
+    width:       int = 800,
+    height:      int = 600,
+) -> "Optional[bytes]":
+    """
+    Render the SKILL_SELECT screen — VITRIOL-derived base ranks + 2 tag picks.
+
+    Layout:
+      Header: Ko's voice line
+      Left column: skill list with base rank bars and VITRIOL letter badge
+      Right column: tag pick queue (chosen skills highlighted)
+      Footer: navigation hints
+    """
+    if not _PIL_AVAILABLE:
+        return None
+
+    img  = Image.new("RGB", (width, height), _WAKING_BG)
+    draw = ImageDraw.Draw(img)
+
+    title_font = _load_font(20)
+    body_font  = _load_font(15)
+    dim_font   = _load_font(13)
+    badge_font = _load_font(12)
+
+    pad = 40
+    remaining = max_picks - len(tag_picks)
+
+    # Header
+    header = "Ko reads what you already carry."
+    draw.text((pad, pad), header, font=title_font, fill=_GOLD)
+    sub = f"Choose {max_picks} skills to deepen.  {remaining} remaining."
+    draw.text((pad, pad + 28), sub, font=dim_font, fill=_UNSELECTED)
+    draw.line([(pad, pad + 50), (width - pad, pad + 50)], fill=_PANEL_EDGE, width=1)
+
+    # Skill list
+    list_y0   = pad + 60
+    row_h     = 26
+    visible   = min(len(skill_opts), (height - list_y0 - 60) // row_h)
+    # Scroll window centred on cursor
+    start     = max(0, min(cursor_idx - visible // 2, len(skill_opts) - visible))
+
+    for i in range(visible):
+        idx   = start + i
+        if idx >= len(skill_opts):
+            break
+        skill_id, name, letter, base_rank = skill_opts[idx]
+        y     = list_y0 + i * row_h
+        is_cursor   = (idx == cursor_idx)
+        is_tagged   = (skill_id in tag_picks)
+        lcolor      = _LETTER_COLOR.get(letter, _UNSELECTED)
+
+        # Cursor marker
+        prefix = "▶ " if is_cursor else "  "
+        # Tag marker
+        tag_mark = " ✓" if is_tagged else ""
+        # Text colour
+        if is_tagged:
+            tcolor = _GOLD
+        elif is_cursor:
+            tcolor = (220, 215, 205)
+        else:
+            tcolor = _UNSELECTED
+
+        # Skill name + tag mark
+        draw.text((pad + 14, y), f"{prefix}{name}{tag_mark}", font=body_font, fill=tcolor)
+
+        # VITRIOL letter badge (right side of name)
+        badge_x = pad + 220
+        draw.text((badge_x, y + 1), f"[{letter}]", font=badge_font, fill=lcolor)
+
+        # Base rank pips
+        pip_x = badge_x + 34
+        for r in range(3):
+            filled = r < base_rank
+            pip_color = lcolor if filled else (40, 36, 52)
+            draw.ellipse(
+                [pip_x + r * 10, y + 4, pip_x + r * 10 + 7, y + 13],
+                fill=pip_color,
+            )
+        # +1 tag boost indicator if tagged
+        if is_tagged:
+            draw.text((pip_x + 36, y + 1), "+1", font=badge_font, fill=_GOLD)
+
+    # Footer hints
+    hints = "↑↓ navigate   [enter] select / deselect   [esc] confirm with fewer picks"
+    draw.text((pad, height - pad - 18), hints, font=dim_font, fill=_UNSELECTED)
+
+    import io
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    return buf.getvalue()
+
+
 # ── Export chargen sequence ───────────────────────────────────────────────────
 
 def render_chargen_sequence(

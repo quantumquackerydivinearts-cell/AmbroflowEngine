@@ -1,79 +1,63 @@
 [
   {
-    "yeigo":   "lectura_poison_collaboration",
-    "shakshi": "Lectura contributed ocean toxicology and salt water — Undine knowledge of what the sea does to iron",
+    "yeigo":   "philosophers_stone_attempted",
+    "shakshi": "The player declared the Great Work and began the attempt — the quest opening is the declaration of intent",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "cyrus_poison_collaboration",
-    "shakshi": "Cyrus contributed Assassin knowledge of delivery and application — how to get it in",
+    "yeigo":   "sulphera_reagents_gathered",
+    "shakshi": "Rare materials from Sulphera collected for the stone",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "kielum_favor_understood",
-    "shakshi": "The player understands why Nexiott has survived every prior attempt — Kielum's protection keeps his most useful operative in play",
+    "yeigo":   "mercurie_reagents_gathered",
+    "shakshi": "Rare materials from Mercurie collected for the stone",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "demonic_iron_acquired",
-    "shakshi": "Iron from Sulphera gathered — already touched the infernal register before the work begins",
+    "yeigo":   "lapidus_reagents_gathered",
+    "shakshi": "Rare materials from Lapidus collected for the stone",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "sulphur_furnace_purified",
-    "shakshi": "The demonic iron purified over sulphur in a furnace — fire as the first transformation",
+    "yeigo":   "three_realm_reagents_complete",
+    "shakshi": "All three realms represented in the work — Sulphera, Mercurie, and Lapidus materials in hand",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "salt_water_rusted",
-    "shakshi": "The purified iron rusted by ocean salt water — surrender to water after surviving fire, Lectura's material contribution",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "rust_vial_collected",
-    "shakshi": "The rust brushed into a vial — the chemical trace of iron that went through fire and yielded to water",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "mercury_acquired",
-    "shakshi": "Mercury acquired — the great solvent and messenger, the mediating element that carries the rust",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "nexiott_poison_complete",
-    "shakshi": "The formula complete — demonic iron rusted by salt water, rust mixed with mercury. Ready for delivery.",
+    "yeigo":   "philosophers_stone_grade_achieved",
+    "shakshi": "The Great Work at an attempted grade — alchemy 100, metal transposition, all reagents, BreathOfKo sufficient. Cannot be sold on any market.",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "kielum_protection_countered",
-    "shakshi": "The demonic iron having passed through the infernal register makes the poison legible to Kielum's protection in a way natural toxins cannot be",
+    "yeigo":   "magnum_opus_complete",
+    "shakshi": "The alchemical arc of the game closed — solve et coagula fully enacted. The player who lived the game rather than optimized it.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "philosophers_stone_unresolved",
+    "shakshi": "The quest is open and may stay open — not a failure, the Great Work continues beyond the game's frame",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    true,

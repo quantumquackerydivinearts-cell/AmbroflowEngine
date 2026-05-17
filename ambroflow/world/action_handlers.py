@@ -142,12 +142,19 @@ def _rest(ctx: ActionContext) -> ActionResult:
     return ActionResult.save_and_heal()
 
 
-@handler("meditation_tutorial", "meditate")
-def _meditate(ctx: ActionContext) -> ActionResult:
+@handler("meditation_tutorial")
+def _meditate_tutorial(ctx: ActionContext) -> ActionResult:
     med = ctx.systems.get("meditation")
     if med is not None and hasattr(med, "begin_tutorial"):
         med.begin_tutorial()
     return ActionResult.open_ui("meditation")
+
+
+@handler("meditate")
+def _altar_meditate(ctx: ActionContext) -> ActionResult:
+    # Daytime voluntary altar encounter — Ko and Moshize Jabiru.
+    # Nightly BoK calibration is auto-triggered at end of day; this is separate.
+    return ActionResult.open_ui("divine_encounter")
 
 
 @handler("lore_books", "read")
@@ -167,12 +174,14 @@ def _rest(ctx: ActionContext) -> ActionResult:
 
 @handler("stairs_up")
 def _stairs_up(ctx: ActionContext) -> ActionResult:
-    return ActionResult.transition("player_home_upper", "24,7")
+    from ..scenes.home_zone import UPPER_SPAWN
+    return ActionResult.transition("player_home_upper", f"{UPPER_SPAWN[0]},{UPPER_SPAWN[1]}")
 
 
 @handler("stairs_down")
 def _stairs_down(ctx: ActionContext) -> ActionResult:
-    return ActionResult.transition("lapidus_wiltoll_home", "9,3")
+    from ..scenes.home_zone import GROUND_SPAWN
+    return ActionResult.transition("player_home_ground", f"{GROUND_SPAWN[0]},{GROUND_SPAWN[1]}")
 
 
 # Sulphera access gate

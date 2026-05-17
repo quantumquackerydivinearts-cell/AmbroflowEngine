@@ -122,7 +122,7 @@ def test_full_presence_full_diagnosis_high_resonance():
     reading  = _full_reading("0034_KLIT", subject.field.axes())
     approach = TreatmentApproach(approach_mode="presence")
     presence = PresenceState(permeability=1.0)
-    inv      = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv      = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
 
     resonance, _ = a.calculate_resonance(subject, reading, approach, presence, inv)
     assert resonance >= 0.85
@@ -133,7 +133,7 @@ def test_formula_approach_reduces_resonance():
     subject = SUBJECT_BY_ID["0034_KLIT"]
     reading  = _full_reading("0034_KLIT", subject.field.axes())
     presence = PresenceState(permeability=1.0)
-    inv      = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv      = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
 
     r_presence, _ = a.calculate_resonance(subject, reading, TreatmentApproach("presence"), presence, inv)
     r_formula,  _ = a.calculate_resonance(subject, reading, TreatmentApproach("formula"),  presence, inv)
@@ -145,7 +145,7 @@ def test_false_axis_identification_penalises_resonance():
     a       = _make_system()
     subject = SUBJECT_BY_ID["0034_KLIT"]
     presence = PresenceState(permeability=1.0)
-    inv      = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv      = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
 
     clean_reading = _full_reading("0034_KLIT", subject.field.axes())
     noisy_reading = DiagnosticReading(
@@ -181,7 +181,7 @@ def test_low_permeability_reduces_resonance():
     a       = _make_system()
     subject = SUBJECT_BY_ID["0034_KLIT"]
     reading = _full_reading("0034_KLIT", subject.field.axes())
-    inv     = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv     = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
 
     r_high, _ = a.calculate_resonance(subject, reading, TreatmentApproach("presence"),
                                       PresenceState(permeability=1.0), inv)
@@ -194,7 +194,7 @@ def test_low_permeability_reduces_resonance():
 
 def test_resonant_treatment_produces_output():
     a   = _make_system()
-    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
     result = a.treat(
         subject_id="0034_KLIT",
         actor_id="test",
@@ -209,7 +209,7 @@ def test_resonant_treatment_produces_output():
 
 def test_resonant_treatment_consumes_materials():
     a   = _make_system()
-    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
     a.treat(
         subject_id="0034_KLIT",
         actor_id="test",
@@ -224,7 +224,7 @@ def test_resonant_treatment_consumes_materials():
 
 def test_epiphanic_result_requires_charge_and_resonance():
     a   = _make_system()
-    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
 
     # High resonance but no charge → not epiphanic
     result = a.treat(
@@ -238,7 +238,7 @@ def test_epiphanic_result_requires_charge_and_resonance():
     assert not result.epiphanic
 
     # High resonance AND sufficient charge → epiphanic
-    inv2 = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv2 = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
     result2 = a.treat(
         subject_id="0034_KLIT",
         actor_id="test",
@@ -253,7 +253,7 @@ def test_epiphanic_result_requires_charge_and_resonance():
 
 def test_epiphanic_result_has_contagion_radius():
     a   = _make_system()
-    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
     result = a.treat(
         subject_id="0034_KLIT",
         actor_id="test",
@@ -268,7 +268,7 @@ def test_epiphanic_result_has_contagion_radius():
 
 def test_non_epiphanic_result_has_no_contagion():
     a   = _make_system()
-    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
     result = a.treat(
         subject_id="0034_KLIT",
         actor_id="test",
@@ -282,7 +282,7 @@ def test_non_epiphanic_result_has_no_contagion():
 
 def test_formula_approach_with_correct_materials_still_low_resonance():
     a   = _make_system()
-    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
     result = a.treat(
         subject_id="0034_KLIT",
         actor_id="test",
@@ -296,7 +296,7 @@ def test_formula_approach_with_correct_materials_still_low_resonance():
 
 def test_field_transformed_above_threshold():
     a   = _make_system()
-    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
     result = a.treat(
         subject_id="0034_KLIT",
         actor_id="test",
@@ -312,7 +312,7 @@ def test_field_transformed_above_threshold():
 
 def test_ontological_engagement_gives_alchemical_sanity():
     a   = _make_system()
-    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
     reading = DiagnosticReading(
         subject_id="0034_KLIT",
         identified_axes=frozenset({"temporal"}),
@@ -326,7 +326,7 @@ def test_ontological_engagement_gives_alchemical_sanity():
 
 def test_cosmological_engagement_gives_cosmic_sanity():
     a   = _make_system()
-    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
     reading = DiagnosticReading(
         subject_id="0034_KLIT",
         identified_axes=frozenset({"temporal"}),
@@ -342,11 +342,11 @@ def test_epiphanic_sanity_delta_larger_than_base():
     a = _make_system()
 
     base_reading = _full_reading("0034_KLIT", {"temporal"})
-    inv1 = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv1 = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
     base_result = a.treat("0034_KLIT", "test", base_reading, TreatmentApproach("presence"),
                           PresenceState(permeability=1.0, epiphanic_charge=0.0), inv1)
 
-    inv2 = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv2 = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
     epic_result = a.treat("0034_KLIT", "test", base_reading, TreatmentApproach("presence"),
                           PresenceState(permeability=1.0, epiphanic_charge=_EPIPHANIC_CHARGE_REQ), inv2)
 
@@ -359,7 +359,7 @@ def test_epiphanic_sanity_delta_larger_than_base():
 
 def test_mode_insights_reported_for_high_engagement():
     a   = _make_system()
-    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
     reading = DiagnosticReading(
         subject_id="0034_KLIT",
         identified_axes=frozenset({"temporal"}),
@@ -383,7 +383,7 @@ def test_mode_insights_reported_for_high_engagement():
 def test_treatment_recorded_to_orrery():
     orrery = _MockOrrery()
     a      = AlchemySystem(orrery=orrery)
-    inv    = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv    = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
     a.treat("0034_KLIT", "test", _full_reading("0034_KLIT", {"temporal"}),
             TreatmentApproach("presence"), PresenceState(permeability=1.0), inv)
 
@@ -405,7 +405,7 @@ def test_unknown_subject_fails_gracefully():
 
 def test_available_subjects_with_materials():
     a   = _make_system()
-    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
     available = a.available_subjects(inv)
     ids = [s.id for s in available]
     assert "0034_KLIT" in ids
@@ -479,8 +479,8 @@ def test_provenance_modifier_applied_to_resonance():
     # Use partial engagement so resonance has headroom below 1.0 for provenance to boost.
     reading = _partial_reading("0034_KLIT", subject.field.axes())
     presence = PresenceState(permeability=0.7)
-    inv_base = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
-    inv_prov = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv_base = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
+    inv_prov = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
 
     # Aligned (sulphera → temporal), foraged — should give modifier > 1.0
     store_high = {
@@ -503,7 +503,7 @@ def test_provenance_modifier_applied_to_resonance():
 def test_provenance_consumed_on_treat():
     """Materials consumed from provenance store when treatment succeeds."""
     a   = _make_system()
-    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
     store = {
         "0073_KLOB": [ItemProvenance(realm_id="lapidus", source_type="foraged", quantity=2)],
         "0040_KLOB": [ItemProvenance(realm_id="lapidus", source_type="foraged", quantity=1)],
@@ -536,7 +536,7 @@ def test_partial_provenance_consume():
 def test_provenance_missing_still_works():
     """treat() works without provenance_store — backward compatible."""
     a   = _make_system()
-    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
     result = a.treat(
         subject_id="0034_KLIT",
         actor_id="test",
@@ -554,7 +554,7 @@ def test_provenance_missing_still_works():
 def test_recipe_discovered_at_sufficient_resonance():
     a    = _make_system()
     book = RecipeBook()
-    inv  = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv  = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
 
     result = a.treat(
         subject_id="0034_KLIT",
@@ -575,7 +575,7 @@ def test_recipe_discovered_at_sufficient_resonance():
 def test_recipe_not_discovered_at_low_resonance():
     a    = _make_system()
     book = RecipeBook()
-    inv  = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv  = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
 
     result = a.treat(
         subject_id="0034_KLIT",
@@ -598,7 +598,7 @@ def test_recipe_not_re_discovered():
     book = RecipeBook()
 
     for _ in range(2):
-        inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+        inv = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
         result = a.treat(
             subject_id="0034_KLIT",
             actor_id="test",
@@ -617,7 +617,7 @@ def test_recipe_not_re_discovered():
 def test_recipe_book_contains_correct_materials():
     a    = _make_system()
     book = RecipeBook()
-    inv  = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv  = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
 
     a.treat(
         subject_id="0034_KLIT",
@@ -639,7 +639,7 @@ def test_recipe_orrery_event_on_first_discovery():
     orrery = _MockOrrery()
     a      = AlchemySystem(orrery=orrery)
     book   = RecipeBook()
-    inv    = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv    = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
 
     a.treat(
         subject_id="0034_KLIT",
@@ -658,7 +658,7 @@ def test_recipe_orrery_event_on_first_discovery():
 def test_no_recipe_book_no_discovery_event():
     orrery = _MockOrrery()
     a      = AlchemySystem(orrery=orrery)
-    inv    = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv    = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
 
     a.treat(
         subject_id="0034_KLIT",
@@ -694,7 +694,7 @@ def test_missing_apparatus_hard_blocks_treatment():
 
 def test_apparatus_not_consumed_on_treatment():
     a   = _make_system()
-    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
     a.treat(
         subject_id="0034_KLIT",
         actor_id="test",
@@ -704,8 +704,8 @@ def test_apparatus_not_consumed_on_treatment():
         inventory=inv,
     )
     # Materials consumed; apparatus remains
-    assert inv.get("0001_KLOB", 0) == 1
-    assert inv.get("0002_KLOB", 0) == 1
+    assert inv.get("8000_KLOB", 0) == 1
+    assert inv.get("2000_KLOB", 0) == 1
 
 
 def test_available_subjects_excludes_missing_apparatus():
@@ -718,7 +718,7 @@ def test_available_subjects_excludes_missing_apparatus():
 
 def test_available_subjects_includes_when_apparatus_present():
     a   = _make_system()
-    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1, "0002_KLOB": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1, "2000_KLOB": 1}
     ids = [s.id for s in a.available_subjects(inv)]
     assert "0034_KLIT" in ids
 
@@ -726,7 +726,7 @@ def test_available_subjects_includes_when_apparatus_present():
 def test_partial_apparatus_still_blocks():
     a   = _make_system()
     # Mortar present but Pestle missing
-    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "0001_KLOB": 1}
+    inv = {"0073_KLOB": 2, "0040_KLOB": 1, "8000_KLOB": 1}
     result = a.treat(
         subject_id="0034_KLIT",
         actor_id="test",
@@ -736,7 +736,7 @@ def test_partial_apparatus_still_blocks():
         inventory=inv,
     )
     assert not result.success
-    assert "0002_KLOB" in result.reason
+    assert "2000_KLOB" in result.reason
 
 
 def test_subject_required_objects_are_klob_ids():

@@ -1,55 +1,127 @@
 [
   {
-    "yeigo":   "sophia_history_session",
-    "shakshi": "Sophia sat with the player and gave the major beats of human history — witness testimony, not scholarship",
+    "yeigo":   "genovise_necromancy_request",
+    "shakshi": "Genovise asked the player to find Savvi for necromantic ingredients — only available near him and Lakota in the Visitor's Ring",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "human_self_destruction_known",
-    "shakshi": "The player knows humanity attempted to destroy itself multiple times — in broad strokes, without the internal logic of why",
+    "yeigo":   "necromantic_ingredients_sought",
+    "shakshi": "The player is looking for something that only exists near Savvi and Lakota",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "savvi_found",
+    "shakshi": "The player found Savvi near Lakota in the Visitor's Ring of Sulphera",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "savvi_met",
+    "shakshi": "Savvi met — Salamander, arms dealer, unapologetic, Lakota's son. The grief belongs to the player, not to him.",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "earth_origin_confirmed",
-    "shakshi": "Humanity came from Earth — space-faring colony species. Now explicit, not implied.",
+    "yeigo":   "lakota_met",
+    "shakshi": "Lakota met — cosmologically connected, Tagame's parent, Lanzu's parent, Savvi's parent. Present in the Visitor's Ring.",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "aeralune_arrival_known",
-    "shakshi": "The player knows the broad shape of how humanity reached Aeralune — the arc without the texture of Games 1-6",
+    "yeigo":   "savvi_lakota_proximity_known",
+    "shakshi": "Savvi is usually near his father in the Visitor's Ring — their presence here is habitual",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "savvi_arms_dealing_known",
+    "shakshi": "The player learned Savvi deals arms in Lapidus — stated plainly, without apology",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "savvi_sulpheran_order_known",
+    "shakshi": "Savvi is ushering a Sulpheran order into Lapidus — series-spanning consequence of his work",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "sophia_outside_perspective_known",
-    "shakshi": "Sophia has the facts without the phenomenology — she watched but was never inside the species. The player may notice the limit or may not.",
+    "yeigo":   "savvi_deathbringer_known",
+    "shakshi": "Savvi's role as deathbringer in Lapidus named plainly and without apology by the man himself",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "genovise_savvi_connection_known",
+    "shakshi": "The black market the player has used since 0003 runs through a Salamander arms dealer — Genovise's supply chain was always his",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "black_market_depth_known",
+    "shakshi": "What the player's shop has been part of since the beginning — the full depth of the pipeline now visible",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    true,
     "andyf":   false
   },
   {
-    "yeigo":   "games_1_6_occluded",
-    "shakshi": "The specific content of the prior six games was withheld deliberately — the arc is visible, the texture is not",
+    "yeigo":   "good_grief_witnessed",
+    "shakshi": "The player sat with the plain truth of what Savvi is and what Lapidus is becoming — grief as the gate",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
-    "anom":    true,
+    "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "human_history_weight_known",
-    "shakshi": "Everything happening in Azonithia is downstream of a very long human story — the player now carries that frame",
+    "yeigo":   "zen_meditation_available",
+    "shakshi": "Grief as the prerequisite — the Zen Meditation perk gate opens here",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "necromantic_ingredients_acquired",
+    "shakshi": "Savvi provided the ingredients Genovise needed for the necromantic rite",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "necromancy_learned_lakota",
+    "shakshi": "Lakota taught the player necromancy directly — a deeper path than acquiring ingredients alone",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "necromancy_available",
+    "shakshi": "Necromancy is now accessible — via Lakota's direct teaching or Genovise's completed rite, either path grants this",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,

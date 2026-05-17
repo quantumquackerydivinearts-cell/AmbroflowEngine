@@ -1,122 +1,82 @@
 [
   {
-    "yeigo":   "abyss_entered",
-    "shakshi": "The dream of the Abyss — all nine Gods present, each speaking, the player individually addressed for what they have lived",
+    "yeigo":   "hypatia_lab_ransacked",
+    "shakshi": "The player arrived to find the lab broken into — inference required, no direct witness",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "abyss_debriefing_received",
-    "shakshi": "Full debriefing for players who cleared Othieru and Zukoru — the Gods acknowledge what was done to Kielum's network directly",
+    "yeigo":   "luminyx_break_in_known",
+    "shakshi": "The player pieced together that Luminyx broke in and took what she needed",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "abyss_standard_received",
-    "shakshi": "The Gods address the player without the debriefing register — still individually, still for what was lived",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "moshize_met",
-    "shakshi": "Moshize met in the Abyss — Chazak's deity, present among the nine",
+    "yeigo":   "hypatia_notes_stolen",
+    "shakshi": "Luminyx took Hypatia's notes — what she learned from them shapes who she becomes in 1728",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "shakzefan_abyss_met",
-    "shakshi": "Shakzefan met in the Abyss — distinct from the Visitor's Ring encounter in 0017, the Gods' register",
+    "yeigo":   "hypatia_amelia_wedding_crystal_known",
+    "shakshi": "A future wedding artifact present in the now — Hypatia and Amelia's wedding yet to be had, the crystal already existed here",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "lakota_abyss_met",
-    "shakshi": "Lakota met in the Abyss — distinct from the Visitor's Ring encounter in 0026",
+    "yeigo":   "luminyx_displaced_1728",
+    "shakshi": "Luminyx transported to Earth 1728AD during an eclipse — her mortal arc's hinge point, engineered by her own hand",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "jabiru_met",
-    "shakshi": "Jabiru met — God of Language, Stories and Knowledge, Lucion's deity, met properly at last",
+    "yeigo":   "luminyx_earth_arrival_known",
+    "shakshi": "Luminyx is now in the historical record, prior to her birth on Aeralune — the loop begins closing",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "ohadame_met",
-    "shakshi": "Ohadame met — Goddess of Past-life Memories, Faygoru's deity",
+    "yeigo":   "eclipse_timing_known",
+    "shakshi": "The eclipse on Earth 1728 is the arrival point — series-spanning, relevant to Game 1's timeline split at 5237/1728",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "ko_abyss_met",
-    "shakshi": "Ko met in the Abyss — distinct from all dream calibrations, the Gods' register not the dream register. The Sun that became the Moon, present among the nine.",
+    "yeigo":   "royal_radio_panic",
+    "shakshi": "The castle lost composure publicly — the royal information infrastructure registered something it could not manage",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "koga_abyss_met",
-    "shakshi": "Koga met in the Abyss — distinct from the Fae temple encounter in 0031",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "mona_abyss_met",
-    "shakshi": "Mona met in the Abyss — distinct from the Fae temple encounter in 0032",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "zoha_abyss_met",
-    "shakshi": "Zoha met in the Abyss — distinct from the Fae temple encounter in 0033",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "bok_shown_gods",
-    "shakshi": "The fractal state shown to the player directly by the Gods — convergence of Lucifer's reading, St. Alaro's mark, Ko's calibrations across the full game",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "afterlife_preparation_received",
-    "shakshi": "Specific to what the BoK actually contains — the afterlife preparation is not an abstraction, it follows from the fractal",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "bok_player_witnessed",
-    "shakshi": "The player saw their own fractal state — what they do with that knowledge is not determined here",
+    "yeigo":   "radio_panic_source_unknown",
+    "shakshi": "The panic's cause is not officially named — the player inferred it, the castle does not admit what happened",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "hypatia_amelia_wedding_imminent",
+    "shakshi": "The crystal's existence confirms the wedding will happen — Saelith's birth follows from it, the causal chain intact",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
     "andyf":   false
   }
 ]

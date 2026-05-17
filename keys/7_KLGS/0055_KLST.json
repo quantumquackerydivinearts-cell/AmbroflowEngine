@@ -1,119 +1,63 @@
 [
   {
-    "yeigo":   "kielum_poison_inflicted",
-    "shakshi": "Kielum poisoned the player before the final confrontation — his last tactical move",
+    "yeigo":   "castle_azoth_defense_joined",
+    "shakshi": "The player took position at the front of Castle Azoth — inverse formation from 0030, Lanvaki at the rear this time",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "binary_choice_forced",
-    "shakshi": "The poisoned state forced the choice between orders — manufactured urgency without full capacity",
+    "yeigo":   "lanvaki_rear_held",
+    "shakshi": "Lanvaki and the soldiers held the rear while the player faced the frontal assault",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "kielum_leverage_active",
-    "shakshi": "The player is compromised — the choice under duress, the same mechanism as Nexiott's caravan order",
+    "yeigo":   "assassin_assault_repelled",
+    "shakshi": "The player successfully defended the frontal assault — the castle gates held",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "assassins_defeated_castle",
+    "shakshi": "The Assassin order took a significant loss at Castle Azoth — the assault broken at the gates",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_line_castle_secured",
+    "shakshi": "The castle held for Nexiott's line — the defense completed",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "asmoth_assault_led",
+    "shakshi": "Asmoth led the assault — the man who forgave without forgetting, now the enemy at the gate",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    true,
     "andyf":   false
   },
   {
-    "yeigo":   "poison_purged",
-    "shakshi": "Meditation, medicine, and alchemy sufficient — the player fought off Kielum's poison",
+    "yeigo":   "hue_assault_participant",
+    "shakshi": "Hue was in the assault — the same man who invited the player to camp at the western plateau edge in 0011",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
-    "anom":    false,
+    "anom":    true,
     "andyf":   false
   },
   {
-    "yeigo":   "kielum_leverage_lost",
-    "shakshi": "Kielum's last tactical move failed — the player circumvented the forced binary",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "choice_from_strength",
-    "shakshi": "The binary available from sovereignty — the urgency gone, the options unchanged, the pressure absent",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "asmoth_killed",
-    "shakshi": "Asmoth dead — the man who forgave without forgetting",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "cyrus_killed",
-    "shakshi": "Cyrus dead — Assassin, present at the night meeting in 0025",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "hue_killed",
-    "shakshi": "Hue dead — Kore's brother, the man who invited the player to camp at the western plateau edge in 0011",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "assassin_order_destroyed",
-    "shakshi": "The order that inducted the player is gone — the oath sworn in 0023 has no home left",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "lanvaki_killed",
-    "shakshi": "Captain Lanvaki dead — carried the plasma rifle in 0030, held the rear in 0054",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "akande_killed",
-    "shakshi": "Sgt. Akande dead — one of the three Heroes of the Azoth Soldiery",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "kilesha_killed",
-    "shakshi": "Pvt. Kilesha dead — one of the three Heroes of the Azoth Soldiery",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "azoth_soldiery_heroes_gone",
-    "shakshi": "The three Heroes of the Azoth Soldiery dead — the military arm of Nexiott's order without its named leaders",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "binary_declined",
-    "shakshi": "The player from strength found the choice unnecessary — neither order imposed, the binary made negligible",
+    "yeigo":   "nexiott_noble_district_known",
+    "shakshi": "Nexiott lives adjacent to the castle in the noble district — not in the castle itself. The castle defense and the eventual deathtrap are separate locations.",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,

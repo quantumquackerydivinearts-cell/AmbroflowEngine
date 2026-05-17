@@ -15,7 +15,7 @@ Ring structure (7 sin rings + Visitor Ring + Royal Ring):
   sloth_ring_entry      The Sitting Place (genuine rest zone)
   wrath_ring_entry      Wrath threshold
   lust_ring_entry       Lust Ring approach (largest ring)
-  royal_ring            Accessible after Asmodeus's blessing (quest 0036_KLST)
+  royal_ring            Accessible after Asmodeus's blessing (quest 0037_KLST)
 
 Individual dungeon areas within each ring are handled by the dungeon generator.
 These zone definitions are the navigable overworld layer of each ring.
@@ -157,7 +157,7 @@ def build_sulphera_ring_entries() -> list[Zone]:
     ]
     zones = [_ring_entry(zid, nm, col, dr) for zid, nm, col, dr in ring_specs]
 
-    # Royal Ring — accessible after Asmodeus's blessing (quest 0036_KLST).
+    # Royal Ring — accessible after Asmodeus's blessing (quest 0037_KLST).
     # No Visitor Ring exit; entered via quest event only.
     # Hypatia is here (as demoness); Drovitth stands at the Orrery.
     royal_rows = [

@@ -1,73 +1,65 @@
 [
   {
-    "yeigo":   "hypatia_gun_instructions_received",
-    "shakshi": "Hypatia gave the fabrication instructions in the Royal Ring — demonic iron purified with melted angelic spears",
+    "yeigo":   "wrath_ring_reentered",
+    "shakshi": "The player returned to the ring already cleared in 0035 — it has been swamped with what was left behind",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "angelic_purification_method_known",
-    "shakshi": "Demonic iron purified with angelic spears rather than sulphur and salt water — a different instrument from the same base material as 0041",
+    "yeigo":   "othieru_encountered",
+    "shakshi": "Othieru manifest — Blood Ball, Demon of Abandon, Kielum's partner, animator of the accumulated dead",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "blood_marionettes_witnessed",
+    "shakshi": "The accumulated dead of the player's run given form — recognizable as themselves, animated by Othieru, specific not abstract",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "angelic_spears_sought",
-    "shakshi": "The player returned to the Pride Ring's ash fields to recover spears",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "angelic_spears_recovered",
-    "shakshi": "Spears collected from the continuous extermination campaign — they have always been in the ash",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "angelic_extermination_known",
-    "shakshi": "The campaign has been going on since forever — structural, not dramatic. The player walked through it in 0015 without knowing what they were seeing.",
+    "yeigo":   "killed_characters_manifest",
+    "shakshi": "The player sees exactly who they have killed — sparse or crowded depending on the run",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    true,
     "andyf":   false
   },
   {
-    "yeigo":   "demonic_iron_purified_angelic",
-    "shakshi": "The demonic iron melted down and purified with angelic spears — the base material transformed by what it absorbed",
+    "yeigo":   "othieru_battle_joined",
+    "shakshi": "The fight began — Axiozul's benediction behind the player, permadeath ahead",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "colt_45_crafted",
-    "shakshi": "Hypatia's Angelic Gun fabricated — the instrument of the Colt .45 path of the secret ending",
+    "yeigo":   "othieru_defeated",
+    "shakshi": "Othieru killed — the Wrath Ring cleared of his presence, Kielum's network diminished by one",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "gold_bullet_capable",
-    "shakshi": "The weapon that can fire gold bullets — the only thing that can kill Sophia, the alternative to St. Alaro's radio path",
+    "yeigo":   "kielum_network_engaged",
+    "shakshi": "First direct engagement with Kielum's demonic network — a preview of the final conflict, the network becoming visible",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "gold_bullet_crafted",
-    "shakshi": "A gold bullet cast and turned — ammunition for the Colt .45, the only thing that can kill Sophia",
+    "yeigo":   "voracity_permadeath_risked",
+    "shakshi": "The player entered knowing the stakes — Axiozul told them death is not the end, the game immediately tests whether they believe it",
     "kaelsuy": "7_KLGS",
-    "dyne":    true,
+    "dyne":    false,
     "anom":    false,
     "andyf":   false
   }

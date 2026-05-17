@@ -88,7 +88,7 @@ VENDOR_CATALOGS: dict[str, dict[str, int]] = {
 #   West  (0,10)+(0,11)   → lapidus_azonithia_slum      (46,5)+(46,6)
 #   East  (59,10)+(59,11) → lapidus_mt_elaene_trail      (1,6)+(1,7)
 #   North (11,0)+(12,0)   → lapidus_litleaf_thoroughfare (0,18)+(1,18)
-#   North (3,8)+(4,8)     → lapidus_wiltoll_home         (20,11)+(21,11)
+#   North (3,8)+(4,8)     → player_home_ground            (23,11)
 
 _WILTOLL_MAP = [
     #          1111111111222222222233333333334444444444555555555566
@@ -135,11 +135,11 @@ _WILTOLL_EXITS = [
              target_zone="lapidus_litleaf_thoroughfare", target_x=0, target_y=18),
     ZoneExit(x=12, y=0, direction="north",
              target_zone="lapidus_litleaf_thoroughfare", target_x=1, target_y=18),
-    # Player home door at cols 3-4, row 8
+    # Player home door at cols 3-4, row 8 → canonical 48-wide home zone
     ZoneExit(x=3, y=8, direction="north",
-             target_zone="lapidus_wiltoll_home", target_x=20, target_y=11),
+             target_zone="player_home_ground", target_x=23, target_y=11),
     ZoneExit(x=4, y=8, direction="north",
-             target_zone="lapidus_wiltoll_home", target_x=21, target_y=11),
+             target_zone="player_home_ground", target_x=23, target_y=11),
     # Elsa's house door at cols 20-21, row 8
     ZoneExit(x=20, y=8, direction="north",
              target_zone="lapidus_elsa_house", target_x=13, target_y=8),

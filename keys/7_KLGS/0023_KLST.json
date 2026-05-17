@@ -1,74 +1,66 @@
 [
   {
-    "yeigo":   "assassin_induction_eligible",
-    "shakshi": "Hue survived or was never affected and the player's alignment is sufficient — Asmoth considers the player",
+    "yeigo":   "nexiott_gnome_mission_accepted",
+    "shakshi": "The player accepted Nexiott's mission to enforce new quotas on the Gnomes — only available to players who have not committed against the war",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "asmoth_met",
-    "shakshi": "Asmoth met — Assassin chief, orphan of Kielum's second war, temperamental but kind. Forgives what ignorance produced. Does not forget.",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "saffron_crystals_stolen_back",
-    "shakshi": "The player retrieved the real crystals from Saffron — induction task for players who delivered them in 0004. The restoration is the ceremony.",
+    "yeigo":   "gnome_houses_trashed",
+    "shakshi": "The player destroyed the children's housework in the Gnome quarters",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "crystals_returned_kore",
-    "shakshi": "The crystals are back with the witches — what Saffron took through the player returns through the player. The 0004 loop closed.",
+    "yeigo":   "quota_notices_delivered",
+    "shakshi": "New metal quota notices left on every Gnome door — bureaucratic violence dressed as administration",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "induction_task_complete",
-    "shakshi": "Induction task satisfied — crystal recovery for 0004 delivery players, or prior false crystal delivery already counted",
+    "yeigo":   "gnome_oppression_performed",
+    "shakshi": "The act is complete — the task was the task, the game does not comment",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "assassin_oath_sworn",
-    "shakshi": "The oath stands regardless of crystal path — the player swore to the Assassin order",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "assassin_inducted",
-    "shakshi": "The player is now inside the Assassin order",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "asmoth_forgave_history",
-    "shakshi": "Asmoth read the player's full history and chose to forgive what ignorance produced — he has not forgotten",
+    "yeigo":   "gnome_children_burdened",
+    "shakshi": "The children must redo the housework and meet harder quotas simultaneously — the player caused this directly",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    true,
     "andyf":   false
   },
   {
-    "yeigo":   "asmoth_nexiott_understanding_known",
-    "shakshi": "Asmoth named how Nexiott operates through manufactured ignorance — the player now has that frame explicitly",
+    "yeigo":   "nexiott_line_deepened",
+    "shakshi": "The player is now materially inside Nexiott's operation — not adjacent to it, inside it",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "gnome_oppressor_unknown",
+    "shakshi": "The Gnomes, children, Joannah, and Sidhal do not know who did it — the player's shop relationships are intact on the surface",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "gnome_crystal_oppressor",
+    "shakshi": "The player who holds gnome_crystal_origin_known just oppressed the people whose gift became the weapon — the irony is invisible to everyone including potentially the player",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    true,
     "andyf":   false
   }
 ]

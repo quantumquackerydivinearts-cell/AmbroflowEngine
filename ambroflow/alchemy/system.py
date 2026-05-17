@@ -457,7 +457,7 @@ SUBJECTS: tuple[AlchemicalSubject, ...] = (
             ),
         )),
         required_materials={"0073_KLOB": 2, "0040_KLOB": 1},
-        required_objects=frozenset({"0001_KLOB", "0002_KLOB"}),
+        required_objects=frozenset({"8000_KLOB", "2000_KLOB"}),   # Mortar + Pestle
         base_outputs={"0034_KLIT": 1},
         enhanced_outputs={"0034_KLIT": 2},
         lore="The simplest reduction. Start here.",
@@ -476,7 +476,7 @@ SUBJECTS: tuple[AlchemicalSubject, ...] = (
             ),
         )),
         required_materials={"0074_KLOB": 3, "0040_KLOB": 1, "0034_KLIT": 1},
-        required_objects=frozenset({"0001_KLOB", "0002_KLOB", "0005_KLOB"}),
+        required_objects=frozenset({"8000_KLOB", "2000_KLOB", "0005_KLOB"}),  # Mortar + Pestle + Reagent Bottle
         base_outputs={"0035_KLIT": 1},
         enhanced_outputs={"0035_KLIT": 2},
         lore="Hypatia knows this one before the tutor does.",
@@ -495,7 +495,7 @@ SUBJECTS: tuple[AlchemicalSubject, ...] = (
             ),
         )),
         required_materials={"0076_KLOB": 1, "0077_KLOB": 1},
-        required_objects=frozenset({"0001_KLOB", "0002_KLOB", "0010_KLOB", "0017_KLOB"}),
+        required_objects=frozenset({"8000_KLOB", "2000_KLOB", "0030_KLOB", "0007_KLOB"}),  # Mortar + Pestle + Furnace + Crucible
         base_outputs={"0036_KLIT": 1},
         enhanced_outputs={"0023_KLIT": 1},
         lore="Asmodean material. Gold-adjacent in its craft demands.",
@@ -514,8 +514,8 @@ SUBJECTS: tuple[AlchemicalSubject, ...] = (
                 intensity=0.75,
             ),
         )),
-        required_materials={"0024_KLOB": 2, "0075_KLOB": 1, "0035_KLIT": 1},
-        required_objects=frozenset({"0001_KLOB", "0002_KLOB", "0017_KLOB", "0019_KLOB"}),
+        required_materials={"1007_KLOB": 2, "0075_KLOB": 1, "0035_KLIT": 1},  # Sulphur + Binding Wax + Restorative Tincture
+        required_objects=frozenset({"8000_KLOB", "2000_KLOB", "0007_KLOB", "0009_KLOB"}),  # Mortar + Pestle + Crucible + Jar
         base_outputs={"0037_KLIT": 1},
         enhanced_outputs={"0037_KLIT": 2},
         lore="Usable in Sulphera's rings. Sulphur recognises its origin.",
@@ -544,7 +544,7 @@ SUBJECTS: tuple[AlchemicalSubject, ...] = (
             ),
         )),
         required_materials={"0023_KLIT": 1, "0037_KLIT": 1},
-        required_objects=frozenset({"0001_KLOB", "0002_KLOB", "0005_KLOB", "0019_KLOB"}),
+        required_objects=frozenset({"8000_KLOB", "2000_KLOB", "0005_KLOB", "0009_KLOB"}),  # Mortar + Pestle + Reagent Bottle + Jar
         base_outputs={"0038_KLIT": 1},
         enhanced_outputs={"0038_KLIT": 2},
         lore=(

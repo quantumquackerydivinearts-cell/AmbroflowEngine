@@ -504,11 +504,11 @@ def test_vendor_coin_prices_positive():
 
 def test_wiltoll_lane_has_home_exits():
     z = build_wiltoll_lane()
-    # Home exit is north at row 8 (player faces north to enter home door at row 7)
+    # Home exit is north at row 8 — targets canonical player_home_ground
     ex0 = exit_at(z, 3, 8, "north")
     ex1 = exit_at(z, 4, 8, "north")
     assert ex0 is not None
-    assert ex0.target_zone == "lapidus_wiltoll_home"
+    assert ex0.target_zone == "player_home_ground"
     assert ex1 is not None
 
 def test_wiltoll_home_door_tiles():
@@ -519,5 +519,6 @@ def test_wiltoll_home_door_tiles():
 
 def test_wiltoll_lane_home_in_world_map():
     wm = build_game7_world()
-    assert "lapidus_wiltoll_home" in wm.zones
+    assert "player_home_ground" in wm.zones   # canonical Kobra home replaced lapidus_wiltoll_home
+    assert "player_home_upper"  in wm.zones
     assert "lapidus_market_interior" in wm.zones

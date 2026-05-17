@@ -1,81 +1,121 @@
 [
   {
-    "yeigo":   "alfir_witch_plot_joined",
-    "shakshi": "The player entered the witching hour conspiracy — Alfir leads, Kore and Forest assist",
+    "yeigo":   "lust_ring_entered",
+    "shakshi": "Asmodeus's domain — the final ring before the Royal, the last gate of the alchemical chain",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "forest_met_properly",
-    "shakshi": "The Forest Witch formally met in conspiratorial context — the folded Mercurie map and knowledge of Castle Azoth's passages now in play",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "castle_azoth_infiltrated",
-    "shakshi": "The witches and player inside Nexiott's house — his own territory the site of his undoing",
+    "yeigo":   "asmodeus_lounge_entered",
+    "shakshi": "The player entered the temptation space — Succubi and Incubi present, three paths available",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "runes_set_player",
-    "shakshi": "The player took point and set the runes — Chaos magic made them the architect of the trap",
+    "yeigo":   "succubi_incubi_resisted",
+    "shakshi": "The player held through the temptation — clean passage",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "runes_set_witches",
-    "shakshi": "Alfir, Kore, and Forest set the runes while the player provided cover — the work was theirs, the safety was the player's to maintain",
+    "yeigo":   "succubi_incubi_succumbed",
+    "shakshi": "The player gave in — life slowly drained, retire condition approaching. The desire that should have rescued became the thing that consumed.",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "nexiott_deathtrap_prepared",
-    "shakshi": "The trap is set — Nexiott's house transformed into a weapon pointed at him, regardless of who led the runing",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "castle_azoth_runed",
-    "shakshi": "Castle Azoth is now a runic deathtrap — the architecture of Nexiott's power turned against him",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "nexiott_assassination_plotted",
-    "shakshi": "The killing is planned and the method is ready — Nexiott dies in his own house by his own territory",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "priesthood_overthrow_plotted",
-    "shakshi": "Not just Nexiott but the structure he represents — the broader conspiracy is named",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "alfir_revenge_arc_open",
-    "shakshi": "Alfir is taking back what was taken from him — his community, his appointment, his people's safety. The player witnesses this but may not name it.",
+    "yeigo":   "story_told_asmodeus",
+    "shakshi": "The player seduced the Lounge with their accumulated story — everything from 0001 to 0035 as the material",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "asmodeus_approved",
+    "shakshi": "Asmodeus approved — the story was worth telling. He reads desire and what it cost, not virtue.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "asmodeus_blessing_received",
+    "shakshi": "Asmodeus's blessing — the gate to the Royal Ring opened",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "asmodean_crystal_bestowed",
+    "shakshi": "Personally bestowed by Asmodeus — distinct from the imp's crystal and the dream dust, the third and final crystal in the chain",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "lust_ring_cleared",
+    "shakshi": "The Lust Ring token granted — all eight rings behind the player",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "royal_ring_entered",
+    "shakshi": "The innermost space of Sulphera — the destination glimpsed from Lucifer's castle in 0021 arrived",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "drovitth_met",
+    "shakshi": "Drovitth met at the Orrery — watching the causal chain, close friends with Hypatia, here because Saelith's birth is structurally necessary",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "hypatia_found",
+    "shakshi": "The alchemical chain from 0007 complete — the player's longing dissolved into dust, coagulated into medicine, became the instrument of the rescue",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "orrery_reached",
+    "shakshi": "The horizon established in 0021 arrived — the Orrery seen from the inside for the first time",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "hypatia_demonified_seen",
+    "shakshi": "The player sees what Hypatia became to survive the Royal Ring — demonified, deliberate, present",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "saelith_imminent_known",
+    "shakshi": "The player may or may not learn about Saelith here depending on what Hypatia chooses to tell — the birth is coming regardless",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
     "anom":    true,
     "andyf":   false
   }

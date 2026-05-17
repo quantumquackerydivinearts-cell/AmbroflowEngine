@@ -1,71 +1,79 @@
 [
   {
-    "yeigo":   "tymona_met",
-    "shakshi": "Tymona met — Dryad, Nexiott's exception, in her own territory in the Dryad zone of Mercurie",
+    "yeigo":   "bombast_completed",
+    "shakshi": "The Fae intel mission from 0014 closed — the player reported back to Bombastus at Castle Azoth",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "lucion_met",
+    "shakshi": "Lucion met — priest of Jabiru, God of language, stories and knowledge. Luminyx's teacher. The right teacher for the most narratively load-bearing mortal in the series.",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "dryad_zone_entered",
-    "shakshi": "The player fought on Tymona's ground — the Dryad zone of Mercurie, her territory",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "tymona_fight_joined",
-    "shakshi": "The fight to submission began — not to the death, to the point where she will speak",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "tymona_submitted",
-    "shakshi": "The player won — Tymona will speak now",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "tymona_fight_lost",
-    "shakshi": "The player was beaten — the confession does not come, Nexiott's source stays hidden",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "nexiott_tymona_affair_known",
-    "shakshi": "The affair confirmed — the intelligence pipeline that fed 0028 has a name and a face now",
+    "yeigo":   "luminyx_met",
+    "shakshi": "Luminyx met — Hildegarde's daughter, mortal, not yet a spirit. The hinge point of the loop Drovitth watches from the Orrery.",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "nexiott_sophia_intelligence_source_known",
-    "shakshi": "Nexiott knew about Sophia through Tymona — the 0028 loop closes, the source of his intelligence about the Assassin order named",
+    "yeigo":   "hildegarde_luminyx_lucion_known",
+    "shakshi": "The family and teaching triangle visible — Hildegarde's daughter, Lucion's student, both entangled with what the king is making war on",
     "kaelsuy": "7_KLGS",
-    "dyne":    true,
+    "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "tymona_exception_understood",
-    "shakshi": "A Dryad who hates humans made one exception, and that exception fed the war machine — the player may or may not register the full weight of that",
+    "yeigo":   "kelly_filtered_intel",
+    "shakshi": "Kelly managed the information before it reached Bombastus — the same truth distorted differently depending on what the player built",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    true,
     "andyf":   false
   },
   {
-    "yeigo":   "nexiott_two_year_deception_known",
-    "shakshi": "The player was fooled about Nexiott for two in-game years — the title lands, everything they understood about him was shaped by what he chose to reveal",
+    "yeigo":   "hypatia_heretic_declared",
+    "shakshi": "Nexiott line outcome — clouded intelligence produced a heresy verdict. Hypatia is officially condemned.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "hypatia_pardoned",
+    "shakshi": "Fae/Assassin line outcome — clean intelligence produced a pardon. Hypatia is officially cleared.",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "bombastus_intel_received",
+    "shakshi": "Bombastus got the information in the form Kelly allowed — his understanding of Hypatia permanently shaped by which line the player walked",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "luminyx_teacher_known",
+    "shakshi": "Lucion has been Luminyx's teacher — relevant to every subsequent encounter with either of them",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "hildegarde_family_depth_known",
+    "shakshi": "The queen's opposition to the war has roots deeper than politics — her daughter is entangled with the Fae, her trusted figure teaches the loop's hinge point",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,

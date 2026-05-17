@@ -1,114 +1,74 @@
 [
   {
-    "yeigo":   "lanvaki_met",
-    "shakshi": "Captain Lanvaki met — carrying the assembled plasma rifle at the front of Nexiott's caravan",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "mine_caravan_marched",
-    "shakshi": "The player marched through the mines as part of Nexiott's operation — past the Gnomes and the children, out into Fae territory",
+    "yeigo":   "sophia_attacked",
+    "shakshi": "The player executed the attack on Sophia — the weapon fired",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "plasma_rifle_assembled",
-    "shakshi": "The weapon built from the crystals is real and present — the alchemical chain from 0004 to here complete",
+    "yeigo":   "sophia_wounded",
+    "shakshi": "The weapon wounded Sophia — it works on beings like her. She survived. The test was a partial result.",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "weapon_sabotaged",
-    "shakshi": "The player intervened and prevented or corrupted the firing — Mercurie protected",
+    "yeigo":   "weapon_tested_living",
+    "shakshi": "Nexiott now has field data on the plasma weapon against a living ancient target — the program advanced",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "nexiott_weapon_data_acquired",
+    "shakshi": "Nexiott got what he actually wanted — the assassination attempt was the data collection",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
-    "anom":    false,
+    "anom":    true,
     "andyf":   false
   },
   {
-    "yeigo":   "mercurie_protected",
-    "shakshi": "Mercurie intact, the Faerie Court survived — the sabotage held",
+    "yeigo":   "lectura_summoned",
+    "shakshi": "Sophia sicced Lectura on the player — the sea responds through its own representative",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "amelia_mission_closed_sabotage",
-    "shakshi": "The mission Nexiott gave in 0013 resolved without the kill — amelia_mission_open closed",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "plasma_freeze_fired",
-    "shakshi": "The weapon discharged — the plasma rifle fired into Mercurie",
+    "yeigo":   "lectura_met",
+    "shakshi": "Lectura met — Undine, Sophia's instrument of response, chased the player off",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "mercurie_quarter_frozen",
-    "shakshi": "A quarter of Mercurie frozen — hundreds of Fae dead, the realm permanently scarred",
+    "yeigo":   "sophia_player_betrayal_known",
+    "shakshi": "Sophia knows the player was involved — the passage she gave them was used against her",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "faerie_court_destroyed",
-    "shakshi": "The Faerie Court is unlivable — Amelia's seat of power collapsed by the weapon",
+    "yeigo":   "mercurie_ocean_access_cut",
+    "shakshi": "Ocean passage to Mercurie closed — the sea itself closes against a player who weaponized it",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "amelia_mission_closed_witness",
-    "shakshi": "The mission closes without the player's direct hand — the weapon fired without them pulling the trigger",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "lanvaki_overpowered",
-    "shakshi": "The player wrested the plasma rifle from Captain Lanvaki — a deliberate act of violence against their own side",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "amelia_killed_player",
-    "shakshi": "The player fired on Amelia directly — the only moment in the game where the 0013 mission can be executed by the player's own hand",
+    "yeigo":   "sophia_trust_broken",
+    "shakshi": "Sophia's trust is broken — reversible if the relationship can be repaired",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "plasma_weapon_deployed",
-    "shakshi": "The weapon exists and has been used or attempted — present on all paths except sabotage",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "nexiott_war_escalated",
-    "shakshi": "Nexiott escalated to weapons deployment regardless of outcome — the war has a new character now",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
+    "andyf":   true
   }
 ]

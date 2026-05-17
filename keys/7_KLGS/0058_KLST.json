@@ -1,73 +1,65 @@
 [
   {
-    "yeigo":   "tymona_hostage_pretense",
-    "shakshi": "The false hostage situation used to get Nexiott onto the water — Tymona was never held",
+    "yeigo":   "lucion_divination_performed",
+    "shakshi": "Lucion performed the divination through Jabiru's knowledge — the God of Language and Stories identifies who belongs in the story's proper place",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "nexiott_lured_sea",
-    "shakshi": "Nexiott brought onto the player's ship under false pretenses — the most informed man in the room, finally out of information",
+    "yeigo":   "jabiru_divination_known",
+    "shakshi": "Jabiru provided the answer through his priest — language and knowledge as the tools that restore what was displaced",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "nexiott_cruise_arranged",
-    "shakshi": "A survey of Mercurie as cover — the pretense held long enough to get him on the water",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "sophia_nexiott_taken",
-    "shakshi": "Sophia snatched Nexiott without warning — no trial, no speech, no final monologue",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "nexiott_trenches",
-    "shakshi": "Nexiott in the ocean trenches — Sophia's territory, his ending. He never got a word in edgewise.",
+    "yeigo":   "pythia_revealed",
+    "shakshi": "Pythia Solunikae named as the rightful temple occupant — the elder the player met in 0038 without knowing who she was",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "sophia_debt_settled",
-    "shakshi": "The energy weapon wound paid in kind — Sophia took something from Nexiott that cost the player dearly, and now they are even",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "mercurie_ocean_access_restored",
-    "shakshi": "The ocean opens again — the Va trigger for sophia_trust_broken, the relationship repaired through Nexiott's death",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "sophia_trust_restored",
-    "shakshi": "The relationship with Sophia repaired — the peace offering accepted through action, not words",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "nexiott_sea_ending_taken",
-    "shakshi": "The path for players who ran out of time, or turned on Nexiott after feeling played — distinct from the trap and assassination endings",
+    "yeigo":   "pythia_identity_resolved",
+    "shakshi": "pythia_identity_occluded from 0038 closes here — the player understands who they were talking to in the Alzedroswune territory",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "pythia_alzedroswune_choice_known",
+    "shakshi": "She chose the Alzedroswune over the temple when Saffron displaced her — the resistance community was not exile, it was preference",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "temple_rightful_occupant_named",
+    "shakshi": "The power vacuum from 0056 has an answer — the right person named by the right instrument",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "pythia_temple_installed",
+    "shakshi": "Pythia takes her place as the rightful priestess — someone who spent years with the Alzedroswune learning what the Azonithians forgot about civic bonds",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "priesthood_restored",
+    "shakshi": "The structure Saffron corrupted returns to its proper occupant — the priesthood is no longer the war machine's instrument",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
     "anom":    false,
     "andyf":   false
   }

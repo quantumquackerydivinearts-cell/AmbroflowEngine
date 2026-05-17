@@ -1,74 +1,74 @@
 [
   {
-    "yeigo":   "zukoru_dream_infiltrated",
-    "shakshi": "Zukoru entered the player's dreams the moment Othieru fell — he wasted no time",
+    "yeigo":   "hypatia_gun_instructions_received",
+    "shakshi": "Hypatia gave the fabrication instructions in the Royal Ring — demonic iron purified with melted angelic spears",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "zukoru_taunted",
-    "shakshi": "The deaths of millions threatened, the Great Obscenity of Game 1 echoed — Zukoru uses what he knows as a weapon",
+    "yeigo":   "angelic_purification_method_known",
+    "shakshi": "Demonic iron purified with angelic spears rather than sulphur and salt water — a different instrument from the same base material as 0041",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "game1_echo_felt",
-    "shakshi": "The player may not have the context for what Zukoru's taunting references but the weight is present — the games cost something",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    true,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "sloth_ring_destination_known",
-    "shakshi": "The dream sent the player to the Sloth Ring — that is where Zukoru is and where this ends",
+    "yeigo":   "angelic_spears_sought",
+    "shakshi": "The player returned to the Pride Ring's ash fields to recover spears",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "sloth_ring_reentered",
-    "shakshi": "The player returned to the ring cleared in 0035 — Zukoru has made it his",
+    "yeigo":   "angelic_spears_recovered",
+    "shakshi": "Spears collected from the continuous extermination campaign — they have always been in the ash",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "zukoru_confronted",
-    "shakshi": "Zukoru confronted — the originating demon of betrayal, alone, in the Sloth Ring. No alliance comes with the player.",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "zukoru_defeated",
-    "shakshi": "Zukoru killed — the dream invasion ended, Kielum's network diminished further",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "kielum_network_collapsed",
-    "shakshi": "Both Othieru and Zukoru down — the network significantly weakened before the final conflict with Kielum himself",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "betrayal_demon_faced",
-    "shakshi": "The originating demon of betrayal — everything betrayed across the game is in that room with the player even if neither names it",
+    "yeigo":   "angelic_extermination_known",
+    "shakshi": "The campaign has been going on since forever — structural, not dramatic. The player walked through it in 0015 without knowing what they were seeing.",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    true,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "demonic_iron_purified_angelic",
+    "shakshi": "The demonic iron melted down and purified with angelic spears — the base material transformed by what it absorbed",
+    "kaelsuy": "7_KLGS",
+    "dyne":    false,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "colt_45_crafted",
+    "shakshi": "Hypatia's Angelic Gun fabricated — the instrument of the Colt .45 path of the secret ending",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "gold_bullet_capable",
+    "shakshi": "The weapon that can fire gold bullets — the only thing that can kill Sophia, the alternative to St. Alaro's radio path",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
+    "andyf":   false
+  },
+  {
+    "yeigo":   "gold_bullet_crafted",
+    "shakshi": "A gold bullet cast and turned — ammunition for the Colt .45, the only thing that can kill Sophia",
+    "kaelsuy": "7_KLGS",
+    "dyne":    true,
+    "anom":    false,
     "andyf":   false
   }
 ]

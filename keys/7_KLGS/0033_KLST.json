@@ -1,79 +1,47 @@
 [
   {
-    "yeigo":   "zoha_altar_found",
-    "shakshi": "The third altar in the Fae court temple — found only after passing Koga and Mona",
+    "yeigo":   "mona_altar_found",
+    "shakshi": "The player found Mona's altar in the Fae court temple — different shrine, same sacred space as Koga's",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "zoha_met",
-    "shakshi": "Zoha met — Goddess of Tranquility and Warriordom, the synthesis of what Koga and Mona taught separately",
+    "yeigo":   "mona_met",
+    "shakshi": "Mona met — Goddess of Play and Torment, unified. For Faekin, play IS torment and torment IS play.",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "fae_temple_path_complete",
-    "shakshi": "Koga and Mona both passed — the gate for Zoha's altar and the bone flute commission",
+    "yeigo":   "assassin_standing_sufficient",
+    "shakshi": "Good relations with Asmoth confirmed — the gate Mona reads, distinct from the Fae conduct Koga reads",
     "kaelsuy": "7_KLGS",
     "dyne":    false,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "karlia_met",
-    "shakshi": "Karlia met — Nymph craftsperson, commissions the bone flute from demon bones",
+    "yeigo":   "warriordom_learned",
+    "shakshi": "The philosophy of engagement as play and torment as delight — affects dialogue and approach, lighter and faster than human warriordom, paradoxically more dangerous",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "demon_bones_sought",
-    "shakshi": "The player descended to Sulphera to gather demon bones for Karlia's commission",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "demon_bones_gathered",
-    "shakshi": "The material collected — every prior investment in Sulphera access flows through this moment",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "karlia_commission_active",
-    "shakshi": "Karlia is crafting the bone flute — the commission is placed and the work has begun",
-    "kaelsuy": "7_KLGS",
-    "dyne":    false,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "bone_flute_received",
-    "shakshi": "Zoha's gift, crafted by Karlia from demon bones — can pull the player from any Sulphera ring with no reset consequence",
+    "yeigo":   "faekin_combat_register_known",
+    "shakshi": "The player understands the unified play-torment register — retroactively reframes every Fae confrontation already had and changes how future ones read",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,
     "andyf":   false
   },
   {
-    "yeigo":   "sulphera_escape_available",
-    "shakshi": "The player can now exit any Sulphera ring without reset consequence — Fae relationships make underworld survival possible",
-    "kaelsuy": "7_KLGS",
-    "dyne":    true,
-    "anom":    false,
-    "andyf":   false
-  },
-  {
-    "yeigo":   "tranquility_warriordom_known",
-    "shakshi": "The unified state Zoha embodies — calm engagement, the synthesis of Chaos magic and Warriordom into a single register",
+    "yeigo":   "mona_flock_accepted",
+    "shakshi": "Accepted into Mona's register — through Assassin standing, not Fae conduct",
     "kaelsuy": "7_KLGS",
     "dyne":    true,
     "anom":    false,

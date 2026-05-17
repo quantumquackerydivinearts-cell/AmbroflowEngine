@@ -56,14 +56,15 @@ except ImportError:
 # -- Phases -------------------------------------------------------------------
 
 class FlowPhase(str, Enum):
-    NAME_ENTRY  = "name_entry"
-    LINEAGE     = "lineage"
-    KO_GENDER   = "ko_gender"
-    DREAM       = "dream"
-    VITRIOL     = "vitriol"
-    WAKING      = "waking"
-    FATE_KNOCKS = "fate_knocks"
-    DONE        = "done"
+    NAME_ENTRY   = "name_entry"
+    LINEAGE      = "lineage"
+    KO_GENDER    = "ko_gender"
+    DREAM        = "dream"
+    VITRIOL      = "vitriol"
+    SKILL_SELECT = "skill_select"   # VITRIOL-derived base ranks + 2 tag picks
+    WAKING       = "waking"
+    FATE_KNOCKS  = "fate_knocks"
+    DONE         = "done"
 
 
 _PHASE_ORDER = [
@@ -72,6 +73,7 @@ _PHASE_ORDER = [
     FlowPhase.KO_GENDER,
     FlowPhase.DREAM,
     FlowPhase.VITRIOL,
+    FlowPhase.SKILL_SELECT,
     FlowPhase.WAKING,
     FlowPhase.FATE_KNOCKS,
     FlowPhase.DONE,
@@ -80,6 +82,15 @@ _PHASE_ORDER = [
 _BUDGET   = 31
 _STAT_MIN = 1
 _STAT_MAX = 10
+
+# pygame key constants as raw ints (avoids importing pygame at module level)
+_K_RETURN = 13
+_K_SPACE  = 32
+_K_ESCAPE = 27
+_K_UP     = 1073741906
+_K_DOWN   = 1073741905
+_K_LEFT   = 1073741904
+_K_RIGHT  = 1073741903
 
 
 # -- Waking placeholder screen ------------------------------------------------
@@ -170,6 +181,15 @@ class GameFlow:
         self._vitriol_stat_idx = 0
         self._player_vitriol: dict[str, int] = {}
 
+        # Skill selector (SKILL_SELECT phase)
+        # _skill_opts: list of (skill_id, display_name, vitriol_letter, base_rank)
+        self._skill_opts:      list[tuple[str, str, str, int]] = []
+        self._skill_cursor:    int   = 0
+        self._skill_tag_picks: list[str] = []   # up to 2 manually chosen tags
+        self._skill_frames:    list[bytes] = []
+        # VITRIOL-derived base ranks computed after VITRIOL phase
+        self._derived_ranks:   dict[str, int] = {}
+
         # Fate Knocks interactive sequence
         self._fate_knocks: Optional[FateKnocksPlay] = None
 
@@ -186,6 +206,8 @@ class GameFlow:
             self._init_dream()
         elif self.phase == FlowPhase.VITRIOL:
             self._init_vitriol()
+        elif self.phase == FlowPhase.SKILL_SELECT:
+            self._init_skill_select()
         elif self.phase == FlowPhase.FATE_KNOCKS:
             self._fate_knocks = FateKnocksPlay(
                 player_name=self.chargen.name or "Apprentice",
@@ -474,6 +496,99 @@ class GameFlow:
     def _vitriol_budget_remaining(self) -> int:
         return _BUDGET - sum(self._player_vitriol.values())
 
+    # ── Skill selector ────────────────────────────────────────────────────────
+
+    # VITRIOL stat name → single letter used in skill affinity field
+    _VITRIOL_LETTER: dict[str, str] = {
+        "vitality":     "V",
+        "introspection":"I",
+        "tactility":    "T",
+        "reflectivity": "R",
+        "ingenuity":    "I",   # second I — same letter, both contribute to I-skills
+        "ostentation":  "O",
+        "levity":       "L",
+    }
+    _TAG_PICKS = 2             # number of manual boosts the player may choose
+
+    def _letter_score(self, letter: str) -> int:
+        """Max VITRIOL score across all stats that map to this letter."""
+        scores = [
+            self._player_vitriol.get(stat, 1)
+            for stat, ltr in self._VITRIOL_LETTER.items()
+            if ltr == letter
+        ]
+        return max(scores) if scores else 1
+
+    def _derive_rank(self, letter: str) -> int:
+        """Auto-derive starting rank from VITRIOL score for a given letter."""
+        score = self._letter_score(letter)
+        return 1 + (1 if score >= 5 else 0) + (1 if score >= 8 else 0)
+
+    def _init_skill_select(self) -> None:
+        from ..skills.registry import SKILLS
+        vitriol = self._player_vitriol
+
+        # Build opts: (skill_id, name, vitriol_letter, base_rank)
+        opts: list[tuple[str, str, str, int]] = []
+        for s in SKILLS:
+            rank = self._derive_rank(s.vitriol_affinity)
+            opts.append((s.id, s.name, s.vitriol_affinity, rank))
+
+        # Sort: highest base_rank first (most VITRIOL-matched at top), then alpha
+        opts.sort(key=lambda t: (-t[3], t[1]))
+
+        self._skill_opts      = opts
+        self._skill_cursor    = 0
+        self._skill_tag_picks = []
+        self._derived_ranks   = {t[0]: t[3] for t in opts}
+        self._skill_frames    = []
+        self._refresh_skill_frames()
+
+    def _refresh_skill_frames(self) -> None:
+        try:
+            from ..chargen.screens import render_skill_select_screen
+            frame = render_skill_select_screen(
+                skill_opts    = self._skill_opts,
+                cursor_idx    = self._skill_cursor,
+                tag_picks     = self._skill_tag_picks,
+                max_picks     = self._TAG_PICKS,
+                vitriol       = self._player_vitriol,
+            )
+            self._skill_frames = [frame] if frame else []
+        except Exception:
+            self._skill_frames = []
+
+    def _skill_select_key(self, key: int) -> None:
+        n = len(self._skill_opts)
+        if n == 0:
+            return
+
+        if key == _K_UP:
+            self._skill_cursor = (self._skill_cursor - 1) % n
+            self._refresh_skill_frames()
+        elif key == _K_DOWN:
+            self._skill_cursor = (self._skill_cursor + 1) % n
+            self._refresh_skill_frames()
+        elif key in (_K_RETURN, _K_SPACE):
+            skill_id = self._skill_opts[self._skill_cursor][0]
+            if skill_id in self._skill_tag_picks:
+                self._skill_tag_picks.remove(skill_id)
+                self._refresh_skill_frames()
+            elif len(self._skill_tag_picks) < self._TAG_PICKS:
+                self._skill_tag_picks.append(skill_id)
+                self._refresh_skill_frames()
+                if len(self._skill_tag_picks) == self._TAG_PICKS:
+                    self._confirm_skill_select()
+        elif key == _K_ESCAPE:
+            # Allow confirming with fewer than max picks
+            self._confirm_skill_select()
+
+    def _confirm_skill_select(self) -> None:
+        # Store derived ranks + tag picks into chargen state
+        self.chargen.vitriol_skill_ranks = dict(self._derived_ranks)
+        self.chargen.tag_picks           = list(self._skill_tag_picks)
+        self._next_phase()
+
     @property
     def _active_stat(self) -> str:
         return VITRIOL_STATS[self._vitriol_stat_idx]
@@ -518,6 +633,11 @@ class GameFlow:
                 size=min(W, H),
             )
 
+        if self.phase == FlowPhase.SKILL_SELECT:
+            if self._skill_frames:
+                return self._skill_frames[0]
+            return None
+
         if self.phase == FlowPhase.WAKING:
             return _render_waking_screen(W, H)
 
@@ -538,15 +658,15 @@ class GameFlow:
     def on_key(self, key: int, unicode: str = "") -> None:
         """
         Feed a pygame key constant.  Returns nothing; check phase / is_done().
-        Key constants passed as raw ints to avoid importing pygame here.
+        Key constants are module-level _K_* to avoid importing pygame at runtime.
         """
-        K_RETURN    = 13
-        K_SPACE     = 32
-        K_ESCAPE    = 27
-        K_UP        = 1073741906
-        K_DOWN      = 1073741905
-        K_LEFT      = 1073741904
-        K_RIGHT     = 1073741903
+        K_RETURN = _K_RETURN
+        K_SPACE  = _K_SPACE
+        K_ESCAPE = _K_ESCAPE
+        K_UP     = _K_UP
+        K_DOWN   = _K_DOWN
+        K_LEFT   = _K_LEFT
+        K_RIGHT  = _K_RIGHT
         K_BACKSPACE = 8
 
         if self.phase == FlowPhase.NAME_ENTRY:
@@ -636,6 +756,9 @@ class GameFlow:
                     self._next_phase()
             elif key == K_ESCAPE:
                 self.phase = FlowPhase.DONE
+
+        elif self.phase == FlowPhase.SKILL_SELECT:
+            self._skill_select_key(key)
 
         elif self.phase == FlowPhase.WAKING:
             if key == K_ESCAPE:
