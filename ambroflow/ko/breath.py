@@ -185,13 +185,74 @@ class BreathOfKo:
     death_patron_id:    Optional[str]                = None
     # Akashic record — attached at game start, persisted in snapshot
     akashic_record:     Optional[object]             = field(default=None, repr=False)
+    # Physics fingerprint — set when a physics world is attached to the session.
+    # Encodes the physical state (energy, collisions, settle time) at the moment
+    # of BoK recording.  Feeds into Azoth as a physical-world contribution.
+    # Format: dict from PhysicsWorld.fingerprint() — see ambroflow.physics.world
+    physics_fingerprint: Optional[dict]              = field(default=None, repr=False)
+
+    # ── Physics Bridge ────────────────────────────────────────────────────────
+
+    def attach_physics(self, world: "object") -> None:
+        """
+        Record the current physics world state into this BreathOfKo.
+
+        The fingerprint encodes: total kinetic energy, collision count,
+        settle state, body count, and simulation time.  It contributes to
+        the Azoth calculation as an additional physical-world component.
+
+        Call this during a Wunashakoun event when a physics world is active —
+        the save file will capture what was physically happening when the
+        breath transformed.
+
+        `world` should be an ambroflow.physics.PhysicsWorld instance.
+        This is typed as `object` to avoid a circular import at module level.
+        """
+        try:
+            self.physics_fingerprint = world.fingerprint()  # type: ignore[union-attr]
+        except AttributeError:
+            pass
+
+    def physics_azoth_contribution(self) -> complex:
+        """
+        Physics world contribution to the Azoth complex number.
+
+        Energy level → modifies the real axis (material ground, Lotus layers).
+        Collision density → modifies the imaginary axis (relational state, Rose layers).
+        Both are bounded to [-0.1, +0.1] so physics supplements but never
+        overwhelms the layer-density-derived Azoth.
+
+        When no physics fingerprint is present, returns 0+0j (no contribution).
+        """
+        fp = self.physics_fingerprint
+        if not fp:
+            return complex(0.0, 0.0)
+
+        # Energy contribution: high kinetic energy → real axis perturbation
+        total_ke    = float(fp.get("total_ke", 0.0))
+        energy_norm = min(1.0, total_ke / 100.0)          # normalise to [0,1]
+        real_delta  = (energy_norm - 0.5) * 0.2           # [-0.1, +0.1]
+
+        # Collision contribution: high collision density → imaginary perturbation
+        collisions    = int(fp.get("total_collisions", 0))
+        steps         = max(1, int(fp.get("steps", 1)))
+        coll_density  = min(1.0, collisions / steps)      # normalise
+        imag_delta    = (coll_density - 0.5) * 0.2        # [-0.1, +0.1]
+
+        # Settled worlds pull toward 0 (rest state doesn't disturb the coil)
+        if fp.get("settled", False):
+            real_delta *= 0.3
+            imag_delta *= 0.3
+
+        return complex(real_delta, imag_delta)
 
     def azoth(self) -> complex:
-        return _derive_azoth(
+        base = _derive_azoth(
             self.layer_densities,
             self.coil_position,
             self.flag_state.modification_weight(len(self.dream_calibrations)),
         )
+        return base + self.physics_azoth_contribution()
 
     def gaoh_constant(self) -> complex:
         return _gaoh_constant(self.coil_position)
@@ -273,6 +334,13 @@ class BreathOfKo:
             "kill_patron_id":   self.kill_patron_id,
             "death_patron_id":  self.death_patron_id,
         }
+        if self.physics_fingerprint:
+            snap["physics_fingerprint"] = self.physics_fingerprint
+            phys_contrib = self.physics_azoth_contribution()
+            snap["physics_azoth_delta"] = [
+                round(phys_contrib.real, 6),
+                round(phys_contrib.imag, 6),
+            ]
         if self.akashic_record is not None:
             try:
                 snap["akashic"] = self.akashic_record.to_dict()
