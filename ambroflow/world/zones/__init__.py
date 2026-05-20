@@ -24,6 +24,18 @@ from .lapidus import (
     build_ocean_shore,
     build_elsa_house,
     build_hypatia_house,
+    # Kobra-built zones
+    build_hopefare_junction,
+    build_june_quarter,
+    build_goldshoot_street,
+    build_youthspring_road,
+    # Castle Azoth interior floors
+    build_castle_main_hall,
+    build_castle_first_floor,
+    build_castle_second_floor,
+    build_castle_basement,
+    build_castle_hypatia_tower,
+    build_castle_canopy,
 )
 from .mercurie import (
     build_mercurie_threshold,
@@ -75,6 +87,11 @@ def build_game7_world() -> WorldMap:
         # Warren district — 9 warrens + Cestii Alley + Serpent's Pass
         *build_all_warren_zones(),
         build_market_interior(),
+        # Kobra-built street zones
+        build_hopefare_junction(),
+        build_june_quarter(),
+        build_goldshoot_street(),
+        build_youthspring_road(),
         build_litleaf_thoroughfare(),
         build_azonithia_slum(),
         build_azonithia_market(),
@@ -82,6 +99,12 @@ def build_game7_world() -> WorldMap:
         build_azonithia_heartvein(),
         build_azoth_approach(),
         build_castle_azoth(),
+        build_castle_main_hall(),
+        build_castle_first_floor(),
+        build_castle_second_floor(),
+        build_castle_basement(),
+        build_castle_hypatia_tower(),
+        build_castle_canopy(),
         build_mt_elaene_trail(),
         build_serpents_pass(),
         build_ocean_shore(),

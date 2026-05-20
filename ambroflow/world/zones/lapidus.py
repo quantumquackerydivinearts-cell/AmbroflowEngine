@@ -47,6 +47,7 @@ ASCII tile key
 from __future__ import annotations
 
 from ..map import Realm, Zone, ZoneExit, ItemSpawn, build_zone_from_ascii
+from ..kobra_zone_loader import load_zone_from_kobra
 
 
 # ── Vendor catalogs ───────────────────────────────────────────────────────────
@@ -433,7 +434,7 @@ def build_azonithia_slum() -> Zone:
         inlet_char = "Y",
         east_zone  = "lapidus_wiltoll_lane",
         west_zone  = "lapidus_azonithia_market",
-        north_zone = "lapidus_slum_interior",
+        north_zone = "lapidus_slum_interior",   # → Hopefare Junction
     )
 
 
@@ -454,7 +455,7 @@ def build_azonithia_market() -> Zone:
         inlet_char = "C",
         east_zone  = "lapidus_azonithia_slum",
         west_zone  = "lapidus_azonithia_temple",
-        north_zone = "lapidus_market_interior",
+        north_zone = "lapidus_june_quarter",   # → June Quarter (proper)
     )
 
 
@@ -469,15 +470,13 @@ def build_azonithia_market() -> Zone:
 #   North (22,0)+(23,0) → lapidus_temple_interior (stub)
 
 def build_azonithia_temple() -> Zone:
-    # Sidhal (0020_TOWN) is the temple custodian — met in the Goldshoot inlet.
     return _avenue_zone(
         zone_id    = "lapidus_azonithia_temple",
         name       = "Azonithia Avenue — Goldshoot Street",
         inlet_char = "L",
-        inlet_npc  = "0020_TOWN",   # Sidhal: temple custodian, quest 0003_KLST guide
         east_zone  = "lapidus_azonithia_market",
         west_zone  = "lapidus_azonithia_heartvein",
-        north_zone = "lapidus_temple_interior",
+        north_zone = "lapidus_goldshoot_street",   # → Goldshoot Street (proper)
     )
 
 
@@ -497,10 +496,9 @@ def build_azonithia_heartvein() -> Zone:
         zone_id    = "lapidus_azonithia_heartvein",
         name       = "Azonithia Avenue — Youthspring Road",
         inlet_char = "X",
-        inlet_npc  = "0017_ROYL",   # Nexiott: noble, information broker, radio network
         east_zone  = "lapidus_azonithia_temple",
         west_zone  = "lapidus_azoth_approach",
-        north_zone = "lapidus_heartvein_interior",
+        north_zone = "lapidus_youthspring_road",   # → Youthspring Road (proper)
     )
 
 
@@ -605,7 +603,7 @@ def build_azoth_approach() -> Zone:
 #   South (18,19)+(19,19) → lapidus_azoth_approach (22,1)+(23,1)
 
 _CASTLE_MAP = [
-    "########################################",  # row  0  (40 chars) N wall
+    "###################++##################",  # row  0  N wall — double gate to main hall
     "#.N....................................#",  # row  1  Alfir NPC at col 3
     "#......................................#",  # row  2
     "#......................................#",  # row  3
@@ -632,6 +630,10 @@ _CASTLE_EXITS = [
              target_zone="lapidus_azoth_approach", target_x=22, target_y=1),
     ZoneExit(x=19, y=19, direction="south",
              target_zone="lapidus_azoth_approach", target_x=23, target_y=1),
+    ZoneExit(x=19, y=0,  direction="north",
+             target_zone="lapidus_castle_main_hall", target_x=27, target_y=28),
+    ZoneExit(x=20, y=0,  direction="north",
+             target_zone="lapidus_castle_main_hall", target_x=28, target_y=28),
 ]
 
 _CASTLE_NPCS = ["0006_WTCH", "0000_0451"]
@@ -994,3 +996,615 @@ def build_hypatia_house() -> Zone:
         npc_ids     = _HYPATIA_HOUSE_NPCS,
         item_spawns = _HYPATIA_HOUSE_ITEMS,
     )
+
+
+# ── Kobra zone helpers (lapidus material palette) ─────────────────────────────
+#
+# Colors encode material character via Shygazun byte table:
+#   El  (byte 26, Rose, Vector Yellow)  — yellow brick: honest, working
+#   Ka  (byte 29, Rose, Vector Indigo)  — slate: institutional, ancient-weight
+#   Ha  (byte 43, Rose, Absolute Pos.)  — ceramic / general warm floor
+#   Ga  (byte 44, Rose, Absolute Neg.)  — silica: extravagant, processed cold
+#   Vo  (wall presence)                 — all wall tiles
+
+def _kw(x: int, y: int) -> str:
+    return f"g|{x},{y} : [Vo Ka]"
+
+def _kf(x: int, y: int, color: str = "Ha") -> str:
+    return f"g|{x},{y} : [Va {color}]"
+
+def _ks(x: int, y: int) -> str:
+    return f"g|{x},{y} : [Va Ha St]"
+
+def _kn(x: int, y: int, npc_id: str) -> str:
+    return f"g|{x},{y} : [Va Ha Lo {npc_id}]"
+
+def _ke(x: int, y: int, direction: str, target: str,
+        tx: int, ty: int, label: str = "") -> str:
+    lex = f"{direction} {target} {tx} {ty}"
+    if label:
+        lex += f" {label}"
+    return f"g|{x},{y} : [Va Ha Ne {lex}]"
+
+def _kperim(W: int, H: int, lines: list[str],
+            passable: set[tuple[int, int]] | None = None) -> None:
+    skip = passable or set()
+    for x in range(W):
+        if (x, 0)   not in skip: lines.append(_kw(x, 0))
+        if (x, H-1) not in skip: lines.append(_kw(x, H-1))
+    for y in range(1, H-1):
+        if (0, y)   not in skip: lines.append(_kw(0, y))
+        if (W-1, y) not in skip: lines.append(_kw(W-1, y))
+
+def _kfill(W: int, H: int, lines: list[str],
+           walls: set[tuple[int, int]], color: str = "Ha") -> None:
+    for y in range(1, H-1):
+        for x in range(1, W-1):
+            if (x, y) not in walls:
+                lines.append(_kf(x, y, color=color))
+
+def _kbuild(lines: list[str], zone_id: str, name: str,
+            spawn: tuple[int, int] = (2, 2)) -> Zone:
+    return load_zone_from_kobra(
+        source       = "\n".join(lines),
+        zone_id      = zone_id,
+        name         = name,
+        realm        = Realm.LAPIDUS,
+        player_spawn = spawn,
+    )
+
+
+# ── Hopefare Inner Junction  (40 × 22) ───────────────────────────────────────
+#
+# The crossroads where Hopefare Street opens into the warren network.
+# Yellow brick throughout — Hopefare's honest material continues inside.
+# The warren district proper begins here; the nine warrens branch from
+# passages visible as openings in the walls.
+#
+# Exits:
+#   South  (19,21)+(20,21) → lapidus_azonithia_slum (22,1)+(23,1)
+#   East   (39,10)+(39,11) → lapidus_warren_faithsalt (1,5)+(1,6)  [Lovecraft Lane]
+#   West   (0,10)+(0,11)   → stub (deeper inner passages, future)
+#
+# Note: lapidus_warren_faithsalt's west exit must be updated to point here.
+
+def build_hopefare_junction() -> Zone:
+    W, H = 40, 22
+    SPAWN = (4, 10)
+
+    SOUTH_EXITS = {(19, H-1), (20, H-1)}
+    EAST_EXITS  = {(W-1, 10), (W-1, 11)}
+    WEST_EXITS  = {(0, 10), (0, 11)}
+    passable    = SOUTH_EXITS | EAST_EXITS | WEST_EXITS
+
+    lines: list[str] = []
+    walls: set[tuple[int, int]] = set()
+
+    _kperim(W, H, lines, passable)
+    walls.update({(x, 0) for x in range(W)} | {(x, H-1) for x in range(W)})
+    walls.update({(0, y) for y in range(H)} | {(W-1, y) for y in range(H)})
+    walls -= passable
+
+    # Central junction markers — low stone dividers suggesting alleys
+    for x in (10, 20, 30):
+        for y in (5, 16):
+            lines.append(_kw(x, y))
+            walls.add((x, y))
+
+    _kfill(W, H, lines, walls, color="El")   # yellow brick
+
+    lines.append(_ks(*SPAWN))
+
+    # Exits
+    for (x, y) in SOUTH_EXITS:
+        lines.append(_ke(x, y, "south", "lapidus_azonithia_slum", 22, 1))
+    for (x, y) in EAST_EXITS:
+        lines.append(_ke(x, y, "east", "lapidus_warren_faithsalt", 1, 5,
+                        "Lovecraft_Lane"))
+    for (x, y) in WEST_EXITS:
+        lines.append(_ke(x, y, "west", "lapidus_slum_west_stub", 1, 5))
+
+    return _kbuild(lines, "lapidus_slum_interior", "Hopefare Junction", SPAWN)
+
+
+# ── June Quarter  (80 × 12) ───────────────────────────────────────────────────
+#
+# Long market corridor — more long than wide.
+# Ceramic tile throughout: decorative, commercial, wanting to be noticed.
+# Stall counters line both sides of a central walkway.
+# Four vendor positions; two are populated (0006_TOWN, 0007_TOWN),
+# two are open stalls for quest-gated merchants.
+#
+# Layout:
+#   rows 0, 11     N/S walls
+#   rows 1–3       North stalls (stone counters + vendor NPCs)
+#   rows 4–7       Central walkway
+#   rows 8–10      South stalls (stone counters + open positions)
+#
+# Exits:
+#   South (39,11)+(40,11) → lapidus_azonithia_market (22,1)+(23,1)
+#   East  (79,5)+(79,6)   → stub (east market extension, future)
+
+def build_june_quarter() -> Zone:
+    W, H = 80, 12
+    SPAWN = (40, 6)
+
+    SOUTH_EXITS = {(39, H-1), (40, H-1)}
+    EAST_EXITS  = {(W-1, 5), (W-1, 6)}
+    passable    = SOUTH_EXITS | EAST_EXITS
+
+    lines: list[str] = []
+    walls: set[tuple[int, int]] = set()
+
+    _kperim(W, H, lines, passable)
+    walls.update({(x, 0) for x in range(W)} | {(x, H-1) for x in range(W)})
+    walls.update({(0, y) for y in range(H)} | {(W-1, y) for y in range(H)})
+    walls -= passable
+
+    # North stall counters (row 2, cols 2–19, 22–39, 42–59, 62–77)
+    for seg_start in (2, 22, 42, 62):
+        for x in range(seg_start, seg_start + 16):
+            lines.append(_kw(x, 2))
+            walls.add((x, 2))
+
+    # South stall counters (row 9)
+    for seg_start in (2, 22, 42, 62):
+        for x in range(seg_start, seg_start + 16):
+            lines.append(_kw(x, 9))
+            walls.add((x, 9))
+
+    _kfill(W, H, lines, walls, color="Ha")   # ceramic — warm commercial
+
+    lines.append(_ks(*SPAWN))
+
+    # Vendor NPCs (north stalls, behind counters at row 1)
+    lines.append(_kn(10, 1, "0006_TOWN"))   # general vendor
+    lines.append(_kn(30, 1, "0007_TOWN"))   # herb specialist
+
+    # Exits
+    for (x, y) in SOUTH_EXITS:
+        lines.append(_ke(x, y, "south", "lapidus_azonithia_market", 22, 1))
+    for (x, y) in EAST_EXITS:
+        lines.append(_ke(x, y, "east", "lapidus_june_east_stub", 1, 5))
+
+    return _kbuild(lines, "lapidus_june_quarter", "June Quarter", SPAWN)
+
+
+# ── Goldshoot Street  (16 × 36) ──────────────────────────────────────────────
+#
+# Slate-paved approach to the Temple of the Gods.
+# Narrow, deep — the length gives the approach its institutional gravity.
+# Serious, ancient-presenting. Progressive weight as the player moves north.
+# Sidhal (0020_TOWN) is the temple custodian; met here on the way up.
+#
+# Exits:
+#   South (7,35)+(8,35)  → lapidus_azonithia_temple (22,1)+(23,1)
+#   North (7,0)+(8,0)    → lapidus_temple_interior (stub)
+
+def build_goldshoot_street() -> Zone:
+    W, H = 16, 36
+    SPAWN = (8, 30)
+
+    SOUTH_EXITS = {(7, H-1), (8, H-1)}
+    NORTH_EXITS = {(7, 0),   (8, 0)}
+    passable    = SOUTH_EXITS | NORTH_EXITS
+
+    lines: list[str] = []
+    walls: set[tuple[int, int]] = set()
+
+    _kperim(W, H, lines, passable)
+    walls.update({(x, 0) for x in range(W)} | {(x, H-1) for x in range(W)})
+    walls.update({(0, y) for y in range(H)} | {(W-1, y) for y in range(H)})
+    walls -= passable
+
+    # Architectural markers — columns suggesting temple approach formality
+    for col_x in (3, 12):
+        for row_y in (8, 16, 24):
+            lines.append(_kw(col_x, row_y))
+            walls.add((col_x, row_y))
+
+    _kfill(W, H, lines, walls, color="Ka")   # slate — Vector Indigo, institutional
+
+    lines.append(_ks(*SPAWN))
+    lines.append(_kn(8, 20, "0020_TOWN"))    # Sidhal: temple custodian
+
+    for (x, y) in SOUTH_EXITS:
+        lines.append(_ke(x, y, "south", "lapidus_azonithia_temple", 22, 1))
+    for (x, y) in NORTH_EXITS:
+        lines.append(_ke(x, y, "north", "lapidus_temple_interior", 7, 34))
+
+    return _kbuild(lines, "lapidus_goldshoot_street", "Goldshoot Street", SPAWN)
+
+
+# ── Youthspring Road  (22 × 28) ──────────────────────────────────────────────
+#
+# Melted silica approach to Heartvein Heights.
+# Wider than Goldshoot — wealth demands space underfoot.
+# Extravagant, processed; the labor of making something impractical on display.
+# Nexiott (0017_ROYL) is encountered here — caravan boss, radio network owner.
+#
+# Exits:
+#   South (10,27)+(11,27) → lapidus_azonithia_heartvein (22,1)+(23,1)
+#   North (10,0)+(11,0)   → lapidus_heartvein_interior (stub)
+
+def build_youthspring_road() -> Zone:
+    W, H = 22, 28
+    SPAWN = (11, 22)
+
+    SOUTH_EXITS = {(10, H-1), (11, H-1)}
+    NORTH_EXITS = {(10, 0),   (11, 0)}
+    passable    = SOUTH_EXITS | NORTH_EXITS
+
+    lines: list[str] = []
+    walls: set[tuple[int, int]] = set()
+
+    _kperim(W, H, lines, passable)
+    walls.update({(x, 0) for x in range(W)} | {(x, H-1) for x in range(W)})
+    walls.update({(0, y) for y in range(H)} | {(W-1, y) for y in range(H)})
+    walls -= passable
+
+    # Noble district character — wide verge walls suggesting estate boundaries
+    for vx in (5, 16):
+        for vy in range(4, 24, 4):
+            lines.append(_kw(vx, vy))
+            walls.add((vx, vy))
+
+    _kfill(W, H, lines, walls, color="Ga")   # silica — Absolute Negative, cold extravagance
+
+    lines.append(_ks(*SPAWN))
+    lines.append(_kn(11, 14, "0017_ROYL"))   # Nexiott on Youthspring Road
+
+    for (x, y) in SOUTH_EXITS:
+        lines.append(_ke(x, y, "south", "lapidus_azonithia_heartvein", 22, 1))
+    for (x, y) in NORTH_EXITS:
+        lines.append(_ke(x, y, "north", "lapidus_heartvein_interior", 10, 26))
+
+    return _kbuild(lines, "lapidus_youthspring_road", "Youthspring Road", SPAWN)
+
+
+# ── Castle Azoth — Main Hall / Lottery Chamber  (56 × 30) ────────────────────
+#
+# Ground floor. The Lottery is drawn here. The room is designed to make people
+# feel small — wide formal hall, central aisle, raised dais at the north end
+# where Bombastus presides. Columns create lanes. Stone throughout.
+#
+# NPCs:
+#   Bombastus (ROYL, King) — on the dais, north center
+#
+# Exits:
+#   South (27,29)+(28,29) → lapidus_castle_azoth courtyard (19,1)+(20,1)
+#   West  (0,14)+(0,15)   → lapidus_castle_west_wing (stub)
+#   North (27,0)+(28,0)   → lapidus_castle_first_floor (27,28)+(28,28)
+#   Down  (2,2)+(3,2)     → lapidus_castle_basement (stub — locked Game 7)
+
+def build_castle_main_hall() -> Zone:
+    W, H = 56, 30
+    SPAWN = (28, 24)
+
+    SOUTH = {(27, H-1), (28, H-1)}
+    NORTH = {(27, 0),   (28, 0)}
+    WEST  = {(0, 14),   (0, 15)}
+    passable = SOUTH | NORTH | WEST
+
+    lines: list[str] = []
+    walls: set[tuple[int, int]] = set()
+
+    _kperim(W, H, lines, passable)
+    for x in range(W):
+        walls.add((x, 0)); walls.add((x, H-1))
+    for y in range(H):
+        walls.add((0, y)); walls.add((W-1, y))
+    walls -= passable
+
+    # Dais — raised stone platform at north center (rows 3-6, cols 18-37)
+    for x in range(18, 38):
+        for y in (3, 6):
+            lines.append(_kw(x, y)); walls.add((x, y))
+    for y in range(4, 6):
+        lines.append(_kw(18, y)); walls.add((18, y))
+        lines.append(_kw(37, y)); walls.add((37, y))
+
+    # Formal columns lining the central aisle (rows 8,12,16,20 — cols 8 and 47)
+    for ry in (8, 12, 16, 20):
+        for cx in (8, 47):
+            lines.append(_kw(cx, ry)); walls.add((cx, ry))
+
+    # Basement stairs marker (locked — west corner, rows 2-3)
+    for x in (2, 3):
+        for y in (2, 3):
+            lines.append(_kw(x, y)); walls.add((x, y))
+
+    _kfill(W, H, lines, walls, color="Ha")
+
+    lines.append(_ks(*SPAWN))
+
+    # Bombastus on the dais
+    lines.append(_kn(27, 4, "ROYL_BOMBASTUS"))
+
+    # Exits
+    for (x, y) in SOUTH:
+        lines.append(_ke(x, y, "south", "lapidus_castle_azoth", 19, 1))
+    for (x, y) in NORTH:
+        lines.append(_ke(x, y, "north", "lapidus_castle_first_floor", 27, 28))
+    for (x, y) in WEST:
+        lines.append(_ke(x, y, "west", "lapidus_castle_west_stub", 1, 5))
+
+    return _kbuild(lines, "lapidus_castle_main_hall", "Castle Azoth — Lottery Hall", SPAWN)
+
+
+# ── Castle Azoth — First Floor  (48 × 24) ─────────────────────────────────────
+#
+# Administrative wing. Alfir's workshop occupies the northwest.
+# Bombastus's private study is northeast.
+# Central corridor connects stair landings.
+#
+# NPCs:
+#   Alfir (0006_WTCH) — northwest workshop (quest 0010_KLST gate)
+#
+# Exits:
+#   South (23,23)+(24,23) → lapidus_castle_main_hall (27,1)+(28,1)
+#   North (23,0)+(24,0)   → lapidus_castle_second_floor (23,22)+(24,22)
+
+def build_castle_first_floor() -> Zone:
+    W, H = 48, 24
+    SPAWN = (24, 18)
+
+    SOUTH = {(23, H-1), (24, H-1)}
+    NORTH = {(23, 0),   (24, 0)}
+    passable = SOUTH | NORTH
+
+    lines: list[str] = []
+    walls: set[tuple[int, int]] = set()
+
+    _kperim(W, H, lines, passable)
+    for x in range(W):
+        walls.add((x, 0)); walls.add((x, H-1))
+    for y in range(H):
+        walls.add((0, y)); walls.add((W-1, y))
+    walls -= passable
+
+    # Northwest workshop walls — Alfir's space (cols 1-14, rows 1-10)
+    for x in range(1, 15):
+        lines.append(_kw(x, 10)); walls.add((x, 10))
+    for y in range(1, 10):
+        lines.append(_kw(14, y)); walls.add((14, y))
+    # Workshop door at (14, 7)+(14, 8)
+    walls.discard((14, 7)); walls.discard((14, 8))
+
+    # Northeast study walls — Bombastus's private room (cols 33-46, rows 1-10)
+    for x in range(33, 47):
+        lines.append(_kw(x, 10)); walls.add((x, 10))
+    for y in range(1, 10):
+        lines.append(_kw(33, y)); walls.add((33, y))
+    # Study door at (33, 7)+(33, 8)
+    walls.discard((33, 7)); walls.discard((33, 8))
+
+    # Alchemy bench markers in workshop (rows 3-5, cols 3-8)
+    for x in range(3, 9):
+        lines.append(_kw(x, 5)); walls.add((x, 5))
+
+    _kfill(W, H, lines, walls, color="Ha")
+
+    lines.append(_ks(*SPAWN))
+
+    # Alfir in his workshop
+    lines.append(_kn(7, 3, "0006_WTCH"))
+
+    for (x, y) in SOUTH:
+        lines.append(_ke(x, y, "south", "lapidus_castle_main_hall", 27, 1))
+    for (x, y) in NORTH:
+        lines.append(_ke(x, y, "north", "lapidus_castle_second_floor", 23, 22))
+
+    return _kbuild(lines, "lapidus_castle_first_floor",
+                   "Castle Azoth — First Floor", SPAWN)
+
+
+# ── Castle Azoth — Second Floor / Royal Chambers  (40 × 20) ──────────────────
+#
+# Private residential floor. Luminyx's chambers occupy the east wing.
+# West wing: family library and private sitting room.
+# Quieter, more intimate than the floors below.
+# The stair north leads to Hypatia's tower study.
+#
+# NPCs:
+#   Luminyx (0019_ROYL) — east wing (early game, before quest 0052_KLST)
+#
+# Exits:
+#   South (19,19)+(20,19) → lapidus_castle_first_floor (23,1)+(24,1)
+#   North (19,0)+(20,0)   → lapidus_castle_hypatia_tower (7,28)+(8,28)
+
+def build_castle_second_floor() -> Zone:
+    W, H = 40, 20
+    SPAWN = (20, 14)
+
+    SOUTH = {(19, H-1), (20, H-1)}
+    NORTH = {(19, 0),   (20, 0)}
+    passable = SOUTH | NORTH
+
+    lines: list[str] = []
+    walls: set[tuple[int, int]] = set()
+
+    _kperim(W, H, lines, passable)
+    for x in range(W):
+        walls.add((x, 0)); walls.add((x, H-1))
+    for y in range(H):
+        walls.add((0, y)); walls.add((W-1, y))
+    walls -= passable
+
+    # East wing divider — Luminyx's chambers (cols 22-38, rows 1-14)
+    for y in range(1, 15):
+        lines.append(_kw(22, y)); walls.add((22, y))
+    # Chamber door at (22, 8)+(22, 9)
+    walls.discard((22, 8)); walls.discard((22, 9))
+
+    # West wing — library shelves (rows 2-4, cols 2-10)
+    for x in range(2, 11):
+        lines.append(_kw(x, 4)); walls.add((x, 4))
+
+    _kfill(W, H, lines, walls, color="Ha")
+
+    lines.append(_ks(*SPAWN))
+
+    # Luminyx in her chambers
+    lines.append(_kn(32, 8, "0019_ROYL"))
+
+    for (x, y) in SOUTH:
+        lines.append(_ke(x, y, "south", "lapidus_castle_first_floor", 23, 1))
+    for (x, y) in NORTH:
+        lines.append(_ke(x, y, "north", "lapidus_castle_hypatia_tower", 7, 28))
+
+    return _kbuild(lines, "lapidus_castle_second_floor",
+                   "Castle Azoth — Royal Chambers", SPAWN)
+
+
+# ── Castle Azoth — Basement  (64 × 20)  [LOCKED Game 7] ─────────────────────
+#
+# The founding crime. The Stelladeva Arkship sank into a sinkhole here in the
+# founding year 50 (~3677 AD); the castle was built on top of the burial.
+# In Game 7 the basement is inaccessible — the locked door in the main hall
+# stair corner registers as impassable. In Game 8 the grandchildren excavate.
+#
+# Zone exists but has no navigable exits in Game 7.
+# The Arkship location is suggested by unusual floor geometry (a depression).
+
+def build_castle_basement() -> Zone:
+    W, H = 64, 20
+    SPAWN = (32, 10)
+
+    lines: list[str] = []
+    walls: set[tuple[int, int]] = set()
+
+    # Fully enclosed — no exits in Game 7
+    _kperim(W, H, lines, set())
+    for x in range(W):
+        walls.add((x, 0)); walls.add((x, H-1))
+    for y in range(H):
+        walls.add((0, y)); walls.add((W-1, y))
+
+    # The Arkship depression — a rectangular void in the floor center
+    # (rows 6-13, cols 20-43) — darker floor tiles marking the burial site
+    for x in range(20, 44):
+        for y in (6, 13):
+            lines.append(_kw(x, y)); walls.add((x, y))
+    for y in range(7, 13):
+        lines.append(_kw(20, y)); walls.add((20, y))
+        lines.append(_kw(43, y)); walls.add((43, y))
+
+    _kfill(W, H, lines, walls, color="Ga")   # cold dark stone — Absolute Negative
+
+    lines.append(_ks(*SPAWN))
+
+    return _kbuild(lines, "lapidus_castle_basement",
+                   "Castle Azoth — Basement", SPAWN)
+
+
+# ── Castle Azoth — Hypatia's Tower  (16 × 30) ────────────────────────────────
+#
+# The tower study above the Royal Chambers — a narrow stone spire.
+# Instrument tables, reference texts, worked alchemy residue on the sills.
+# First accessible in 0010_KLST (Alfir's apprenticeship quest chain).
+# The highest enclosed floor; the canopy lies one stair above.
+#
+# NPCs:
+#   Hypatia (0000_0451) — at her instrument table, center north
+#
+# Exits:
+#   South (7,29)+(8,29) → lapidus_castle_second_floor (19,18)+(20,18)
+#   North (7,0)+(8,0)   → lapidus_castle_canopy (15,16)+(16,16)
+
+def build_castle_hypatia_tower() -> Zone:
+    W, H = 16, 30
+    SPAWN = (8, 22)
+
+    SOUTH = {(7, H-1), (8, H-1)}
+    NORTH = {(7, 0),   (8, 0)}
+    passable = SOUTH | NORTH
+
+    lines: list[str] = []
+    walls: set[tuple[int, int]] = set()
+
+    _kperim(W, H, lines, passable)
+    for x in range(W):
+        walls.add((x, 0)); walls.add((x, H-1))
+    for y in range(H):
+        walls.add((0, y)); walls.add((W-1, y))
+    walls -= passable
+
+    # Instrument table — long bench across north section (rows 4-5, cols 2-13)
+    for x in range(2, 14):
+        lines.append(_kw(x, 5)); walls.add((x, 5))
+
+    # Bookshelf alcoves on west wall (rows 8,12,16,20 — single-tile depth)
+    for sy in (8, 12, 16, 20):
+        lines.append(_kw(1, sy)); walls.add((1, sy))
+
+    # Observation nook — narrow ledge east wall (rows 10-14)
+    for ny in range(10, 15):
+        lines.append(_kw(W-2, ny)); walls.add((W-2, ny))
+
+    _kfill(W, H, lines, walls, color="Ha")   # warm — scholarly warmth
+
+    lines.append(_ks(*SPAWN))
+
+    # Hypatia at her instrument table (one row above bench)
+    lines.append(_kn(8, 3, "0000_0451"))
+
+    for (x, y) in SOUTH:
+        lines.append(_ke(x, y, "south", "lapidus_castle_second_floor", 19, 18))
+    for (x, y) in NORTH:
+        lines.append(_ke(x, y, "north", "lapidus_castle_canopy", 15, 16))
+
+    return _kbuild(lines, "lapidus_castle_hypatia_tower",
+                   "Hypatia's Tower", SPAWN)
+
+
+# ── Castle Azoth — Canopy  (32 × 18) ─────────────────────────────────────────
+#
+# The fifth floor: an open canopy level where the castle's ancient trees
+# break through the roof line. No ceiling. Mt. Elaene visible to the East.
+# The highest accessible point in Castle Azoth in Game 7.
+# Battlements form the perimeter; trees crowd the interior.
+#
+# Exits:
+#   South (15,17)+(16,17) → lapidus_castle_hypatia_tower (7,28)+(8,28)
+
+def build_castle_canopy() -> Zone:
+    W, H = 32, 18
+    SPAWN = (16, 10)
+
+    SOUTH = {(15, H-1), (16, H-1)}
+    passable = SOUTH
+
+    lines: list[str] = []
+    walls: set[tuple[int, int]] = set()
+
+    _kperim(W, H, lines, passable)
+    for x in range(W):
+        walls.add((x, 0)); walls.add((x, H-1))
+    for y in range(H):
+        walls.add((0, y)); walls.add((W-1, y))
+    walls -= passable
+
+    # Ancient trees growing through the floor (impassable trunks)
+    # Irregular placement suggesting genuine growth, not design
+    for (tx, ty) in [(4, 3), (5, 3), (4, 4),      # NW cluster
+                     (26, 3), (27, 3), (27, 4),    # NE cluster
+                     (9, 8), (10, 8),               # center-west
+                     (21, 9), (22, 9),              # center-east
+                     (6, 13), (7, 13),              # SW canopy
+                     (24, 12), (25, 12)]:           # SE canopy
+        lines.append(_kw(tx, ty)); walls.add((tx, ty))
+
+    # Battlement crenellations — gaps in north wall
+    for bx in (4, 8, 12, 16, 20, 24, 28):
+        walls.discard((bx, 0))    # leave perimeter gap (decorative — not traversable)
+
+    _kfill(W, H, lines, walls, color="El")   # El = Vector Yellow — sunlight, open sky
+
+    lines.append(_ks(*SPAWN))
+
+    for (x, y) in SOUTH:
+        lines.append(_ke(x, y, "south", "lapidus_castle_hypatia_tower", 7, 28))
+
+    return _kbuild(lines, "lapidus_castle_canopy",
+                   "Castle Azoth — Canopy", SPAWN)

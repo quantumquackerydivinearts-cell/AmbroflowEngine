@@ -110,7 +110,7 @@ def build_faithsalt() -> Zone:
 
     lines.append(_spawn(*SPAWN))
     lines.append(_npc(10, 5, "0014_TOWN"))   # Joshua lives here
-    lines.append(_exit(*ENTRY, "west",  "lapidus_azonithia_slum",    3, 15, "Lovecraft_Lane"))
+    lines.append(_exit(*ENTRY, "west",  "lapidus_slum_interior",    38, 10, "Lovecraft_Lane"))
     lines.append(_exit(*EXIT,  "east",  "lapidus_warren_gethsemane", 2, 15, "Breakheart_Boulevard"))
 
     return _build(lines, "lapidus_warren_faithsalt", "Faithsalt Corridor", SPAWN)

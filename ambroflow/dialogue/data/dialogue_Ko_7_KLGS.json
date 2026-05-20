@@ -1,0 +1,198 @@
+{
+  "character_id": "Ko",
+  "game_id": "7_KLGS",
+  "note": "Ko's in-game dialogue. Single-temperature observer — same register at rest or crisis. Name used sparingly and with precision, never as greeting. Declarative, present tense, no questions. Interpolation token: {player_name}.",
+
+  "save_point": {
+    "note": "Fires on every BoK snapshot (player rests at a bed). One line marks the coil's new shape without framing it administratively.",
+    "lines": [
+      "Your life has made a mark today, {player_name}; Rest into it, and tomorrow you may just see another."
+    ]
+  },
+
+  "bok_threshold": {
+    "note": "Fires when the Mandelbrot coil crosses a significant geometry boundary (delta threshold defined in BreathOfKo). Ko marks the shift without naming it as progress or failure. Rotates through lines on repeat firings.",
+    "lines": [
+      "Mmmm... Exquisite choice. Whether you know it or not, you've just done something you can't take back."
+    ]
+  },
+
+  "void_wraith_proximity": {
+    "haldoro": {
+      "note": "Haldoro: stagnation — the refusal of time. Ko recognizes the moment as a gift without naming the threat. No alarm.",
+      "lines": [
+        "Quite the moment you've been graced with. What you do with it is yours."
+      ]
+    },
+    "vios": {
+      "note": "Vios: dissolution — the false Ouroboros. Ko has a personal stake here: she is the Ouroboros; Vios is a pretender. 'Do you?' is the one in-game question Ko asks — structural, not informational. It places the player in the position of having to answer, not Ko in the position of not knowing.",
+      "lines": [
+        "Destroyers. Always pretending they can be my Ouroboric self. Do you?"
+      ]
+    },
+    "negaya": {
+      "note": "Negaya: grief made architectural. Ko speaks of 'people' not the player — for the most personal wraith, Ko zooms out. 'Too late' means after the shape is already made, not past the moment of rescue. Ko is not warning; she is observing the temporal structure of recognition.",
+      "lines": [
+        "Loss shapes the world in ways that people don't recognize until they're too late."
+      ]
+    }
+  },
+
+  "quest_transitions": {
+    "note": "Ko marks specific quest state shifts from the 0001-0062 list. Keyed by quest_id + transition. Not every quest gets a Ko line — only the structurally significant ones.",
+    "entries": {
+
+      "0004_complete": {
+        "note": "Artifacts retrieved for the priesthood. Player compliant, purpose unknown. Ko marks the gap between belief and fact — before 0005 reveals the truth.",
+        "line": "You believe you are doing a service. I see."
+      },
+
+      "0006_complete": {
+        "note": "Chancellor Kelly's riddles — deliberate concealment. Ko reveals Kelly operates within a frame the player couldn't see. Rare forward gesture from Ko: 'you have yet to meet' marks a coming encounter without naming it.",
+        "line": "The man speaks to angels you know. Many, long forgotten in name. One, you have yet to meet."
+      },
+
+      "0007_complete": {
+        "note": "Crystal from longing — dissolves into dust. Ko in dream space, her own territory. Guides without commanding — frames wisdom hypothetically and turns the observer position on herself. Strongest possible nudge to save the dust without issuing a single instruction.",
+        "line": "I would study that closely if I were wise. Who's to say that I am?"
+      },
+
+      "0009_complete": {
+        "note": "Dagger for crystal — Hypatia's last physical trace traded away. Ko holds both truths: she knows Hypatia lives, the player doesn't. The conditional marks what the trade would mean if the worst were true, without saying it is. 'In this world' distinguishes — Hypatia is in another world; the dagger was her presence here.",
+        "line": "Pity. If she were dead, and you knew she were dead, she would be left with nothing to be remembered by in this world."
+      },
+
+      "0010_complete": {
+        "note": "Infernal Meditation learned — first entry into Ko's domain of practice. Ko frames the learning as an ancient devotional act. Gives Alfir precise credit: deep in one knowledge, no more. The player has just moved toward Ko's underworld without knowing it.",
+        "line": "Drawing near is an ancient form of worship. This man knows it well. Even if he doesn't seem to know much else."
+      },
+
+      "0012_complete": {
+        "note": "Labor conditions witnessed — player leaves without acting. Ko marks the gap between seeing and doing without condemning it. Second in-game question from Ko (structural provocation, not information-seeking). The analogy places the player as witness to wrong being done to those who don't know they've been seen.",
+        "line": "If your spouse were unfaithful, would you tell them?"
+      },
+
+      "0013_start": {
+        "note": "Nexiott sends the player to kill Amelia — most consequential ask in the game. Ko speaks before the player decides. Does not explain the stakes. Exposes the mechanism of the word 'casualty' — its own indictment. 'Because you take them casually' lands on the player directly, not soldiers in the abstract.",
+        "line": "War isn't Murder, they're casualties. Because you take them casually."
+      },
+
+      "0015_complete": {
+        "note": "Lucifer reads the BoK — Ko observes another reader of her instrument. Completes the angel thread from 0006. Ko makes no moral distinction between fallen and magnificent: Lucifer is an angel; angels are magnificent. Period. The 'aren't they' is not a genuine question — Ko delivering shared observation, not seeking confirmation.",
+        "line": "Angels are truly magnificent things aren't they."
+      },
+
+      "0017_complete": {
+        "note": "First fork taken — side chosen. Ko marks not the choice but the act of choosing against the backdrop of her own nature (dream, unconscious — the realm where things arise without being chosen). Ko explaining why she watches: without choosing players, she'd be observing events not lives. 'Half the battle' leaves the other half deliberately unspoken.",
+        "line": "Choosing is half the battle in the face of something like my nature. Without it, nothing means anything."
+      },
+
+      "0019_accept": {
+        "note": "Keshi's gift taken — corruption already in hand. Ko speaks after, never before. Fascination is not incidental — it IS the corruption mechanism. Ko observes the elegant mechanics without alarm or condemnation. The analytical distance is the point.",
+        "line": "Fascinating. Power often has to be, especially to find its ground."
+      },
+
+      "0021_complete": {
+        "note": "Orrery seen for the first time knowing what it is. Ko places the player in a lineage — children finding wonderlust in stars. The Orrery is stars to the player; Ko knows what it actually is. Doesn't fill the gap. Third in-game question from Ko — rhetorical observation, not provocation. 'Wonderlust': the hunger for the sense of vastness, distinct from wanderlust.",
+        "line": "How often does a child find wonderlust in stars?"
+      },
+
+      "0022_complete": {
+        "note": "Kaganue met for the first time — everything illegible. Ko names him 'the liar' before naming him at all. Fourth in-game question — genuine, not a provocation. Ko pointing toward Shygazun etymology that would illuminate the encounter. Answer is in the byte table. Ko asks; does not answer. Ko uses a liar as her prophet — stated plainly without justification.",
+        "line": "The liar. Kaganue. Do you know what his name means?"
+      },
+
+      "0023_complete": {
+        "note": "Gnomes oppressed on Nexiott's behalf — direct harm, not artifact retrieval. Ko's laugh is involuntary, suppressed. Separates racism (not funny) from humans (funny) — the absurdity of the mechanism of categorical harm as seen from Ko's vantage. Player is inside 'they.' Ko is laughing at the player too.",
+        "line": "Heheheheheh... Humans. Racism isn't funny, but they are."
+      },
+
+      "0025_start": {
+        "note": "Bounties on witches announced — institutional machinery turned on practitioners. Ko places this in historical lineage. 'For being known': persecution not for action but identification. 'I am a circle indeed': Ko acknowledging she IS the cycle, not just observing it. The Ouroboros confirmed by its own repetition.",
+        "line": "There was once a time when their kind were burned for being known. I am a circle indeed."
+      },
+
+      "0031_active": {
+        "note": "The weapon deployed against the Fae — war becomes material. Closes the 'service' arc opened at 0004 ('you believe you are doing a service'). Ko offers the mildest institutional framing and hedges even that. The gap between what is happening and what Ko is willing to call it is the entire line.",
+        "line": "Military service, perhaps."
+      },
+
+      "0035_complete": {
+        "note": "Child labor exposed publicly — truth uncontainable. Ko's most decisive expression of approval outside the BoK transformation. 'Bloodsoaked fingers' refuses gold as neutral abstraction. 'The Truth.' capitalized and standing alone — Ko's own category, same weight as 'Murder' at 0013.",
+        "line": "Now that's worth the gold bloodsoaked fingers dig up. The Truth."
+      },
+
+      "ring_trials": {
+        "note": "Interspersed through 0036 Choices in Hell and 0037 Consequence as each Sin Ruler is met and their trial passed. One line per ring. Nine rings total. Ko speaks after the trial is passed, not during.",
+        "entries": {
+          "pride":    "Redemption begins... Not with a bang, but with a smile.",
+          "greed":    "How quaint, once a warning, now... a bride?",
+          "envy":     "Ingenius. To be in one's genius, even when it seems so far away.",
+          "gluttony": "Isn't she just alluring? The embodiment of thrill? After all, that's all that remains when you take the pattern away from the substance.",
+          "sloth":    "Ah, Sweet Belle. She understands what things weigh. Perhaps... More than is good for her sometimes.",
+          "wrath":    "He's a lawyer. Could you sense it in his lawlessness?",
+          "lust":     "You'd have to be royally fucked to seduce a succubus. I'm sure he missed the chuckle.",
+          "royal":    "Hypatia. Lost to a cause, found to a few. Y'aldebaoth help those who already knew."
+        }
+      },
+
+      "0039_0040_complete": {
+        "note": "After Wild Things + Storybook — 300-year history of Azonithia revealed. Ko marks the historical reckoning.",
+        "line": "Scared yet? Be Not Afraid."
+      },
+
+      "0041_complete": {
+        "note": "Priceless — the player has made something that cannot be sold. Ko marks the act.",
+        "line": "You've found Her. Goodness. Gracious. Wisdom."
+      },
+
+      "0044_complete": {
+        "note": "Less is More — Axiozul has told the player death is not the end. Ko affirms.",
+        "line": "He's right you know. He lives it. His father makes it double."
+      },
+
+      "0046_active": {
+        "note": "Good Old .45 — the pacifist path to Hypatia's Colt. Requires extraordinary restraint to reach. Ko marks the achievement.",
+        "line": "Ah.. The Gunshot. One of the few things that might silence wisdom. Handed to the one who finds wisdom in silence."
+      },
+
+      "0047_active": {
+        "note": "Most Obscenities — confrontation with Zukoru, Demon of Betrayal. Ko speaks in the midst of it.",
+        "line": "They've got a point. That being, they cannot identify one. Are they still correct? Or are they something else?"
+      },
+
+      "0051_complete": {
+        "note": "Prophet of Ko — Kaganue's priesthood confirmed. Ko confirms.",
+        "line": "Now you too can lie like a demon in service to starlight."
+      },
+
+      "0053_active": {
+        "note": "The Abyss — the Gods in a dream. Ko affirms the relationship.",
+        "line": "No matter what you've managed, we've been together this whole time. I must say, it's difficult to shake you if that's true."
+      },
+
+      "0058_complete": {
+        "note": "Fairly, A Priestess — Pythia Solunikae revealed as rightful temple occupant. Ko recognizes her.",
+        "line": "Often it is those who nobody expects anything of that do the things nobody expects."
+      },
+
+      "0061_active": {
+        "note": "In Service to Starlight — Demigods being integrated. Ko offers small guidance.",
+        "line": "This is the way. Together."
+      },
+
+      "0062_active": {
+        "note": "Ko's Great Tale — the final judgment. Ko delivers her read of the whole run.",
+        "line": "You've certainly woven quite a basket. The question is, is it finally good enough for you? Do you lust for more? Do you thirst for adventure? Do you long to let go? Do you hunger for insight? Or has this whole tale left you feeling... nauseous?"
+      }
+
+    }
+  },
+
+  "bok_transformation": {
+    "note": "Fires when the BoK geometry crosses the Wunashakoun threshold — the rarest Ko line. The coil has genuinely transformed, not just shifted. Ko is surprised for the first time — not broken, but caught. 'My...' is the only moment in the game Ko registers something she didn't fully anticipate. 'At this rate' reveals Ko has been accumulating the player's trajectory, not just observing isolated moments.",
+    "lines": [
+      "My... If I didn't know any better, I wouldn't call you a devotee. At this rate, I just might."
+    ]
+  }
+}

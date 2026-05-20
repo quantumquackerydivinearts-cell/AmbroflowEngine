@@ -18,6 +18,8 @@ from ambroflow.world.zones.lapidus import (
     build_mt_elaene_trail,
     build_serpents_pass,
     build_ocean_shore,
+    build_goldshoot_street,
+    build_youthspring_road,
     VENDOR_CATALOGS,
 )
 
@@ -200,36 +202,36 @@ class TestAvenueCommon:
         self._check(z, WorldTileKind.CERAMIC)
         assert exit_at(z, 47, 5, "east").target_zone == "lapidus_azonithia_slum"
         assert exit_at(z, 0,  5, "west").target_zone == "lapidus_azonithia_temple"
-        assert exit_at(z, 22, 0, "north").target_zone == "lapidus_market_interior"
+        assert exit_at(z, 22, 0, "north").target_zone == "lapidus_june_quarter"
 
     def test_temple_section(self):
         z = build_azonithia_temple()
         self._check(z, WorldTileKind.SLATE)
         assert exit_at(z, 47, 5, "east").target_zone == "lapidus_azonithia_market"
         assert exit_at(z, 0,  5, "west").target_zone == "lapidus_azonithia_heartvein"
-        assert exit_at(z, 22, 0, "north").target_zone == "lapidus_temple_interior"
+        assert exit_at(z, 22, 0, "north").target_zone == "lapidus_goldshoot_street"
 
     def test_heartvein_section(self):
         z = build_azonithia_heartvein()
         self._check(z, WorldTileKind.SILICA)
         assert exit_at(z, 47, 5, "east").target_zone == "lapidus_azonithia_temple"
         assert exit_at(z, 0,  5, "west").target_zone == "lapidus_azoth_approach"
-        assert exit_at(z, 22, 0, "north").target_zone == "lapidus_heartvein_interior"
+        assert exit_at(z, 22, 0, "north").target_zone == "lapidus_youthspring_road"
 
 
 # ── Sidhal NPC spawn ──────────────────────────────────────────────────────────
 
 def test_sidhal_spawns_in_temple_zone():
-    # Sidhal (0020_TOWN) is the temple custodian — placed in Goldshoot St section.
-    z = build_azonithia_temple()
+    # Sidhal (0020_TOWN) is the temple custodian — placed on Goldshoot Street.
+    z = build_goldshoot_street()
     cids = [n.character_id for n in z.npc_spawns]
-    assert "0020_TOWN" in cids, "Sidhal should be in temple zone"
+    assert "0020_TOWN" in cids, "Sidhal should be on Goldshoot Street"
 
 def test_nexiott_spawns_in_heartvein_zone():
-    # Nexiott (0017_ROYL) is a noble living in Heartvein Heights.
-    z = build_azonithia_heartvein()
+    # Nexiott (0017_ROYL) is a noble — placed on Youthspring Road.
+    z = build_youthspring_road()
     cids = [n.character_id for n in z.npc_spawns]
-    assert "0017_ROYL" in cids, "Nexiott should be in heartvein zone"
+    assert "0017_ROYL" in cids, "Nexiott should be on Youthspring Road"
 
 
 # ── Azoth Approach ────────────────────────────────────────────────────────────
