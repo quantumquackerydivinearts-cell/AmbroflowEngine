@@ -443,6 +443,10 @@ class GLWorldPlay:
         # PIL texture kept only for overlay-mode screens (ALCHEMY, SHOP, etc.)
         self._tex = Texture.empty(width, height)
 
+        # Physics renderer — created lazily during ALCHEMY mode
+        self._phys_r        = None
+        self._phys_r_forces: tuple = ()
+
     # ── Public API ────────────────────────────────────────────────────────────
 
     def is_done(self) -> bool:
@@ -655,6 +659,48 @@ class GLWorldPlay:
             self._tex.delete()
         self._tex = Texture.empty(w, h)
 
+    def _current_element_forces(self) -> tuple:
+        """Return element_forces for the active alchemy subject, or ()."""
+        try:
+            from ..alchemy.physics_integration import PHYSICS_AWARE_SUBJECTS
+            subjects = self._wp._alchemy_subjects
+            idx = self._wp._alchemy_subject_idx
+            if subjects and 0 <= idx < len(subjects):
+                sid = subjects[idx].id
+                if sid in PHYSICS_AWARE_SUBJECTS:
+                    return PHYSICS_AWARE_SUBJECTS[sid].element_forces
+        except Exception:
+            pass
+        return ()
+
+    def _draw_physics(self) -> None:
+        """Draw physics bodies over the world during alchemy result display."""
+        phys_world = getattr(self._wp, "_physics_world", None)
+        if phys_world is None or getattr(phys_world, "body_count", 0) == 0:
+            if self._phys_r is not None:
+                self._phys_r.clear()
+            return
+        forces = self._current_element_forces()
+        if self._phys_r is None or forces != self._phys_r_forces:
+            if self._phys_r is not None:
+                self._phys_r.delete()
+            try:
+                from ..render.physics import PhysicsRenderer
+                self._phys_r = (
+                    PhysicsRenderer.for_treatment(forces)
+                    if forces
+                    else PhysicsRenderer.for_world()
+                )
+                self._phys_r_forces = forces
+            except Exception:
+                self._phys_r = None
+                return
+        try:
+            self._phys_r.update(phys_world)
+            self._phys_r.draw(self._cam, time=self._t)
+        except Exception:
+            pass
+
     def tick(self, dt: float) -> None:
         self._t += dt
         self._wp.tick(dt, [])
@@ -769,6 +815,12 @@ class GLWorldPlay:
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
         self._wr.draw(self._cam, time=self._t)
 
+        # Physics bodies glow over the world during alchemy result phase
+        if mode == WorldMode.ALCHEMY and getattr(self._wp, "_alchemy_phase", "") == "result":
+            self._draw_physics()
+        elif self._phys_r is not None:
+            self._phys_r.clear()
+
         if not _PIL:
             return
         img = self._render_pil()
@@ -783,6 +835,12 @@ class GLWorldPlay:
                 self._wr.delete()
             except Exception:
                 pass
+        if self._phys_r is not None:
+            try:
+                self._phys_r.delete()
+            except Exception:
+                pass
+            self._phys_r = None
         if self._tex is not None:
             self._tex.delete()
             self._tex = None

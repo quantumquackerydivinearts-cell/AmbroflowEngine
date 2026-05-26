@@ -297,6 +297,7 @@ class AmbroflowApp:
                         width=self._W,
                         height=self._H,
                         vendor_catalogs=VENDOR_CATALOGS,
+                        physics_world=self._session.physics,
                     )
                     self._go("WORLD_PLAY")
                 except Exception:

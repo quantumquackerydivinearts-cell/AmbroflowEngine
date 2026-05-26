@@ -494,6 +494,7 @@ class GLApp:
                 alchemy         = alchemy,
                 journal         = journal,
                 breath          = self._active_breath,
+                physics_world   = self._session.physics,
             )
             # Post-FateKnocks: player exits through the home's front door onto
             # Wiltoll Lane.  Spawn at the exterior lane position in front of

@@ -204,6 +204,7 @@ class WorldPlay:
         recipe_book:      object                          = None,  # RecipeBook instance
         vendor_catalogs:  Optional[Dict[str, Dict[str, int]]] = None,
         breath:           object                          = None,  # BreathOfKo instance
+        physics_world:    object                          = None,  # PhysicsWorld instance
     ) -> None:
         self.width     = width
         self.height    = height
@@ -254,6 +255,9 @@ class WorldPlay:
 
         # BreathOfKo — Akashic write target (optional)
         self._breath = breath
+
+        # Physics world — passed into treat() for session-persistent simulation
+        self._physics_world = physics_world
 
         # Alchemy (optional — graceful no-ops when absent)
         self._alchemy       = alchemy
@@ -1687,6 +1691,7 @@ class WorldPlay:
                 inventory=inv_dict,
                 recipe_book=self._recipe_book,
                 calendar_context=self._alchemy_calendar_ctx,
+                physics_world=self._physics_world,
             )
         except Exception:
             self._end_alchemy()
@@ -1768,6 +1773,7 @@ class WorldPlay:
                 inventory=inv_dict,
                 recipe_book=self._recipe_book,
                 calendar_context=self._alchemy_calendar_ctx,
+                physics_world=self._physics_world,
             )
         except Exception:
             self._end_alchemy()
