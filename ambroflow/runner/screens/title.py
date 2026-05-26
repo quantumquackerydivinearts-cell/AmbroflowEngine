@@ -86,7 +86,7 @@ def render_title_screen(
 
     # ── Main title ────────────────────────────────────────────────────────────
     font_title = _load_font(38)
-    title_text = "KLGS"
+    title_text = "Ko's Labyrnth"
     tw, th = text_size(draw, title_text, font_title)
     title_y = int(H * 0.20)
     draw.text(((W - tw) // 2, title_y), title_text,
@@ -100,7 +100,7 @@ def render_title_screen(
 
     # ── Current game tagline ──────────────────────────────────────────────────
     font_game = _load_font(16)
-    game_text = "An Alchemist's Labor of Love"
+    game_text = "An Exploration of the Soul"
     gw, gh = text_size(draw, game_text, font_game)
     draw.text(((W - gw) // 2, rule_y + 14), game_text,
               fill=P.TEXT_PRIMARY, font=font_game)
