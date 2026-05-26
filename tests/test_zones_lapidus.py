@@ -17,6 +17,7 @@ from ambroflow.world.zones.lapidus import (
     build_castle_azoth,
     build_mt_elaene_trail,
     build_serpents_pass,
+    build_witch_forest,
     build_ocean_shore,
     build_goldshoot_street,
     build_youthspring_road,
@@ -48,6 +49,7 @@ def test_build_game7_world_has_all_zones():
         "lapidus_castle_azoth",
         "lapidus_mt_elaene_trail",
         "lapidus_witch_forest",
+        "lapidus_ocean_shore",
         "lapidus_dirt_trail",
         "lapidus_the_rocks",
     }

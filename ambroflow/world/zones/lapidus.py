@@ -23,13 +23,24 @@ Zone topology (West → East):
   lapidus_litleaf_thoroughfare  N–S road connecting Wiltoll to Hopefare Street.
          ↕ East
   lapidus_mt_elaene_trail       Forest edge trail toward Mt. Elaene (stub).
+         ↕ East
+  lapidus_serpents_pass         Mountain defile.  East exit → Elaene desert (summit stub).
+
+West of Castle Azoth:
+  lapidus_dirt_trail            Caravan trail — plateau stone, wide dirt road.
+         ↕ West
+  lapidus_the_rocks             Hieronymus Coast enclave (assassins).
+         ↕ West
+  lapidus_ocean_shore           The Hieronymus Coast — open ocean to the west.
+
+South of Youthspring Road (N/S only):
+  lapidus_witch_forest          Forest commune.  One entrance: Youthspring Road south.
 
 Unimplemented targets (show "(nothing that way yet)" in-game):
-  lapidus_dirt_trail            West of Castle Azoth — ocean-bound dirt caravan trail.
   lapidus_slum_interior         Azonithia Slum (9 warrens / 13 passages).
   lapidus_temple_interior       Temple of the Gods interior.
   lapidus_heartvein_interior    Heartvein Heights residential district.
-  lapidus_mt_elaene_summit      Mt. Elaene summit / Elaene desert gateway.
+  lapidus_mt_elaene_summit      Mt. Elaene summit / Elaene desert gateway (East terminus).
 """
 
 from __future__ import annotations
@@ -166,8 +177,7 @@ _ALFIR_COURTYARD_SCHEDULE = NPCSchedule(
         NPCScheduleEntry("afternoon",      x=25, y= 7, activity="patrol"),
         NPCScheduleEntry("late_afternoon", x= 5, y= 5, activity="ritual"),
         NPCScheduleEntry("dusk",           x= 5, y= 6, activity="ritual"),
-        NPCScheduleEntry("night",          x= 5, y= 5, activity="sleep",
-                         zone_id="lapidus_witch_forest"),
+        NPCScheduleEntry("night",          x= 5, y= 5, activity="sleep"),
     ],
 )
 
@@ -184,39 +194,17 @@ _ELAENE_EXITS = [
              target_zone="lapidus_serpents_pass",    target_x=1,  target_y=6),
     ZoneExit(x=19, y=7, direction="east",
              target_zone="lapidus_serpents_pass",    target_x=1,  target_y=7),
-    ZoneExit(x= 1, y=13, direction="south",
-             target_zone="lapidus_witch_forest",     target_x=1,  target_y=1),
-    ZoneExit(x= 2, y=13, direction="south",
-             target_zone="lapidus_witch_forest",     target_x=2,  target_y=1),
-]
-
-_WITCH_FOREST_EXITS = [
-    ZoneExit(x=1, y=0, direction="north",
-             target_zone="lapidus_mt_elaene_trail", target_x=1, target_y=12),
-    ZoneExit(x=2, y=0, direction="north",
-             target_zone="lapidus_mt_elaene_trail", target_x=2, target_y=12),
 ]
 
 _PASS_EXITS = [
     ZoneExit(x= 0, y=6, direction="west",
-             target_zone="lapidus_mt_elaene_trail", target_x=18, target_y=6),
+             target_zone="lapidus_mt_elaene_trail",   target_x=18, target_y=6),
     ZoneExit(x= 0, y=7, direction="west",
-             target_zone="lapidus_mt_elaene_trail", target_x=18, target_y=7),
+             target_zone="lapidus_mt_elaene_trail",   target_x=18, target_y=7),
     ZoneExit(x=39, y=6, direction="east",
-             target_zone="lapidus_ocean_shore",     target_x=1,  target_y=6),
+             target_zone="lapidus_mt_elaene_summit",  target_x=1,  target_y=6),
     ZoneExit(x=39, y=7, direction="east",
-             target_zone="lapidus_ocean_shore",     target_x=1,  target_y=7),
-]
-
-_SHORE_EXITS = [
-    ZoneExit(x= 0, y=6, direction="west",
-             target_zone="lapidus_serpents_pass", target_x=38, target_y=6),
-    ZoneExit(x= 0, y=7, direction="west",
-             target_zone="lapidus_serpents_pass", target_x=38, target_y=7),
-    ZoneExit(x=24, y=0, direction="north",
-             target_zone="mercurie_threshold",    target_x=25, target_y=11),
-    ZoneExit(x=25, y=0, direction="north",
-             target_zone="mercurie_threshold",    target_x=26, target_y=11),
+             target_zone="lapidus_mt_elaene_summit",  target_x=1,  target_y=7),
 ]
 
 _DIRT_TRAIL_EXITS = [
@@ -232,9 +220,27 @@ _DIRT_TRAIL_EXITS = [
 
 _THE_ROCKS_EXITS = [
     ZoneExit(x=39, y=5, direction="east",
-             target_zone="lapidus_dirt_trail", target_x=1, target_y=5),
+             target_zone="lapidus_dirt_trail",   target_x=1,  target_y=5),
     ZoneExit(x=39, y=6, direction="east",
-             target_zone="lapidus_dirt_trail", target_x=1, target_y=6),
+             target_zone="lapidus_dirt_trail",   target_x=1,  target_y=6),
+    ZoneExit(x= 0, y=5, direction="west",
+             target_zone="lapidus_ocean_shore",  target_x=48, target_y=5),
+    ZoneExit(x= 0, y=6, direction="west",
+             target_zone="lapidus_ocean_shore",  target_x=48, target_y=6),
+]
+
+_WITCH_FOREST_EXITS = [
+    ZoneExit(x=17, y=0, direction="north",
+             target_zone="lapidus_youthspring_road", target_x=2, target_y=26),
+    ZoneExit(x=18, y=0, direction="north",
+             target_zone="lapidus_youthspring_road", target_x=3, target_y=26),
+]
+
+_OCEAN_SHORE_EXITS = [
+    ZoneExit(x=49, y=5, direction="east",
+             target_zone="lapidus_the_rocks", target_x=1, target_y=5),
+    ZoneExit(x=49, y=6, direction="east",
+             target_zone="lapidus_the_rocks", target_x=1, target_y=6),
 ]
 
 # lapidus_warren_serpents_pass is the warren-chain zone (distinct from lapidus_serpents_pass
@@ -820,57 +826,6 @@ def build_mt_elaene_trail() -> Zone:
                   Realm.LAPIDUS, (2, 6), _ELAENE_EXITS)
 
 
-# ── Witch Forest Commune ──────────────────────────────────────────────────────
-#
-# 40 wide × 22 tall.  Home of the Azonithian witch community.
-# Three lodges: Alfir (0006_WTCH, night only — returns from Castle Azoth),
-#               Kore  (0008_WTCH, always present — guards crystals all day),
-#               Forest (0007_WTCH, night only — returns from the trail).
-# Central firepit stone ring at cols 17–23, rows 13–15.
-#
-# Exits:
-#   North (1,0)+(2,0) → lapidus_mt_elaene_trail
-
-def build_witch_forest() -> Zone:
-    W, H = 40, 22
-    lines: list[str] = []
-
-    # Base: dense forest
-    for y in range(H):
-        for x in range(W):
-            lines.append(_tree(x, y))
-
-    # North entry gap at cols 1-2 (trail connection)
-    lines.append(_grass(1, 0))
-    lines.append(_grass(2, 0))
-
-    # Clearing: cols 1-38, rows 1-19
-    for y in range(1, 20):
-        for x in range(1, W - 1):
-            lines.append(_grass(x, y))
-
-    # Three lodges
-    _house(lines, 2, 9, 3, 8, (5, 6))       # Alfir's lodge
-    _house(lines, 17, 25, 3, 9, (20, 21))   # Kore's lodge
-    _house(lines, 30, 38, 3, 8, (33, 34))   # Forest's lodge
-
-    # Central firepit stone ring
-    for x in range(17, 24):
-        lines.append(_stone(x, 13))
-        lines.append(_stone(x, 15))
-    for y in (13, 14, 15):
-        lines.append(_stone(17, y))
-        lines.append(_stone(23, y))
-
-    # NPC spawns
-    lines.append(_npc_tile(21, 6, "0005_WTCH"))   # Kore — crystal guardian, always here
-    lines.append(_npc_tile(5,  5, "0006_WTCH"))   # Alfir — night return
-    lines.append(_npc_tile(33, 5, "0007_WTCH"))   # Forest — night return
-
-    return _build(lines, "lapidus_witch_forest", "Witch Forest Commune",
-                  Realm.LAPIDUS, (20, 10), _WITCH_FOREST_EXITS)
-
-
 # ── Serpent's Pass ────────────────────────────────────────────────────────────
 #
 # 40 wide × 14 tall.  Mountain defile — stone walls North (row 0) and
@@ -881,7 +836,7 @@ def build_witch_forest() -> Zone:
 #
 # Exits:
 #   West  (0,6)+(0,7)   → lapidus_mt_elaene_trail
-#   East  (39,6)+(39,7) → lapidus_ocean_shore
+#   East  (39,6)+(39,7) → lapidus_mt_elaene_summit (Elaene desert, stub)
 
 def build_serpents_pass() -> Zone:
     W, H = 40, 14
@@ -908,59 +863,6 @@ def build_serpents_pass() -> Zone:
 
     return _build(lines, "lapidus_serpents_pass", "Serpent's Pass",
                   Realm.LAPIDUS, (5, 6), _PASS_EXITS)
-
-
-# ── Ocean Shore ───────────────────────────────────────────────────────────────
-#
-# 50 wide × 12 tall.  Dark water, salt wind, coastline.
-# Mercurie threshold opens at (24,0)+(25,0) at low tide (quest 0007_KLST gate).
-# Rows 9–10: dirt track (inland path).
-#
-# Exits:
-#   West  (0,6)+(0,7)    → lapidus_serpents_pass
-#   North (24,0)+(25,0)  → mercurie_threshold
-
-def build_ocean_shore() -> Zone:
-    W, H = 50, 12
-    lines: list[str] = []
-
-    # Row 0: water with threshold opening at 24-25
-    for x in range(W):
-        if x in (24, 25):
-            lines.append(_grass(x, 0))
-        else:
-            lines.append(_water(x, 0))
-
-    # Rows 1-3: open water
-    for y in range(1, 4):
-        for x in range(W):
-            lines.append(_water(x, y))
-
-    # Row 4: shoreline (grass at edges, water middle)
-    for x in range(W):
-        if x < 10 or x >= 40:
-            lines.append(_grass(x, 4))
-        else:
-            lines.append(_water(x, 4))
-
-    # Rows 5-8: sandy shore
-    for y in range(5, 9):
-        for x in range(W):
-            lines.append(_grass(x, y))
-
-    # Rows 9-10: dirt track
-    for y in (9, 10):
-        for x in range(W):
-            lines.append(_dirt(x, y))
-
-    # Row 11: grass
-    for x in range(W):
-        lines.append(_grass(x, 11))
-
-    lines.append(_spawn_tile(24, 6))
-
-    return _build(lines, "lapidus_ocean_shore", "Ocean Shore",
-                  Realm.LAPIDUS, (24, 6), _SHORE_EXITS)
 
 
 # ── Dirt Trail (West Caravan Road) ────────────────────────────────────────────
@@ -1038,6 +940,113 @@ def build_the_rocks() -> Zone:
 
     return _build(lines, "lapidus_the_rocks", "The Rocks",
                   Realm.LAPIDUS, (28, 5), _THE_ROCKS_EXITS)
+
+
+# ── Witch Forest Commune ──────────────────────────────────────────────────────
+#
+# 36 wide × 26 tall.  Dense forest south of Youthspring Road.
+# Home of the Forest Witch (0007_WTCH) — the commune and their private wood.
+# The only entrance is north, connecting directly back to Youthspring Road.
+# Thick tree canopy on all sides; central clearing with grass and cottage.
+# The Forest Witch's journal (found here) contains a folded Mercurie map.
+#
+# Exits:
+#   North (17,0)+(18,0) → lapidus_youthspring_road (2,26)+(3,26)
+
+def build_witch_forest() -> Zone:
+    W, H = 36, 26
+
+    # Path corridor from north entrance south to the clearing
+    PATH_COLS = {17, 18}
+    CLEAR_X0, CLEAR_X1 = 8, 27
+    CLEAR_Y0, CLEAR_Y1 = 8, 18
+
+    lines: list[str] = []
+
+    # Base: dense tree canopy everywhere
+    for y in range(H):
+        for x in range(W):
+            lines.append(_tree(x, y))
+
+    # North approach path: cols 17-18, rows 0-7
+    for y in range(8):
+        for x in PATH_COLS:
+            lines.append(_grass(x, y))
+
+    # Widen path into the clearing top: cols 15-20, rows 6-8
+    for y in range(6, 9):
+        for x in range(15, 21):
+            lines.append(_grass(x, y))
+
+    # Commune clearing: grass floor
+    for y in range(CLEAR_Y0, CLEAR_Y1 + 1):
+        for x in range(CLEAR_X0, CLEAR_X1 + 1):
+            lines.append(_grass(x, y))
+
+    # Cottage footprint: stone walls cols 14-22, rows 11-16; floor inside
+    for x in range(14, 23):
+        lines.append(_stone(x, 11))
+        lines.append(_stone(x, 16))
+    for y in range(12, 16):
+        lines.append(_stone(14, y))
+        lines.append(_stone(22, y))
+    for y in range(12, 16):
+        for x in range(15, 22):
+            lines.append(_floor(x, y))
+    # Door on south wall
+    lines.append(_floor(18, 16, "door"))
+
+    # Forest Witch in the clearing outside the cottage
+    lines.append(_npc_tile(11, 13, "0007_WTCH"))
+
+    # Player spawn on the path just inside the tree line
+    spawn = (17, 2)
+
+    return _build(lines, "lapidus_witch_forest", "Witch Forest Commune",
+                  Realm.LAPIDUS, spawn, _WITCH_FOREST_EXITS)
+
+
+# ── Ocean Shore (Hieronymus Coast) ────────────────────────────────────────────
+#
+# 50 wide × 14 tall.  The open western coast of Lapidus.
+# Coastal scrub at the top, sandy beach in the middle, ocean water below.
+# Entered from The Rocks going west; the rest of the coast stretches away.
+#
+# Exits:
+#   East (49,5)+(49,6) → lapidus_the_rocks (1,5)+(1,6)
+
+def build_ocean_shore() -> Zone:
+    W, H = 50, 14
+
+    lines: list[str] = []
+
+    # Base: ocean water (rows 7-13)
+    for y in range(7, H):
+        for x in range(W):
+            lines.append(_water(x, y))
+
+    # Sandy beach (rows 4-6) — passable
+    for y in range(4, 7):
+        for x in range(W):
+            lines.append(_dirt(x, y))
+
+    # Coastal scrub (rows 1-3): alternating grass and sparse trees
+    for y in range(1, 4):
+        for x in range(W):
+            if (x + y) % 5 == 0:
+                lines.append(_tree(x, y))
+            else:
+                lines.append(_grass(x, y))
+
+    # Stone cliff edge (row 0): rocky lip above the scrub
+    for x in range(W):
+        lines.append(_stone(x, 0))
+
+    # Player spawns on the beach, away from the Rocks exit
+    spawn = (20, 5)
+
+    return _build(lines, "lapidus_ocean_shore", "The Hieronymus Coast",
+                  Realm.LAPIDUS, spawn, _OCEAN_SHORE_EXITS)
 
 
 # ── Orebustle Road ────────────────────────────────────────────────────────────
@@ -1466,15 +1475,17 @@ def build_goldshoot_street() -> Zone:
 #
 # Exits:
 #   South (10,27)+(11,27) → lapidus_azonithia_heartvein (22,1)+(23,1)
+#   South  (2,27)+ (3,27) → lapidus_witch_forest (17,1)+(18,1)  [west-side forest path]
 #   North (10,0)+(11,0)   → lapidus_heartvein_interior (stub)
 
 def build_youthspring_road() -> Zone:
     W, H = 22, 28
     SPAWN = (11, 22)
 
-    SOUTH_EXITS = {(10, H-1), (11, H-1)}
-    NORTH_EXITS = {(10, 0),   (11, 0)}
-    passable    = SOUTH_EXITS | NORTH_EXITS
+    SOUTH_EXITS        = {(10, H-1), (11, H-1)}
+    SOUTH_FOREST_EXITS = {( 2, H-1), ( 3, H-1)}
+    NORTH_EXITS        = {(10, 0),   (11, 0)}
+    passable = SOUTH_EXITS | SOUTH_FOREST_EXITS | NORTH_EXITS
 
     lines: list[str] = []
     walls: set[tuple[int, int]] = set()
@@ -1496,6 +1507,8 @@ def build_youthspring_road() -> Zone:
 
     for (x, y) in SOUTH_EXITS:
         lines.append(_ke(x, y, "south", "lapidus_azonithia_heartvein", 22, 1))
+    for (x, y) in SOUTH_FOREST_EXITS:
+        lines.append(_ke(x, y, "south", "lapidus_witch_forest", 17, 1))
     for (x, y) in NORTH_EXITS:
         lines.append(_ke(x, y, "north", "lapidus_heartvein_interior", 10, 26))
 
