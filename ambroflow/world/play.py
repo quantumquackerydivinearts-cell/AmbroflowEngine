@@ -93,6 +93,7 @@ from .alchemy_screen import AlchemyScreen, _APPROACHES
 from .vendor_screen import VendorScreen, COIN_ID
 from .journal_screen import JournalScreen
 from .inventory_screen import InventoryScreen
+from ..inventory.equipment import EquipmentSlots, slot_for, EQUIPPABLE
 
 # ── qqva quest engine (graceful fallback) ────────────────────────────────────
 
@@ -137,6 +138,7 @@ _K_FIGHT     = ord('f')
 _K_ALCHEMY   = ord('z')
 _K_JOURNAL   = ord('j')
 _K_INVENTORY = ord('i')
+_K_TAB       = 9
 
 _DIR_KEYS: dict[int, Direction] = {
     _K_UP:    Direction.NORTH,
@@ -296,6 +298,9 @@ class WorldPlay:
         self._inventory_screen = InventoryScreen()
         self._inventory_cursor: int            = 0
         self._inventory_bytes:  Optional[bytes] = None
+        self._inv_tab:          str             = "items"
+        self._equip_cursor:     int             = 0
+        self._equipment:        EquipmentSlots  = EquipmentSlots()
 
         # Item spawn tracking — zone_ids whose spawns have been collected
         self._collected_zones: set[str] = set()
@@ -1998,7 +2003,9 @@ class WorldPlay:
 
     def _begin_inventory(self) -> None:
         self._inventory_cursor = 0
-        self._mode = WorldMode.INVENTORY
+        self._equip_cursor     = 0
+        self._inv_tab          = "items"
+        self._mode             = WorldMode.INVENTORY
         self._refresh_inventory_bytes()
 
     def _end_inventory(self) -> None:
@@ -2006,11 +2013,29 @@ class WorldPlay:
         self._mode = WorldMode.WORLD
 
     def _handle_inventory_key(self, key: int) -> None:
-        inv_dict = self._inventory_dict()
-        total = len(inv_dict)
-        if key == _K_ESCAPE or key == _K_INVENTORY:
+        if key in (_K_ESCAPE, _K_INVENTORY):
             self._end_inventory()
-        elif key in (_K_UP, ord('w')):
+            return
+
+        if key == _K_TAB:
+            self._inv_tab = "equipment" if self._inv_tab == "items" else "items"
+            self._refresh_inventory_bytes()
+            return
+
+        if self._inv_tab == "items":
+            self._handle_items_key(key)
+        else:
+            self._handle_equip_key(key)
+
+    def _handle_items_key(self, key: int) -> None:
+        inv_dict = self._inventory_dict()
+        rows = sorted(inv_dict.items(), key=lambda kv: (
+            0 if kv[0].endswith("_KLIT") else
+            1 if kv[0].endswith("_KLOB") else 2,
+            kv[0],
+        ))
+        total = len(rows)
+        if key in (_K_UP, ord('w')):
             if self._inventory_cursor > 0:
                 self._inventory_cursor -= 1
                 self._refresh_inventory_bytes()
@@ -2018,6 +2043,48 @@ class WorldPlay:
             if self._inventory_cursor < total - 1:
                 self._inventory_cursor += 1
                 self._refresh_inventory_bytes()
+        elif key in (_K_RETURN, _K_SPACE):
+            if rows and self._inventory_cursor < len(rows):
+                item_id, _ = rows[self._inventory_cursor]
+                self._try_equip(item_id)
+
+    def _handle_equip_key(self, key: int) -> None:
+        from ..inventory.equipment import SLOT_ORDER
+        n = len(SLOT_ORDER)
+        if key in (_K_UP, ord('w')):
+            if self._equip_cursor > 0:
+                self._equip_cursor -= 1
+                self._refresh_inventory_bytes()
+        elif key in (_K_DOWN, ord('s')):
+            if self._equip_cursor < n - 1:
+                self._equip_cursor += 1
+                self._refresh_inventory_bytes()
+        elif key in (_K_RETURN, _K_SPACE):
+            slot = SLOT_ORDER[self._equip_cursor]
+            self._try_unequip(slot)
+
+    def _try_equip(self, item_id: str) -> None:
+        if self._inventory is None or item_id not in EQUIPPABLE:
+            return
+        try:
+            _, displaced = self._equipment.equip(item_id)
+            self._inventory.remove(item_id)
+            if displaced is not None:
+                self._inventory.add(displaced)
+            self._refresh_inventory_bytes()
+        except Exception:
+            pass
+
+    def _try_unequip(self, slot: str) -> None:
+        if self._inventory is None:
+            return
+        item_id = self._equipment.unequip(slot)
+        if item_id is not None:
+            try:
+                self._inventory.add(item_id)
+            except Exception:
+                self._equipment.equip(item_id)  # rollback
+        self._refresh_inventory_bytes()
 
     def _inventory_dict(self) -> dict:
         if self._inventory is None:
@@ -2030,8 +2097,11 @@ class WorldPlay:
     def _refresh_inventory_bytes(self) -> None:
         inv_dict = self._inventory_dict()
         self._inventory_bytes = self._inventory_screen.render(
-            inv_dict   = inv_dict,
-            cursor_idx = self._inventory_cursor,
-            width      = self.width,
-            height     = self.height,
+            inv_dict        = inv_dict,
+            cursor_idx      = self._inventory_cursor,
+            width           = self.width,
+            height          = self.height,
+            tab             = self._inv_tab,
+            equipment_slots = self._equipment.as_dict(),
+            equip_cursor    = self._equip_cursor,
         )

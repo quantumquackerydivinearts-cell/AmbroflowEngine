@@ -1,9 +1,15 @@
 """
 InventoryScreen — PIL renderer for the player inventory overlay.
 
-Shows all held items grouped and sorted by ID, with KLOB names resolved
-from the object registry and KLIT names from the canonical 7_KLGS table.
-Cursor navigates with ↑↓; selected item shows its note/description.
+Two tabs:
+  Items      — all carried items, sorted, qty shown.  Equippable items
+               show an [E] hint; Enter equips the selected item.
+  Equipment  — five slots (Weapon / Armor / Ring I / Ring II / Clothes).
+               Enter unequips the selected slot back to the bag.
+
+Names are resolved from the KLOB registry and the canonical KLIT table.
+Raw IDs are never shown prominently — names only.
+Tab key switches between tabs.
 """
 
 from __future__ import annotations
@@ -16,7 +22,9 @@ _GOLD  = (210, 175, 80)
 _WHITE = (230, 225, 215)
 _DIM   = (120, 115, 105)
 _CYAN  = (80, 190, 190)
-_GREEN = (80, 170, 90)
+_GREEN = (80, 200, 100)
+_TAB_A = (50, 44, 70)    # active tab bg
+_TAB_I = (30, 26, 46)    # inactive tab bg
 
 # ── Canonical KLIT name table (mirrors game7Registry.js ITEMS) ────────────────
 
@@ -49,11 +57,10 @@ _KLIT_NAMES: dict[str, str] = {
     "0082_KLIT": "Transmitter",          "0083_KLIT": "Radio",
 }
 
-_KLOB_NOTE_CACHE: dict[str, tuple[str, str]] = {}   # id → (name, note)
+_KLOB_NOTE_CACHE: dict[str, tuple[str, str]] = {}
 
 
 def _klob_info(klob_id: str) -> tuple[str, str]:
-    """Return (name, note) for a KLOB ID, cached after first lookup."""
     if klob_id not in _KLOB_NOTE_CACHE:
         try:
             from ..klob.registry import klob_registry
@@ -72,8 +79,7 @@ def _item_display(item_id: str) -> tuple[str, str]:
     if item_id.endswith("_KLOB"):
         return _klob_info(item_id)
     if item_id.endswith("_KLIT"):
-        name = _KLIT_NAMES.get(item_id, item_id)
-        return name, ""
+        return _KLIT_NAMES.get(item_id, item_id), ""
     return item_id, ""
 
 
@@ -96,14 +102,17 @@ def _to_png(img) -> bytes:
 class InventoryScreen:
     """Stateless PIL renderer for the inventory overlay."""
 
-    _ROWS = 16   # visible rows in the list
+    _ROWS = 16
 
     def render(
         self,
-        inv_dict:   dict[str, int],
-        cursor_idx: int,
-        width:      int,
-        height:     int,
+        inv_dict:        dict[str, int],
+        cursor_idx:      int,
+        width:           int,
+        height:          int,
+        tab:             str = "items",       # "items" or "equipment"
+        equipment_slots: Optional[dict] = None,
+        equip_cursor:    int = 0,
     ) -> Optional[bytes]:
         try:
             from PIL import Image, ImageDraw
@@ -120,18 +129,47 @@ class InventoryScreen:
         pad = 48
         draw.rectangle((pad, pad, width - pad, height - pad), fill=_PANEL)
 
-        # ── Header ────────────────────────────────────────────────────────────
-        total = sum(inv_dict.values())
-        draw.text((pad + 20, pad + 14), "Inventory",
-                  font=title_font, fill=_GOLD)
-        draw.text((width - pad - 120, pad + 16),
-                  f"{len(inv_dict)} types  {total} total",
-                  font=dim_font, fill=_DIM)
-        draw.line([(pad + 20, pad + 40), (width - pad - 20, pad + 40)],
-                  fill=_GOLD, width=1)
+        # ── Tab bar ───────────────────────────────────────────────────────────
+        tab_y    = pad + 8
+        tab_h    = 26
+        tab_w    = 120
+        tab_x0   = pad + 16
+        tabs     = [("items", "Items"), ("equipment", "Equipment")]
+        for i, (tid, tlabel) in enumerate(tabs):
+            tx = tab_x0 + i * (tab_w + 4)
+            bg = _TAB_A if tab == tid else _TAB_I
+            draw.rectangle((tx, tab_y, tx + tab_w, tab_y + tab_h), fill=bg)
+            fc = _GOLD if tab == tid else _DIM
+            draw.text((tx + 10, tab_y + 5), tlabel, font=body_font, fill=fc)
 
-        # ── Build sorted item rows ────────────────────────────────────────────
-        # Sort: KLIT first (carried items), then KLOB (apparatus/materials)
+        sep_y = tab_y + tab_h + 4
+        draw.line([(pad + 10, sep_y), (width - pad - 10, sep_y)],
+                  fill=(50, 46, 70), width=1)
+
+        content_top = sep_y + 8
+
+        if tab == "items":
+            self._render_items(
+                draw, inv_dict, cursor_idx,
+                pad, content_top, width, height,
+                body_font, dim_font, equipment_slots,
+            )
+        else:
+            self._render_equipment(
+                draw, equipment_slots or {}, equip_cursor,
+                pad, content_top, width, height,
+                title_font, body_font, dim_font,
+            )
+
+        return _to_png(img)
+
+    # ── Items tab ─────────────────────────────────────────────────────────────
+
+    def _render_items(self, draw, inv_dict, cursor_idx,
+                      pad, top, width, height,
+                      body_font, dim_font, equipment_slots):
+        from ..inventory.equipment import EQUIPPABLE
+
         def _sort_key(item_id: str) -> tuple[int, str]:
             if item_id.endswith("_KLIT"):
                 return (0, item_id)
@@ -142,76 +180,126 @@ class InventoryScreen:
         rows = sorted(inv_dict.items(), key=lambda kv: _sort_key(kv[0]))
 
         if not rows:
-            draw.text((pad + 20, pad + 60), "— empty —",
+            draw.text((pad + 20, top + 10), "— nothing carried —",
                       font=body_font, fill=_DIM)
-            draw.text((pad + 20, height - pad - 20),
-                      "Esc  close",
-                      font=dim_font, fill=_DIM)
-            return _to_png(img)
+            self._footer(draw, "Tab  equipment    I / Esc  close",
+                         pad, width, height, dim_font)
+            return
 
         cursor_idx = max(0, min(cursor_idx, len(rows) - 1))
 
-        # Viewport window
-        half   = self._ROWS // 2
-        v_top  = max(0, cursor_idx - half)
-        v_top  = min(v_top, max(0, len(rows) - self._ROWS))
+        half  = self._ROWS // 2
+        v_top = max(0, cursor_idx - half)
+        v_top = min(v_top, max(0, len(rows) - self._ROWS))
         v_rows = rows[v_top:v_top + self._ROWS]
 
-        # ── Item list ─────────────────────────────────────────────────────────
-        col_id   = pad + 20
-        col_name = pad + 160
+        col_name = pad + 20
         col_qty  = width - pad - 60
 
-        y = pad + 52
-        row_h = (height - pad - 90 - y) // self._ROWS
-        row_h = max(18, min(row_h, 26))
+        list_h   = height - pad - 90 - top
+        row_h    = max(18, min(list_h // self._ROWS, 26))
 
+        y = top
         for rel_i, (item_id, qty) in enumerate(v_rows):
-            abs_i   = v_top + rel_i
+            abs_i    = v_top + rel_i
             selected = abs_i == cursor_idx
-            name, _ = _item_display(item_id)
+            name, _  = _item_display(item_id)
+            equippable = item_id in EQUIPPABLE
 
             if selected:
                 draw.rectangle(
                     (pad + 10, y - 2, width - pad - 10, y + row_h - 4),
                     fill=(40, 36, 60),
                 )
-            color = _WHITE if selected else _DIM
-            id_color = _CYAN if selected else (60, 120, 140)
 
-            draw.text((col_id,   y), item_id, font=dim_font, fill=id_color)
-            draw.text((col_name, y), name,    font=body_font, fill=color)
-            qty_str = f"×{qty}"
-            draw.text((col_qty, y), qty_str, font=body_font,
-                      fill=_GOLD if selected else _DIM)
+            fc = _WHITE if selected else _DIM
+            draw.text((col_name, y), name, font=body_font, fill=fc)
+
+            if equippable and selected:
+                draw.text((col_name + 200, y), "[E]", font=dim_font, fill=_GREEN)
+
+            qty_str = f"×{qty}" if qty > 1 else ""
+            if qty_str:
+                draw.text((col_qty, y), qty_str, font=body_font,
+                          fill=_GOLD if selected else _DIM)
             y += row_h
 
-        # Scroll indicator
         if len(rows) > self._ROWS:
             frac_top = v_top / max(1, len(rows) - self._ROWS)
-            bar_h    = height - pad * 2 - 80
-            bar_x    = width - pad - 14
-            draw.rectangle((bar_x, pad + 50, bar_x + 4, pad + 50 + bar_h),
-                           fill=(40, 40, 60))
-            thumb_y = pad + 50 + int(frac_top * (bar_h - 20))
-            draw.rectangle((bar_x, thumb_y, bar_x + 4, thumb_y + 20),
-                           fill=_DIM)
+            bar_h  = height - pad * 2 - 80
+            bar_x  = width - pad - 14
+            draw.rectangle((bar_x, top, bar_x + 4, top + bar_h), fill=(40, 40, 60))
+            thumb_y = top + int(frac_top * (bar_h - 20))
+            draw.rectangle((bar_x, thumb_y, bar_x + 4, thumb_y + 20), fill=_DIM)
 
-        # ── Selected item detail ───────────────────────────────────────────────
-        sel_id, sel_qty = rows[cursor_idx]
+        # Detail line for selected item
+        sel_id, _ = rows[cursor_idx]
         sel_name, sel_note = _item_display(sel_id)
         detail_y = height - pad - 52
         draw.line([(pad + 20, detail_y - 6), (width - pad - 20, detail_y - 6)],
                   fill=(50, 50, 70), width=1)
-        draw.text((pad + 20, detail_y), sel_name,
-                  font=body_font, fill=_WHITE)
+        draw.text((pad + 20, detail_y), sel_name, font=body_font, fill=_WHITE)
         if sel_note:
-            draw.text((pad + 20, detail_y + 18), sel_note,
-                      font=dim_font, fill=_DIM)
+            draw.text((pad + 20, detail_y + 18), sel_note, font=dim_font, fill=_DIM)
 
-        # ── Footer ────────────────────────────────────────────────────────────
-        draw.text((pad + 20, height - pad - 18),
-                  "↑↓  navigate    I / Esc  close",
-                  font=dim_font, fill=_DIM)
+        hint = "↑↓  navigate    Tab  equipment    Enter  equip    I / Esc  close"
+        self._footer(draw, hint, pad, width, height, dim_font)
 
-        return _to_png(img)
+    # ── Equipment tab ─────────────────────────────────────────────────────────
+
+    def _render_equipment(self, draw, slots_dict, equip_cursor,
+                          pad, top, width, height,
+                          title_font, body_font, dim_font):
+        from ..inventory.equipment import SLOT_ORDER, SLOT_LABELS
+
+        label_x  = pad + 28
+        value_x  = pad + 140
+        row_h    = 34
+
+        for i, slot in enumerate(SLOT_ORDER):
+            selected = i == equip_cursor
+            item_id  = slots_dict.get(slot)
+            y        = top + i * row_h
+
+            if selected:
+                draw.rectangle(
+                    (pad + 10, y - 2, width - pad - 10, y + row_h - 6),
+                    fill=(40, 36, 60),
+                )
+
+            lc = _GOLD if selected else _DIM
+            draw.text((label_x, y + 6), SLOT_LABELS[slot], font=dim_font, fill=lc)
+
+            if item_id:
+                name, _ = _item_display(item_id)
+                fc = _WHITE if selected else (160, 155, 145)
+                draw.text((value_x, y + 5), name, font=body_font, fill=fc)
+                if selected:
+                    draw.text((value_x + 200, y + 7), "[unequip]",
+                              font=dim_font, fill=_DIM)
+            else:
+                draw.text((value_x, y + 5), "—", font=dim_font, fill=(60, 58, 72))
+
+        # Separator
+        sep_y = top + len(SLOT_ORDER) * row_h + 8
+        draw.line([(pad + 20, sep_y), (width - pad - 20, sep_y)],
+                  fill=(50, 50, 70), width=1)
+
+        # Detail: show selected slot's item note if any
+        sel_slot = SLOT_ORDER[equip_cursor] if equip_cursor < len(SLOT_ORDER) else None
+        if sel_slot:
+            item_id = slots_dict.get(sel_slot)
+            if item_id:
+                _, note = _item_display(item_id)
+                if note:
+                    draw.text((pad + 20, sep_y + 8), note,
+                              font=dim_font, fill=_DIM)
+
+        hint = "↑↓  navigate    Tab  items    Enter  unequip    I / Esc  close"
+        self._footer(draw, hint, pad, width, height, dim_font)
+
+    # ── Shared ────────────────────────────────────────────────────────────────
+
+    @staticmethod
+    def _footer(draw, text: str, pad, width, height, font) -> None:
+        draw.text((pad + 20, height - pad - 18), text, font=font, fill=_DIM)
