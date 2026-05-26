@@ -136,12 +136,13 @@ def simulate_treatment(
             # Fire component adds horizontal turbulence
             world.apply_shak(i, thermal * 3.0, 0.0, thermal * 2.0)
 
-    # Run simulation — no gravity (Zot=False): measure compound reaction stability,
-    # not gravitational accumulation.  Earth force distorts the compound signal.
+    # Run simulation — no gravity (Zot=False): measure compound reaction stability.
+    # Photonic forces (phase coupling + spin exclusion) active: compounds that form
+    # in constructive phase are truly stable; those in destructive phase are not.
     peak_energy = 0.0
     settle_step = steps
     for step in range(steps):
-        world.wu_tick_flags(zot=False, mel=True, puf=True)
+        world.wu_tick_extended(zot=False, mel=True, puf=True, photon=True, chiral=True)
         ke = world.total_kinetic_energy()
         if ke > peak_energy:
             peak_energy = ke

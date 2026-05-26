@@ -20,8 +20,13 @@ from .lapidus import (
     build_azoth_approach,
     build_castle_azoth,
     build_mt_elaene_trail,
+    build_witch_forest,
     build_serpents_pass,
     build_ocean_shore,
+    build_dirt_trail,
+    build_the_rocks,
+    build_orebustle_road,
+    build_mine_entrance,
     build_elsa_house,
     build_hypatia_house,
     # Kobra-built zones
@@ -68,7 +73,6 @@ def build_game7_world() -> WorldMap:
         player_home_upper               Study / Library (upper floor, 48 × 10)
 
     Stubs (show "(nothing that way yet)"):
-        lapidus_dirt_trail              West of Castle Azoth — ocean-bound trail
         lapidus_slum_interior           Azonithia Slum (9 warrens / 13 passages)
         lapidus_market_interior         Market district interior
         lapidus_temple_interior         Temple of the Gods
@@ -106,8 +110,13 @@ def build_game7_world() -> WorldMap:
         build_castle_hypatia_tower(),
         build_castle_canopy(),
         build_mt_elaene_trail(),
+        build_witch_forest(),
         build_serpents_pass(),
         build_ocean_shore(),
+        build_dirt_trail(),
+        build_the_rocks(),
+        build_orebustle_road(),
+        build_mine_entrance(),
         build_elsa_house(),
         build_hypatia_house(),
         # Mercurie (gated by hypnotic_meditation / 0007_KLST)

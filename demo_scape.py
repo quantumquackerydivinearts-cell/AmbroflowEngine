@@ -43,8 +43,9 @@ from ambroflow.render.post        import PostProcessor
 from ambroflow.render.ui          import UIRenderer
 
 from ambroflow.world.map import (
-    Zone, Realm, WorldTileKind, build_zone_from_ascii
+    Zone, Realm, WorldTileKind,
 )
+from ambroflow.world.kobra_zone_loader import load_zone_from_kobra
 
 from PIL import Image, ImageDraw
 
@@ -190,7 +191,18 @@ def make_sprite_atlas() -> Image.Image:
 # 3.  ZONE MAP  — Wiltoll Lane preview (not canonical, for scape framing only)
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-_MAP = [
+_CHAR_TOKENS = {
+    "#": "Vo Ka",
+    ",": "Va Ki grass",
+    "S": "Va Na stone",
+    ".": "Va Ha floor",
+    "@": "Va Ha St",
+    "~": "Va Fu water",
+    "=": "Va Ru road",
+    "D": "Va Ung dirt",
+}
+
+_MAP_ROWS = [
     "###################",
     "#,,,,,,,,,,,,,,,,,#",
     "#,,,S,S,S,S,S,,,,,#",
@@ -206,11 +218,17 @@ _MAP = [
     "###################",
 ]
 
-_ZONE = build_zone_from_ascii(
+_ZONE = load_zone_from_kobra(
+    source="\n".join(
+        f"g|{x},{y} : [{_CHAR_TOKENS.get(ch, 'Va Ha floor')}]"
+        for y, row in enumerate(_MAP_ROWS)
+        for x, ch in enumerate(row)
+    ),
     zone_id="wiltoll_preview",
-    realm=Realm.LAPIDUS,
     name="Wiltoll Lane",
-    rows=_MAP,
+    realm=Realm.LAPIDUS,
+    player_spawn=(8, 4),
+    exits=[],
 )
 
 # Sprite world positions (x, z) — placed in the scene manually

@@ -30,6 +30,11 @@ from .negaya import (
     negaya_duration,
 )
 from .meditation import MeditationSession, MeditationOutcome
+from .scout import (
+    StateScout, ScoutResult,
+    CrossingMatrix, CrossingEntry, CrossingBiography, ElementProfile,
+    GATE_TIWU, GATE_TAWU, GATE_FYKO, GATE_MOWU, GATE_ZOWU,
+)
 
 __all__ = [
     "DreamCalibration",
@@ -69,4 +74,15 @@ __all__ = [
     "negaya_duration",
     "MeditationSession",
     "MeditationOutcome",
+    "StateScout",
+    "ScoutResult",
+    "CrossingMatrix",
+    "CrossingEntry",
+    "CrossingBiography",
+    "ElementProfile",
+    "GATE_TIWU",
+    "GATE_TAWU",
+    "GATE_FYKO",
+    "GATE_MOWU",
+    "GATE_ZOWU",
 ]

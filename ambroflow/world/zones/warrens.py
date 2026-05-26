@@ -171,7 +171,7 @@ def build_gethsemane() -> Zone:
 
 def build_lithos() -> Zone:
     W, H = 50, 40
-    SPAWN = (25, 2)
+    SPAWN = (25, 1)    # junction tile — player arrives and can go left (Joshua) or right (main path)
     ENTRY = (25, 0)    # from Gethsemane via Lockstep Lane
     EXIT  = (25, 39)   # to Manchester via Whistletoe Walkway
 
@@ -183,12 +183,12 @@ def build_lithos() -> Zone:
     for x in range(24, 49): internal.add((x, 20))
     # Horizontal wall 3: y=30, x=1-35  (gap x=36-48)
     for x in range(1, 36):  internal.add((x, 30))
-    # Vertical wall A: x=25, y=1-9  (divides top chamber)
-    for y in range(1, 10):  internal.add((25, y))
-    # Vertical wall B: x=24, y=11-19 (continues middle divide)
-    for y in range(11, 20): internal.add((24, y))
-    # Vertical wall C: x=36, y=21-29 (Slag's room right side)
-    for y in range(21, 30): internal.add((36, y))
+    # Vertical wall A: x=25, y=2-9  (divides top chamber; y=1 left open as junction)
+    for y in range(2, 10):  internal.add((25, y))
+    # Vertical wall B: x=24, y=11-18 (y=19 left open so player can cross west to use Wall 2 gap)
+    for y in range(11, 19): internal.add((24, y))
+    # Vertical wall C: x=36, y=21-28 (y=29 left open so player can cross east to use Wall 3 gap)
+    for y in range(21, 29): internal.add((36, y))
 
     lines: list[str] = []
     passable = {ENTRY, EXIT}
@@ -501,7 +501,7 @@ def build_grimes() -> Zone:
     lines.append(_npc(14, 7,  "0001_TOWN"))   # Joannah (home)
     lines.append(_npc(35, 25, "0008_TOWN"))   # Hartwell (home)
     lines.append(_exit(*ENTRY, "west",  "lapidus_warren_kidney",  42, 17, "December_Boulevard"))
-    lines.append(_exit(*EXIT,  "east",  "lapidus_serpents_pass",   2, 22, "Georgia_Street"))
+    lines.append(_exit(*EXIT,  "east",  "lapidus_warren_serpents_pass",   2, 22, "Georgia_Street"))
 
     return _build(lines, "lapidus_warren_grimes", "The Grimes", SPAWN)
 
@@ -577,7 +577,7 @@ def build_serpents_pass() -> Zone:
     lines.append(_npc(15, 20, "0002_TOWN"))   # Wells
     lines.append(_npc(25, 20, "0003_TOWN"))   # Lavelle
 
-    return _build(lines, "lapidus_serpents_pass", "Serpent's Pass", SPAWN)
+    return _build(lines, "lapidus_warren_serpents_pass", "Serpent's Pass", SPAWN)
 
 
 # ─────────────────────────────────────────────────────────────────────────────

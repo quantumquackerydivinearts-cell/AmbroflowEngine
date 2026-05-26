@@ -522,6 +522,10 @@ _LETTER_COLOR: dict[str, tuple] = {
 }
 
 
+_RANK_TIERS = {1: 10, 2: 18, 3: 25}   # derive_rank output → 1–100 display value
+_TAG_DISPLAY = 30                       # what a tag pick shows as
+
+
 def render_skill_select_screen(
     skill_opts:  list,           # list of (skill_id, name, vitriol_letter, base_rank)
     cursor_idx:  int,
@@ -535,9 +539,8 @@ def render_skill_select_screen(
     Render the SKILL_SELECT screen — VITRIOL-derived base ranks + 2 tag picks.
 
     Layout:
-      Header: Ko's voice line
-      Left column: skill list with base rank bars and VITRIOL letter badge
-      Right column: tag pick queue (chosen skills highlighted)
+      Header: Ko's voice line + remaining picks
+      Skill list: name | [letter] | rank bar (1–100) | numeric rank
       Footer: navigation hints
     """
     if not _PIL_AVAILABLE:
@@ -550,6 +553,7 @@ def render_skill_select_screen(
     body_font  = _load_font(15)
     dim_font   = _load_font(13)
     badge_font = _load_font(12)
+    rank_font  = _load_font(12)
 
     pad = 40
     remaining = max_picks - len(tag_picks)
@@ -561,60 +565,61 @@ def render_skill_select_screen(
     draw.text((pad, pad + 28), sub, font=dim_font, fill=_UNSELECTED)
     draw.line([(pad, pad + 50), (width - pad, pad + 50)], fill=_PANEL_EDGE, width=1)
 
-    # Skill list
-    list_y0   = pad + 60
-    row_h     = 26
-    visible   = min(len(skill_opts), (height - list_y0 - 60) // row_h)
-    # Scroll window centred on cursor
-    start     = max(0, min(cursor_idx - visible // 2, len(skill_opts) - visible))
+    # Column layout
+    BAR_X0   = pad + 300
+    BAR_X1   = width - pad - 60
+    BAR_MAXW = BAR_X1 - BAR_X0
+    RANK_X   = BAR_X1 + 8
+
+    list_y0 = pad + 60
+    row_h   = 28
+    visible = min(len(skill_opts), (height - list_y0 - 60) // row_h)
+    start   = max(0, min(cursor_idx - visible // 2, len(skill_opts) - visible))
 
     for i in range(visible):
-        idx   = start + i
+        idx = start + i
         if idx >= len(skill_opts):
             break
         skill_id, name, letter, base_rank = skill_opts[idx]
-        y     = list_y0 + i * row_h
-        is_cursor   = (idx == cursor_idx)
-        is_tagged   = (skill_id in tag_picks)
-        lcolor      = _LETTER_COLOR.get(letter, _UNSELECTED)
+        y          = list_y0 + i * row_h
+        is_cursor  = (idx == cursor_idx)
+        is_tagged  = (skill_id in tag_picks)
+        lcolor     = _LETTER_COLOR.get(letter, _UNSELECTED)
 
-        # Cursor marker
+        # Display rank on 1–100 scale
+        display_rank = _TAG_DISPLAY if is_tagged else _RANK_TIERS.get(base_rank, 10)
+
+        # Row highlight
+        if is_cursor:
+            draw.rectangle([pad, y - 2, width - pad, y + row_h - 4], fill=(28, 22, 40))
+
+        # Cursor arrow + name
         prefix = "▶ " if is_cursor else "  "
-        # Tag marker
         tag_mark = " ✓" if is_tagged else ""
-        # Text colour
-        if is_tagged:
-            tcolor = _GOLD
-        elif is_cursor:
-            tcolor = (220, 215, 205)
-        else:
-            tcolor = _UNSELECTED
+        tcolor = _GOLD if is_tagged else ((220, 215, 205) if is_cursor else _UNSELECTED)
+        draw.text((pad + 14, y + 2), f"{prefix}{name}{tag_mark}", font=body_font, fill=tcolor)
 
-        # Skill name + tag mark
-        draw.text((pad + 14, y), f"{prefix}{name}{tag_mark}", font=body_font, fill=tcolor)
+        # VITRIOL letter badge
+        draw.text((BAR_X0 - 36, y + 3), f"[{letter}]", font=badge_font, fill=lcolor)
 
-        # VITRIOL letter badge (right side of name)
-        badge_x = pad + 220
-        draw.text((badge_x, y + 1), f"[{letter}]", font=badge_font, fill=lcolor)
+        # Rank bar
+        bar_y0 = y + 8
+        bar_y1 = y + 18
+        draw.rectangle([BAR_X0, bar_y0, BAR_X1, bar_y1], fill=(30, 26, 42))
+        filled_w = int(BAR_MAXW * display_rank / 100)
+        bar_col  = _GOLD if is_tagged else lcolor
+        if filled_w > 0:
+            draw.rectangle([BAR_X0, bar_y0, BAR_X0 + filled_w, bar_y1], fill=bar_col)
 
-        # Base rank pips
-        pip_x = badge_x + 34
-        for r in range(3):
-            filled = r < base_rank
-            pip_color = lcolor if filled else (40, 36, 52)
-            draw.ellipse(
-                [pip_x + r * 10, y + 4, pip_x + r * 10 + 7, y + 13],
-                fill=pip_color,
-            )
-        # +1 tag boost indicator if tagged
-        if is_tagged:
-            draw.text((pip_x + 36, y + 1), "+1", font=badge_font, fill=_GOLD)
+        # Numeric rank
+        rank_str = str(display_rank)
+        draw.text((RANK_X, y + 3), rank_str, font=rank_font,
+                  fill=_GOLD if is_tagged else lcolor)
 
-    # Footer hints
-    hints = "↑↓ navigate   [enter] select / deselect   [esc] confirm with fewer picks"
+    # Footer
+    hints = "↑↓ navigate   [enter] tag / untag   [esc] confirm"
     draw.text((pad, height - pad - 18), hints, font=dim_font, fill=_UNSELECTED)
 
-    import io
     buf = io.BytesIO()
     img.save(buf, format="PNG")
     return buf.getvalue()

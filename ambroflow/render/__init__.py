@@ -15,6 +15,7 @@ from .kobra_bridge import (
     apply_render_config,
     voxels_to_zone,
 )
+from .physics      import PhysicsRenderer, body_color, treatment_color
 
 __all__ = [
     "WorldRenderer",
@@ -28,4 +29,7 @@ __all__ = [
     "build_render_config",
     "apply_render_config",
     "voxels_to_zone",
+    "PhysicsRenderer",
+    "body_color",
+    "treatment_color",
 ]

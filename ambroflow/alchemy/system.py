@@ -82,7 +82,7 @@ Mania contagion: epiphanic results spread the presence-state to nearby entities.
 The radius scales with mania_level × resonance quality.
 
 VITRIOL note: Alchemy has Reflectivity (R) affinity.
-Hypatia's primary skill — she is the player character, ID 0000_0451.
+Hypatia (0000_0451) is the player's mentor, not the player character.
 """
 
 from __future__ import annotations
@@ -476,7 +476,7 @@ SUBJECTS: tuple[AlchemicalSubject, ...] = (
             ),
         )),
         required_materials={"0074_KLOB": 3, "0040_KLOB": 1, "0034_KLIT": 1},
-        required_objects=frozenset({"8000_KLOB", "2000_KLOB", "0005_KLOB"}),  # Mortar + Pestle + Reagent Bottle
+        required_objects=frozenset({"8000_KLOB", "2000_KLOB", "0003_KLOB"}),  # Mortar + Pestle + Retort
         base_outputs={"0035_KLIT": 1},
         enhanced_outputs={"0035_KLIT": 2},
         lore="Hypatia knows this one before the tutor does.",
@@ -494,7 +494,7 @@ SUBJECTS: tuple[AlchemicalSubject, ...] = (
                 intensity=0.8,
             ),
         )),
-        required_materials={"0076_KLOB": 1, "0077_KLOB": 1},
+        required_materials={},   # TODO: Asmodean Crystal Dust (item ID pending canonical definition)
         required_objects=frozenset({"8000_KLOB", "2000_KLOB", "0030_KLOB", "0007_KLOB"}),  # Mortar + Pestle + Furnace + Crucible
         base_outputs={"0036_KLIT": 1},
         enhanced_outputs={"0023_KLIT": 1},
@@ -544,7 +544,7 @@ SUBJECTS: tuple[AlchemicalSubject, ...] = (
             ),
         )),
         required_materials={"0023_KLIT": 1, "0037_KLIT": 1},
-        required_objects=frozenset({"8000_KLOB", "2000_KLOB", "0005_KLOB", "0009_KLOB"}),  # Mortar + Pestle + Reagent Bottle + Jar
+        required_objects=frozenset({"8000_KLOB", "2000_KLOB", "0003_KLOB", "0009_KLOB"}),  # Mortar + Pestle + Retort + Jar
         base_outputs={"0038_KLIT": 1},
         enhanced_outputs={"0038_KLIT": 2},
         lore=(
@@ -575,6 +575,7 @@ class AlchemicalResult:
     reason:              str
     recipe_discovered:   bool  = False     # True if this treatment discovered a new recipe
     provenance_modifier: float = 1.0      # the aggregate provenance modifier applied
+    physics_context:     "Optional[object]" = None  # PhysicsTreatmentContext if physics ran
 
 
 @dataclass
@@ -742,6 +743,7 @@ class AlchemySystem:
         provenance_store: Optional[ProvenanceStore]       = None,
         recipe_book:      Optional[RecipeBook]            = None,
         calendar_context: "Optional[AlchemyCalendarContext]" = None,
+        physics_world:    "Optional[object]"              = None,
     ) -> AlchemicalResult:
         """
         Attempt alchemical treatment of a subject.
@@ -749,6 +751,10 @@ class AlchemySystem:
         Consumes required materials from inventory (and provenance_store if provided)
         when resonance produces output.  Records to Orrery.  Discovers recipe in
         recipe_book if resonance >= _RECIPE_DISCOVERY_THRESH.
+
+        physics_world: optional PhysicsWorld instance.  When provided, physics-aware
+        subjects (those in PHYSICS_AWARE_SUBJECTS) run a short simulation and the
+        outcome modifies resonance before epiphany and output resolution.
         """
         subject = SUBJECT_BY_ID.get(subject_id)
         if subject is None:
@@ -792,6 +798,20 @@ class AlchemySystem:
                 default=0.0,
             )
             resonance = min(1.0, max(0.0, resonance + seasonal_boost))
+
+        # Physics substrate check — runs for physics-aware subjects when a world is provided.
+        # Outcome modifies resonance additively; the context is attached to the result.
+        physics_ctx = None
+        if physics_world is not None:
+            try:
+                from .physics_integration import PHYSICS_AWARE_SUBJECTS, apply_physics_to_resonance
+                if subject_id in PHYSICS_AWARE_SUBJECTS:
+                    aware = PHYSICS_AWARE_SUBJECTS[subject_id]
+                    resonance, physics_ctx = apply_physics_to_resonance(
+                        resonance, aware.element_forces, world=physics_world
+                    )
+            except Exception:
+                pass  # physics unavailable — carry on without modifier
 
         # Epiphanic: high resonance AND sufficient accumulated charge
         # Threshold can be lowered by calendar context (anchor days / Vrwumane)
@@ -889,6 +909,7 @@ class AlchemySystem:
             reason=reason,
             recipe_discovered=recipe_discovered,
             provenance_modifier=prov_mod,
+            physics_context=physics_ctx,
         )
 
     def available_subjects(

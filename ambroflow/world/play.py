@@ -37,8 +37,49 @@ try:
 except ImportError:
     _PG = False
 
-from .map import WorldMap, Zone
+from dataclasses import dataclass as _dataclass
+
+from .map import WorldMap, Zone, NPCSchedule, is_passable as _is_passable
+from ..pathfinding.astar import astar as _astar
 from .player import WorldPlayer, Direction
+
+
+_TICKS_PER_HOUR:  int = 3_000   # ~50 real-seconds per game-hour at 60 fps
+_SCHED_STEP_TICKS: int = 45    # path-following step rate (slightly faster than patrol)
+
+
+def _time_of_day_at(hour: int) -> str:
+    """Map a 0–23 hour to a TimeOfDay.value string (mirrors calendar.py logic)."""
+    h = hour % 24
+    if h in (5, 6):       return "dawn"
+    if 7  <= h <= 11:     return "morning"
+    if 12 <= h <= 16:     return "afternoon"
+    if h in (17, 18):     return "late_afternoon"
+    if h in (19, 20):     return "dusk"
+    return "night"
+
+
+def _route_for(zone: Zone, cid: str):
+    """Return the NPCRoute for character_id in zone, or None."""
+    for r in getattr(zone, "npc_routes", []):
+        if r.character_id == cid:
+            return r
+    return None
+
+
+@_dataclass
+class _MobileNPCState:
+    x:          int
+    y:          int
+    wp_idx:     int         # current waypoint index (route fallback)
+    wp_dir:     int         # +1 forward / -1 reverse (pingpong only)
+    tick_acc:   int         # ticks since last step
+    # Schedule fields
+    sched_tx:   int  = -1  # A* target x (-1 = no active schedule target)
+    sched_ty:   int  = -1
+    activity:   str  = "idle"
+    sched_path: object = None   # list[tuple[int,int]] | None — pending path
+    path_idx:   int  = 0        # next step index in sched_path
 from .renderer import WorldRenderer
 from .loaders import EncounterDef, AudioTrack, select_audio
 from .map_discovery import MapDiscoveryScreen, MapState, ITEM_ID as _MAP_ITEM_ID, _JOURNAL_TITLE, _JOURNAL_BODY
@@ -51,6 +92,7 @@ from .combat    import (
 from .alchemy_screen import AlchemyScreen, _APPROACHES
 from .vendor_screen import VendorScreen, COIN_ID
 from .journal_screen import JournalScreen
+from .inventory_screen import InventoryScreen
 
 # ── qqva quest engine (graceful fallback) ────────────────────────────────────
 
@@ -91,9 +133,10 @@ _K_RIGHT  = 1073741903
 _K_RETURN = 13
 _K_SPACE  = 32
 _K_ESCAPE = 27
-_K_FIGHT   = ord('f')
-_K_ALCHEMY = ord('z')
-_K_JOURNAL = ord('j')
+_K_FIGHT     = ord('f')
+_K_ALCHEMY   = ord('z')
+_K_JOURNAL   = ord('j')
+_K_INVENTORY = ord('i')
 
 _DIR_KEYS: dict[int, Direction] = {
     _K_UP:    Direction.NORTH,
@@ -119,8 +162,9 @@ class WorldMode(str, Enum):
     ALCHEMY       = "alchemy"
     VENDOR        = "vendor"
     SHOP          = "shop"     # player-operated trade screen
-    SMELT         = "smelt"    # forge / smelting UI
-    JOURNAL       = "journal"  # in-game journal overlay
+    SMELT         = "smelt"      # forge / smelting UI
+    JOURNAL       = "journal"    # in-game journal overlay
+    INVENTORY     = "inventory"  # player inventory overlay
     DEAD          = "dead"
     DONE          = "done"
 
@@ -220,10 +264,14 @@ class WorldPlay:
         self._alchemy_subjects:     list  = []
         self._alchemy_subject_idx:  int   = 0
         self._alchemy_approach_idx: int   = 0
-        self._alchemy_phase:        str   = "subject"   # subject | approach | result
+        self._alchemy_phase:        str   = "subject"   # subject | lab | lab_flash | approach | result
         self._alchemy_result:       object = None
         self._alchemy_bytes:        Optional[bytes] = None
         self._alchemy_calendar_ctx: object = None
+        # Lab session state (populated when phase == "lab")
+        self._lab_session:          object = None   # LaboratorySession or None
+        self._lab_op_idx:           int    = 0
+        self._lab_op_result:        object = None   # last OperationResult (flash screen)
 
         # Vendor (optional)
         self._vendor_catalogs: Dict[str, Dict[str, int]] = vendor_catalogs or {}
@@ -239,6 +287,11 @@ class WorldPlay:
         self._journal_page    = 0
         self._journal_detail  = False   # True = expanded detail view
         self._journal_bytes:  Optional[bytes] = None
+
+        # Inventory overlay
+        self._inventory_screen = InventoryScreen()
+        self._inventory_cursor: int            = 0
+        self._inventory_bytes:  Optional[bytes] = None
 
         # Item spawn tracking — zone_ids whose spawns have been collected
         self._collected_zones: set[str] = set()
@@ -266,6 +319,17 @@ class WorldPlay:
         self._combat_result:   Optional[CombatResult]  = None
         self._combat_bytes:    Optional[bytes]         = None
         self._dead_npcs:       set[str]                = set()
+        self._necromancy_npcs: set[str]                = set()   # raised once by Lakota's perk
+        self._permanently_dead: set[str]               = set()   # raised then killed again — no re-raise
+
+        # Mobile NPC live positions — keyed by character_id
+        self._mobile_state:    dict[str, _MobileNPCState] = {}
+        self._tick_count:      int  = 0
+        self._schedule_index:  dict = {}   # character_id → NPCSchedule
+        self._passable_cache:  dict = {}   # passable voxels for A* (reset per zone)
+        self._hour_tick_acc:   int  = 0
+        self._current_hour:    int  = 6    # dawn default; syncs from WorldClock when present
+        self._init_mobile_npcs(starting)
 
         # HUD hint text
         self._hint: str = ""
@@ -292,6 +356,19 @@ class WorldPlay:
         """Process pygame events for the current frame."""
         if not _PG:
             return
+        self._tick_count  += 1
+        self._hour_tick_acc += 1
+        if self._hour_tick_acc >= _TICKS_PER_HOUR:
+            self._hour_tick_acc = 0
+            if self._clock is not None:
+                try:
+                    self._current_hour = self._clock.hour
+                except Exception:
+                    self._current_hour = (self._current_hour + 1) % 24
+            else:
+                self._current_hour = (self._current_hour + 1) % 24
+            self._evaluate_schedules()
+        self._advance_mobile_npcs()
         for event in events:
             if not hasattr(event, "type"):
                 continue
@@ -315,7 +392,9 @@ class WorldPlay:
                 screen, self._frozen_bg, self._dialogue_bytes)
 
         elif self._mode == WorldMode.WORLD:
-            self._renderer.render(screen, zone, self._player, hint=self._hint)
+            self._renderer.render(screen, zone, self._player, hint=self._hint,
+                                  npc_overrides=self._mobile_positions(),
+                                  visible_npc_ids=self._visible_npc_ids())
 
         elif self._mode == WorldMode.DUNGEON:
             if self._frozen_bg is not None:
@@ -372,6 +451,17 @@ class WorldPlay:
                 try:
                     from PIL import Image as _Img4
                     pil = _Img4.open(_io4.BytesIO(self._journal_bytes))
+                    surf = pygame.image.fromstring(pil.tobytes(), pil.size, pil.mode)
+                    screen.blit(surf, (0, 0))
+                except Exception:
+                    pass
+
+        elif self._mode == WorldMode.INVENTORY:
+            if self._inventory_bytes is not None:
+                import io as _io5
+                try:
+                    from PIL import Image as _Img5
+                    pil = _Img5.open(_io5.BytesIO(self._inventory_bytes))
                     surf = pygame.image.fromstring(pil.tobytes(), pil.size, pil.mode)
                     screen.blit(surf, (0, 0))
                 except Exception:
@@ -438,6 +528,8 @@ class WorldPlay:
                 self._end_alchemy()
             elif self._mode == WorldMode.JOURNAL:
                 self._end_journal()
+            elif self._mode == WorldMode.INVENTORY:
+                self._end_inventory()
             elif self._mode in (WorldMode.VENDOR, WorldMode.SHOP):
                 # VENDOR is WorldPlay's internal shop mode; SHOP is set directly
                 # by the GL layer — both dismiss the overlay and return to free roam.
@@ -501,6 +593,10 @@ class WorldPlay:
             self._handle_journal_key(key)
             return
 
+        if self._mode == WorldMode.INVENTORY:
+            self._handle_inventory_key(key)
+            return
+
         if self._mode == WorldMode.WORLD:
             direction = _DIR_KEYS.get(key) or _WASD.get(key)
             if direction is not None:
@@ -513,6 +609,8 @@ class WorldPlay:
                 self._begin_alchemy()
             elif key == _K_JOURNAL:
                 self._begin_journal()
+            elif key == _K_INVENTORY:
+                self._begin_inventory()
 
     # ── Movement ─────────────────────────────────────────────────────────────
 
@@ -521,8 +619,14 @@ class WorldPlay:
         moved, exit_trig, portal_trig = self._player.move(direction, zone)
 
         if exit_trig is not None:
+            if not self._cond_met(exit_trig.condition):
+                self._hint = "(the way is not yet open)"
+                return
             self._transition_zone(exit_trig)
         elif portal_trig is not None:
+            if not self._cond_met(portal_trig.condition):
+                self._hint = "(the way is not yet open)"
+                return
             self._enter_dungeon(portal_trig)
         elif moved:
             self._tracer.deposit(
@@ -531,6 +635,399 @@ class WorldPlay:
             self._check_encounters()
 
     # ── Zone transition ───────────────────────────────────────────────────────
+
+    # ── Mobile NPCs ───────────────────────────────────────────────────────────
+
+    def _init_mobile_npcs(self, zone: Zone) -> None:
+        """Build live mobile state for the new zone and evaluate initial schedules."""
+        self._mobile_state.clear()
+        self._schedule_index.clear()
+
+        # Passable voxel cache for A* (rebuilt per zone)
+        self._passable_cache = {
+            pos: kind for pos, kind in zone.voxels.items()
+            if _is_passable(kind)
+        }
+
+        # Schedule index — only schedules whose condition is currently met
+        for sched in getattr(zone, "npc_schedules", []):
+            if self._cond_met(sched.condition):
+                self._schedule_index[sched.character_id] = sched
+
+        # States for route-based NPCs — skip routes whose condition is not met
+        for route in getattr(zone, "npc_routes", []):
+            if not route.waypoints:
+                continue
+            if not self._cond_met(route.condition):
+                continue
+            wx, wy = route.waypoints[0]
+            self._mobile_state[route.character_id] = _MobileNPCState(
+                x=wx, y=wy, wp_idx=0, wp_dir=1, tick_acc=0,
+            )
+
+        # States for schedule-only NPCs (no patrol route)
+        for cid in self._schedule_index:
+            if cid in self._mobile_state:
+                continue
+            spawn = zone.npc_by_char(cid)
+            if spawn is not None:
+                self._mobile_state[cid] = _MobileNPCState(
+                    x=spawn.x, y=spawn.y, wp_idx=0, wp_dir=1, tick_acc=0,
+                )
+
+        self._evaluate_schedules()
+
+    def _evaluate_schedules(self) -> None:
+        """
+        Re-evaluate every NPCSchedule against the current hour.
+
+        Called on zone init and every time the game-clock advances one hour.
+        Sets A* paths toward new targets, or marks NPCs absent when their
+        schedule puts them in another zone.
+        """
+        tod      = _time_of_day_at(self._current_hour)
+        zone_id  = self._zone.zone_id
+        passable = self._passable_cache
+
+        for cid, sched in self._schedule_index.items():
+            if cid in self._dead_npcs:
+                continue
+            state = self._mobile_state.get(cid)
+            if state is None:
+                continue
+
+            # First matching entry wins
+            entry = None
+            for e in sched.entries:
+                if e.time_of_day != tod:
+                    continue
+                if not self._cond_met(e.condition):
+                    continue
+                entry = e
+                break
+
+            if entry is None:
+                # No matching entry — clear any active schedule target
+                state.sched_tx   = -1
+                state.sched_ty   = -1
+                state.sched_path = None
+                state.path_idx   = 0
+                continue
+
+            # NPC is in a different zone at this hour
+            if entry.zone_id and entry.zone_id != zone_id:
+                state.sched_tx = -2   # sentinel: absent from current zone
+                continue
+
+            # Clear absent flag if re-entering this zone's schedule
+            if state.sched_tx == -2:
+                state.sched_tx = -1
+
+            state.activity = entry.activity
+
+            # Already at target — nothing to path toward
+            if state.x == entry.x and state.y == entry.y:
+                state.sched_tx   = entry.x
+                state.sched_ty   = entry.y
+                state.sched_path = None
+                state.path_idx   = 0
+                continue
+
+            # Target unchanged — keep existing path
+            if state.sched_tx == entry.x and state.sched_ty == entry.y:
+                continue
+
+            # New target — compute A* path
+            path = _astar(
+                start=(state.x, state.y),
+                goal=(entry.x, entry.y),
+                voxels=passable,
+            )
+            state.sched_tx   = entry.x
+            state.sched_ty   = entry.y
+            state.sched_path = path[1:] if path else []
+            state.path_idx   = 0
+
+    def _cond_met(self, condition) -> bool:
+        """
+        Return True if a ZoneCondition is satisfied (or if condition is None).
+
+        "witnessed" — the quest key has been witnessed in this session.
+        "pending"   — the quest key has NOT yet been witnessed.
+        """
+        if condition is None:
+            return True
+        entries  = self._quest_state.get("entries") or {}
+        done     = entries.get(condition.key, {}).get("witness_state") == "witnessed"
+        return done if condition.mode == "witnessed" else not done
+
+    def _visible_npc_ids(self) -> set:
+        """
+        Character IDs of NPCs that should be drawn and be interactable this frame.
+
+        Filters by:  quest condition on NPCSpawn, dead_npcs, schedule absent flag.
+        """
+        absent = {cid for cid, s in self._mobile_state.items() if s.sched_tx == -2}
+        return {
+            npc.character_id
+            for npc in self._zone.npc_spawns
+            if self._cond_met(npc.condition)
+            and npc.character_id not in self._dead_npcs
+            and npc.character_id not in absent
+        }
+
+    def _advance_mobile_npcs(self) -> None:
+        """
+        Step each mobile NPC one tile per tick cycle.
+
+        Priority: schedule path > waypoint route > idle.
+        NPCs absent from this zone (sched_tx == -2) are skipped entirely.
+        """
+        if self._mode != WorldMode.WORLD:
+            return
+        zone       = self._zone
+        player_pos = (self._player.x, self._player.y)
+
+        for cid, state in self._mobile_state.items():
+            if cid in self._dead_npcs or state.sched_tx == -2:
+                continue
+
+            state.tick_acc += 1
+
+            # ── Schedule path movement ─────────────────────────────────────────
+            path = state.sched_path
+            if path and state.path_idx < len(path):
+                if state.tick_acc < _SCHED_STEP_TICKS:
+                    continue
+                state.tick_acc = 0
+                tx, ty = path[state.path_idx]
+                if _is_passable(zone.tile_at(tx, ty)) and (tx, ty) != player_pos:
+                    state.x, state.y = tx, ty
+                state.path_idx += 1
+                continue
+
+            # ── Waypoint route fallback ────────────────────────────────────────
+            route = _route_for(zone, cid)
+            if route is None or len(route.waypoints) < 2:
+                continue
+            if state.tick_acc < route.ticks_per_step:
+                continue
+            state.tick_acc = 0
+            wps      = route.waypoints
+            next_idx = state.wp_idx + state.wp_dir
+            if route.loop == "pingpong":
+                if next_idx >= len(wps):
+                    state.wp_dir = -1
+                    next_idx     = len(wps) - 2
+                elif next_idx < 0:
+                    state.wp_dir = 1
+                    next_idx     = 1
+            else:
+                next_idx = next_idx % len(wps)
+            tx, ty = wps[next_idx]
+            if _is_passable(zone.tile_at(tx, ty)) and (tx, ty) != player_pos:
+                state.x, state.y = tx, ty
+                state.wp_idx     = next_idx
+
+    def _mobile_positions(self) -> dict:
+        """Current live positions of mobile NPCs present in this zone."""
+        return {
+            cid: (s.x, s.y)
+            for cid, s in self._mobile_state.items()
+            if s.sched_tx != -2   # -2 = NPC is in another zone right now
+        }
+
+    def _facing_npc(self):
+        """
+        Return the NPC directly in front of the player.
+
+        Checks mobile live positions first (so patrolling NPCs are interactable
+        wherever they stand), then falls back to static zone spawns.
+        Skips NPCs currently scheduled to be in another zone.
+        """
+        ax, ay = self._player.facing_tile()
+        for char_id, state in self._mobile_state.items():
+            if state.sched_tx == -2:
+                continue
+            if state.x == ax and state.y == ay:
+                spawn = self._zone.npc_by_char(char_id)
+                if spawn is not None:
+                    return spawn
+        npc = self._zone.npc_at(ax, ay)
+        if npc is not None and not self._cond_met(npc.condition):
+            return None
+        return npc
+
+    # ── Necromancy ────────────────────────────────────────────────────────────
+    # Perk granted by Lakota (2018_GODS) after 0026_KLST + 0043_KLST both
+    # witnessed.  Raising requires a three-part ritual:
+    #   1. Pick up the corpse (any state of decay) at its death location.
+    #   2. Carry it to the zodiac fountain in front of Castle Azoth.
+    #   3. On a solar day (solstice / equinox) — apply Infernal Salve (0037_KLIT)
+    #      and meditate / pray to Lakota.
+    # The causal debt — consumed life.time.energy entangled with the fabric of
+    # causality, manifesting as infant mortality, sudden elder deaths, etc. — is
+    # recorded as a semantic journal entry.  It is real in the lore layer; it is
+    # not simulated as mechanical NPC death in this session.
+
+    _INFERNAL_SALVE: str = "0037_KLIT"
+    # Castle Azoth fountain tile bounds (rows 5–9, cols 10–18 in lapidus_castle_azoth)
+    _FOUNTAIN_ZONE: str  = "lapidus_castle_azoth"
+    _FOUNTAIN_X0:   int  = 10
+    _FOUNTAIN_X1:   int  = 18
+    _FOUNTAIN_Y0:   int  = 5
+    _FOUNTAIN_Y1:   int  = 9
+
+    def _has_necromancy_perk(self) -> bool:
+        """True when both quests gating Lakota's perk have been witnessed."""
+        entries = self._quest_state.get("entries") or {}
+        def _w(key: str) -> bool:
+            return entries.get(key, {}).get("witness_state") == "witnessed"
+        return _w("0026_KLST") and _w("0043_KLST")
+
+    def _is_solar_day(self) -> bool:
+        """True on the four astronomical anchors when the fountain runs."""
+        if self._clock is None:
+            return False
+        try:
+            return self._clock.date.is_astronomical_anchor()
+        except Exception:
+            return False
+
+    def _facing_fountain(self) -> bool:
+        """True when the player's facing tile is within the Castle Azoth fountain bounds."""
+        if self._player.zone_id != self._FOUNTAIN_ZONE:
+            return False
+        fx, fy = self._player.facing_tile()
+        return (self._FOUNTAIN_X0 <= fx <= self._FOUNTAIN_X1
+                and self._FOUNTAIN_Y0 <= fy <= self._FOUNTAIN_Y1)
+
+    def _facing_dead_npc(self):
+        """
+        Return the NPCSpawn of a raiseable dead NPC at the player's facing tile
+        whose corpse has not yet been picked up.
+
+        Uses last known mobile-state position.  Permanently-dead NPCs and NPCs
+        whose corpse is already in the player's inventory are excluded.
+        """
+        if self._inventory is None:
+            return None
+        ax, ay = self._player.facing_tile()
+        for cid in self._dead_npcs:
+            if cid in self._permanently_dead:
+                continue
+            if self._inventory.has(f"corpse_{cid}"):
+                continue   # already carrying this body
+            state = self._mobile_state.get(cid)
+            if state is not None and state.x == ax and state.y == ay:
+                return self._zone.npc_by_char(cid)
+        return None
+
+    def _pickup_corpse(self, cid: str) -> None:
+        """Add the corpse of a dead NPC to the player's inventory."""
+        if self._inventory is not None:
+            try:
+                self._inventory.add(f"corpse_{cid}", 1)
+            except Exception:
+                pass
+        self._tracer.deposit(
+            self._player.zone_id, self._player.x, self._player.y, PU,
+            context={"event": "corpse_picked_up", "npc": cid},
+        )
+        self._hint = "(carrying the body)"
+
+    def _try_fountain_ritual(self) -> bool:
+        """
+        Attempt the raising ritual at the Castle Azoth fountain.
+
+        Returns True if this interaction was consumed (even when blocked by a
+        missing item or wrong day) so the caller can stop further processing.
+        """
+        if not self._is_solar_day():
+            self._hint = "(the fountain is still — return on a day the sun speaks)"
+            return True
+
+        # Find a carried corpse
+        raiseable: Optional[str] = None
+        if self._inventory is not None:
+            for cid in list(self._dead_npcs):
+                if cid in self._permanently_dead:
+                    continue
+                try:
+                    if self._inventory.has(f"corpse_{cid}"):
+                        raiseable = cid
+                        break
+                except Exception:
+                    pass
+
+        if raiseable is None:
+            self._hint = "(bring a body to the fountain)"
+            return True
+
+        if self._inventory is None or not self._inventory.has(self._INFERNAL_SALVE):
+            self._hint = "(you need Infernal Salve)"
+            return True
+
+        # Consume ritual items
+        try:
+            self._inventory.remove(self._INFERNAL_SALVE, 1)
+            self._inventory.remove(f"corpse_{raiseable}", 1)
+        except Exception:
+            pass
+
+        self._raise_npc(raiseable)
+        return True
+
+    def _raise_npc(self, cid: str) -> None:
+        """
+        Return a dead NPC to perfect healthful life via Lakota's perk.
+
+        Called from the fountain ritual.  The NPC materialises at the player's
+        position (the fountain) and resumes their schedule from there.
+        """
+        self._dead_npcs.discard(cid)
+        self._necromancy_npcs.add(cid)
+
+        self._tracer.deposit(
+            self._player.zone_id, self._player.x, self._player.y, KO,
+            context={"event": "npc_raised", "npc": cid},
+        )
+        self.advance_quest(f"raised_{cid}", "raised")
+
+        if self._journal is not None:
+            try:
+                from ..journal.journal import EntryKind
+                self._journal.write(
+                    EntryKind.LORE_FRAGMENT,
+                    f"Raised: {cid}",
+                    (
+                        f"{cid} was returned to a state of perfect healthful life.\n"
+                        f"Their other life.time.energy was consumed in the weaving —\n"
+                        f"an eternal debt woven into the fabric of causality itself.\n"
+                        f"Lakota's fire burns in both directions."
+                    ),
+                    tags=[cid, "0026_KLST", "0043_KLST", "2018_GODS"],
+                )
+            except Exception:
+                pass
+
+        # Materialise at the ritual site; schedule paths from here
+        state = self._mobile_state.get(cid)
+        if state is not None:
+            state.x        = self._player.x
+            state.y        = self._player.y
+            state.sched_tx   = -1
+            state.sched_ty   = -1
+            state.activity   = "idle"
+            state.sched_path = None
+            state.path_idx   = 0
+            state.tick_acc   = 0
+        else:
+            self._mobile_state[cid] = _MobileNPCState(
+                x=self._player.x, y=self._player.y,
+                wp_idx=0, wp_dir=1, tick_acc=0,
+            )
+        self._evaluate_schedules()
 
     def _transition_zone(self, exit_trig) -> None:
         target = self._world.zones.get(exit_trig.target_zone)
@@ -543,12 +1040,18 @@ class WorldPlay:
         self._zone           = target
         self._active_track   = self._select_audio_track()
 
-        # Advance clock one hour per zone crossing
+        # Advance clock one hour per zone crossing, then re-init NPCs in the
+        # new zone (which also calls _evaluate_schedules with the updated hour)
         if self._clock is not None:
             try:
                 self._clock.advance(1)
+                self._current_hour = self._clock.hour
             except Exception:
-                pass
+                self._current_hour = (self._current_hour + 1) % 24
+        else:
+            self._current_hour = (self._current_hour + 1) % 24
+
+        self._init_mobile_npcs(target)
 
         # First-visit: journal entry + item spawn collection
         zone_id = exit_trig.target_zone
@@ -566,6 +1069,8 @@ class WorldPlay:
             return
         self._collected_zones.add(zone_id)
         for spawn in getattr(zone, "item_spawns", []):
+            if not self._cond_met(spawn.condition):
+                continue
             try:
                 self._inventory.add(spawn.item_id, spawn.qty)
             except Exception:
@@ -599,13 +1104,23 @@ class WorldPlay:
 
     def _interact(self) -> None:
         zone = self._zone
-        npc  = self._player.facing_npc(zone)
+        npc  = self._facing_npc()
         if npc is not None and npc.character_id not in self._dead_npcs:
             if npc.character_id in self._vendor_catalogs:
                 self._begin_vendor(npc)
             else:
                 self._begin_dialogue(npc)
             return
+        if self._has_necromancy_perk():
+            # Fountain ritual — facing fountain stone/water tiles in Castle Azoth
+            if self._facing_fountain():
+                self._try_fountain_ritual()
+                return
+            # Corpse pickup — facing a dead body at its last position
+            dead_npc = self._facing_dead_npc()
+            if dead_npc is not None:
+                self._pickup_corpse(dead_npc.character_id)
+                return
         portal = self._player.facing_portal(zone)
         if portal is not None:
             self._enter_dungeon(portal)
@@ -615,10 +1130,21 @@ class WorldPlay:
             self._hint = ""
             return
         zone = self._zone
-        npc  = self._player.facing_npc(zone)
+        npc  = self._facing_npc()
         if npc is not None and npc.character_id not in self._dead_npcs:
             self._hint = "[space]  Talk     [f]  Attack"
             return
+        if self._has_necromancy_perk():
+            if self._facing_fountain():
+                if self._is_solar_day():
+                    self._hint = "[space]  Ritual"
+                else:
+                    self._hint = "(the fountain is still)"
+                return
+            dead_npc = self._facing_dead_npc()
+            if dead_npc is not None:
+                self._hint = "[space]  Pick up body"
+                return
         portal = self._player.facing_portal(zone)
         if portal is not None:
             self._hint = "[space]  Enter dungeon"
@@ -776,7 +1302,11 @@ class WorldPlay:
                     7, ZO,
                     context={"event": "npc_killed", "npc": result.npc_id},
                 )
+                if result.npc_id in self._necromancy_npcs:
+                    # Second death after a raising — permanent, no re-raise possible
+                    self._permanently_dead.add(result.npc_id)
                 self._dead_npcs.add(result.npc_id)
+                # Keep mobile state — preserves last position for necromancy raise
                 self.advance_quest(f"killed_{result.npc_id}", "killed")
             elif result.outcome == "player_flees":
                 # Pu (5, stasis) — arrested motion
@@ -1004,11 +1534,34 @@ class WorldPlay:
                     len(self._alchemy_subjects) - 1, self._alchemy_subject_idx + 1)
                 self._refresh_alchemy_bytes()
             elif key in (_K_RETURN, _K_SPACE):
-                self._alchemy_phase = "approach"
-                self._alchemy_approach_idx = 0
-                self._refresh_alchemy_bytes()
+                self._begin_lab_session()
             elif key == _K_ESCAPE:
                 self._end_alchemy()
+
+        elif phase == "lab":
+            if key in (_K_UP, ord('w')):
+                self._lab_op_idx = max(0, self._lab_op_idx - 1)
+                self._refresh_alchemy_bytes()
+            elif key in (_K_DOWN, ord('s')):
+                try:
+                    from ..alchemy.laboratory import OPERATIONS
+                    max_idx = len(OPERATIONS)  # last = Conclude
+                except Exception:
+                    max_idx = 0
+                self._lab_op_idx = min(max_idx, self._lab_op_idx + 1)
+                self._refresh_alchemy_bytes()
+            elif key in (_K_RETURN, _K_SPACE):
+                self._execute_lab_operation()
+            elif key == _K_ESCAPE:
+                self._lab_session = None
+                self._alchemy_phase = "subject"
+                self._refresh_alchemy_bytes()
+
+        elif phase == "lab_flash":
+            # Any key dismisses the operation result flash and returns to the menu
+            self._lab_op_result = None
+            self._alchemy_phase = "lab"
+            self._refresh_alchemy_bytes()
 
         elif phase == "approach":
             if key in (_K_UP, ord('w')):
@@ -1026,6 +1579,146 @@ class WorldPlay:
         elif phase == "result":
             if key in (_K_RETURN, _K_SPACE, _K_ESCAPE):
                 self._end_alchemy()
+
+    def _begin_lab_session(self) -> None:
+        try:
+            from ..alchemy.laboratory import LaboratorySession, SubstanceState
+        except Exception:
+            # Lab module unavailable — fall back to approach select
+            self._alchemy_phase = "approach"
+            self._alchemy_approach_idx = 0
+            self._refresh_alchemy_bytes()
+            return
+
+        subject = self._alchemy_subjects[self._alchemy_subject_idx]
+        inv_dict = self._inventory.as_dict() if self._inventory is not None else {}
+
+        # Available equipment = every KLOB ID in inventory with qty >= 1
+        available_equipment = frozenset(
+            k for k, v in inv_dict.items() if k.endswith("_KLOB") and v >= 1
+        )
+
+        # Starting substance = primary required material (first non-apparatus entry)
+        start_klob = next(
+            (k for k in subject.required_materials if k.endswith("_KLOB")),
+            "0073_KLOB",
+        )
+
+        self._lab_session = LaboratorySession(
+            subject_id=subject.id,
+            available_equipment=available_equipment,
+            starting_substance=SubstanceState.default_for(start_klob),
+            actor_id=getattr(self._chargen, "character_id", "0000_0451"),
+        )
+        self._lab_op_idx    = 0
+        self._lab_op_result = None
+        self._alchemy_phase = "lab"
+        self._refresh_alchemy_bytes()
+
+    def _execute_lab_operation(self) -> None:
+        try:
+            from ..alchemy.laboratory import OPERATIONS
+        except Exception:
+            return
+
+        if self._lab_session is None:
+            return
+
+        # Conclude selected
+        if self._lab_op_idx >= len(OPERATIONS):
+            self._execute_treatment_from_lab()
+            return
+
+        op = OPERATIONS[self._lab_op_idx]
+        available_op_ids = {o.op_id for o in self._lab_session.available_operations()}
+
+        if op.op_id not in available_op_ids:
+            return  # op not available — no-op, player sees dim entry
+
+        vitriol_scores = {}
+        if self._chargen is not None:
+            try:
+                vitriol_scores = dict(getattr(self._chargen, "vitriol_scores", {}))
+            except Exception:
+                pass
+
+        alchemy_rank = 50
+        if self._chargen is not None:
+            try:
+                alchemy_rank = getattr(self._chargen, "alchemy_rank", 50)
+            except Exception:
+                pass
+
+        result = self._lab_session.perform(op.op_id, alchemy_rank, vitriol_scores)
+        self._lab_op_result = result
+        self._alchemy_phase = "lab_flash"
+        self._refresh_alchemy_bytes()
+
+    def _execute_treatment_from_lab(self) -> None:
+        if self._lab_session is None:
+            self._end_alchemy()
+            return
+
+        try:
+            reading, approach = self._lab_session.conclude()
+        except Exception:
+            self._end_alchemy()
+            return
+
+        subject = self._alchemy_subjects[self._alchemy_subject_idx]
+        inv_dict = self._inventory.as_dict() if self._inventory is not None else {}
+        presence = self._presence
+
+        try:
+            from ..alchemy.system import PresenceState
+            if presence is None:
+                presence = PresenceState()
+        except Exception:
+            self._end_alchemy()
+            return
+
+        try:
+            result = self._alchemy.treat(
+                subject_id=subject.id,
+                actor_id=getattr(self._chargen, "character_id", "0000_0451"),
+                reading=reading,
+                approach=approach,
+                presence=presence,
+                inventory=inv_dict,
+                recipe_book=self._recipe_book,
+                calendar_context=self._alchemy_calendar_ctx,
+            )
+        except Exception:
+            self._end_alchemy()
+            return
+
+        if self._presence is not None:
+            try:
+                from ..alchemy.system import AlchemySystem
+                delta = AlchemySystem.derive_presence_delta(result.resonance_quality, result.epiphanic)
+                self._presence.permeability = min(1.0, max(0.0,
+                    self._presence.permeability + delta.permeability_delta))
+                charge_gain = delta.epiphanic_charge_delta
+                if self._alchemy_calendar_ctx is not None:
+                    charge_gain *= self._alchemy_calendar_ctx.charge_multiplier
+                self._presence.epiphanic_charge = min(1.0, max(0.0,
+                    self._presence.epiphanic_charge + charge_gain))
+                self._presence.mania_level = min(1.0, max(0.0,
+                    self._presence.mania_level + delta.mania_level_delta))
+            except Exception:
+                pass
+
+        if self._inventory is not None:
+            try:
+                self._inventory.sync_from(inv_dict)
+            except Exception:
+                pass
+
+        self._lab_session   = None
+        self._alchemy_result = result
+        self._alchemy_phase  = "result"
+        self._journal_alchemy_note(result, subject)
+        self._refresh_alchemy_bytes()
 
     def _execute_treatment(self) -> None:
         try:
@@ -1129,6 +1822,37 @@ class WorldPlay:
                 self.width, self.height,
                 season_note=season_note,
             )
+        elif phase == "lab" and self._lab_session is not None:
+            try:
+                from ..alchemy.laboratory import OPERATIONS
+                subject = self._alchemy_subjects[self._alchemy_subject_idx]
+                available_op_ids = {
+                    o.op_id for o in self._lab_session.available_operations()
+                }
+                self._alchemy_bytes = self._alchemy_screen.render_lab_operation_menu(
+                    subject_name=getattr(subject, "name", subject.id),
+                    all_ops=OPERATIONS,
+                    available_op_ids=available_op_ids,
+                    cursor_idx=self._lab_op_idx,
+                    mode_scores=dict(self._lab_session._mode_scores),
+                    substance=self._lab_session.substance,
+                    history=self._lab_session.history,
+                    width=self.width,
+                    height=self.height,
+                )
+            except Exception:
+                pass
+        elif phase == "lab_flash" and self._lab_op_result is not None:
+            try:
+                subject = self._alchemy_subjects[self._alchemy_subject_idx]
+                self._alchemy_bytes = self._alchemy_screen.render_lab_operation_result(
+                    result=self._lab_op_result,
+                    subject_name=getattr(subject, "name", subject.id),
+                    width=self.width,
+                    height=self.height,
+                )
+            except Exception:
+                pass
         elif phase == "approach":
             subject = self._alchemy_subjects[self._alchemy_subject_idx]
             formula_bonus = getattr(cal, "formula_approach_bonus", 0.0) if cal is not None else 0.0
@@ -1263,3 +1987,45 @@ class WorldPlay:
             self._journal_bytes = self._journal_screen.render_list(
                 entries, self._journal_cursor, self._journal_page,
                 self.width, self.height)
+
+    # ── Inventory overlay ─────────────────────────────────────────────────────
+
+    def _begin_inventory(self) -> None:
+        self._inventory_cursor = 0
+        self._mode = WorldMode.INVENTORY
+        self._refresh_inventory_bytes()
+
+    def _end_inventory(self) -> None:
+        self._inventory_bytes = None
+        self._mode = WorldMode.WORLD
+
+    def _handle_inventory_key(self, key: int) -> None:
+        inv_dict = self._inventory_dict()
+        total = len(inv_dict)
+        if key == _K_ESCAPE or key == _K_INVENTORY:
+            self._end_inventory()
+        elif key in (_K_UP, ord('w')):
+            if self._inventory_cursor > 0:
+                self._inventory_cursor -= 1
+                self._refresh_inventory_bytes()
+        elif key in (_K_DOWN, ord('s')):
+            if self._inventory_cursor < total - 1:
+                self._inventory_cursor += 1
+                self._refresh_inventory_bytes()
+
+    def _inventory_dict(self) -> dict:
+        if self._inventory is None:
+            return {}
+        try:
+            return self._inventory.as_dict()
+        except Exception:
+            return {}
+
+    def _refresh_inventory_bytes(self) -> None:
+        inv_dict = self._inventory_dict()
+        self._inventory_bytes = self._inventory_screen.render(
+            inv_dict   = inv_dict,
+            cursor_idx = self._inventory_cursor,
+            width      = self.width,
+            height     = self.height,
+        )

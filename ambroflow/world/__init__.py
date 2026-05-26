@@ -28,7 +28,6 @@ from .map import (
     DungeonPortal,
     NPCSpawn,
     ItemSpawn,
-    build_zone_from_ascii,
 )
 from .zones.lapidus import VENDOR_CATALOGS
 from .vendor_screen import VendorScreen
@@ -91,7 +90,6 @@ __all__ = [
     "DungeonPortal",
     "NPCSpawn",
     "ItemSpawn",
-    "build_zone_from_ascii",
     "VENDOR_CATALOGS",
     "VendorScreen",
     "WorldPlayer",

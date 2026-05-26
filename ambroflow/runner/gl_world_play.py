@@ -710,8 +710,25 @@ class GLWorldPlay:
         player     = self._wp._player
         placements = list(self._static_furniture)  # zone furniture first
         placements.append(_P(float(player.x), 0.12, float(player.y), 9, 0.45))  # player (amber)
+
+        combat_npc   = getattr(self._wp, "_combat_npc",  None)
+        mobile_state = getattr(self._wp, "_mobile_state", {})
+        # Use WorldPlay's unified visibility filter (quest conditions + dead + absent)
+        visible = (self._wp._visible_npc_ids()
+                   if hasattr(self._wp, "_visible_npc_ids") else None)
+
         for npc in getattr(self._wp._zone, "npc_spawns", []):
-            placements.append(_P(float(npc.x), 0.08, float(npc.y), 2, 0.35))   # NPC (grey)
+            if visible is not None and npc.character_id not in visible:
+                continue
+            # Use live position if the NPC is on a patrol route
+            ms = mobile_state.get(npc.character_id)
+            nx = float(ms.x if ms is not None else npc.x)
+            nz = float(ms.y if ms is not None else npc.y)
+            # Combat NPC gets PORTAL tile (purple/magenta) — distinct from
+            # regular NPCs (grey=2) and smelt furniture (cream=10)
+            tile = 11 if npc.character_id == combat_npc else 2
+            placements.append(_P(nx, 0.08, nz, tile, 0.35))
+
         self._wr.load_furniture(placements)
 
     def draw(self) -> None:
@@ -745,12 +762,18 @@ class GLWorldPlay:
                         pass
             return
 
-        # ── Overlay modes (ALCHEMY, SHOP, SMELT, VENDOR …) — PIL bytes ───────
+        # ── Overlay modes (ALCHEMY, SHOP, SMELT, VENDOR …) ───────────────────
+        # Render the live 3D world first, then composite the panel on top at
+        # ~0.88 opacity so the spatial scene remains visible as a dark backdrop.
+        GL.glClearColor(0.04, 0.03, 0.08, 1.0)
+        GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
+        self._wr.draw(self._cam, time=self._t)
+
         if not _PIL:
             return
         img = self._render_pil()
         self._tex.update_pil(img)
-        self._ui.add(self._tex, (-1.0, -1.0, 1.0, 1.0), opacity=1.0)
+        self._ui.add(self._tex, (-1.0, -1.0, 1.0, 1.0), opacity=0.88)
         self._ui.draw()
         self._ui.clear()
 

@@ -83,6 +83,23 @@ def is_passable(tile: WorldTileKind) -> bool:
 # ── Zone records ──────────────────────────────────────────────────────────────
 
 @dataclass(frozen=True)
+class ZoneCondition:
+    """
+    A quest-state gate on any zone entity (spawn, exit, portal, item, route,
+    schedule, or schedule entry).
+
+    key:  quest entry_id (e.g. "0009_KLST") evaluated against the session's
+          quest_state.entries dict.
+    mode: "witnessed" — entity active when the key IS witnessed (post-quest).
+          "pending"   — entity active when the key is NOT yet witnessed (pre-quest /
+                        in-progress).  Use this for content that disappears after
+                        a quest resolves.
+    """
+    key:  str
+    mode: str = "witnessed"   # "witnessed" | "pending"
+
+
+@dataclass(frozen=True)
 class ZoneExit:
     """
     A tile position that transitions the player to another zone.
@@ -97,6 +114,7 @@ class ZoneExit:
     target_zone: str    # zone_id of destination
     target_x:    int    # player spawn x in destination
     target_y:    int    # player spawn y in destination
+    condition:   Optional[ZoneCondition] = None
 
 
 @dataclass(frozen=True)
@@ -105,6 +123,7 @@ class DungeonPortal:
     x:          int
     y:          int
     dungeon_id: str
+    condition:  Optional[ZoneCondition] = None
 
 
 @dataclass(frozen=True)
@@ -113,30 +132,98 @@ class NPCSpawn:
     x:            int
     y:            int
     character_id: str
+    condition:    Optional[ZoneCondition] = None
+
+
+@dataclass
+class NPCRoute:
+    """
+    Patrol route for a mobile NPC.
+
+    Paired with an NPCSpawn of the same character_id (which provides the
+    initial position and dialogue/combat identity).  WorldPlay ticks each
+    route and updates the NPC's live position independently of the static
+    spawn record.
+
+    loop="pingpong"  A → B → C → B → A → B → …
+    loop="cycle"     A → B → C → A → B → C → …
+    """
+    character_id:   str
+    waypoints:      list           # list[tuple[int, int]] — ordered patrol points
+    ticks_per_step: int = 60      # game ticks between steps (~60 FPS → 1 step/sec)
+    loop:           str = "pingpong"
+    condition:      Optional[ZoneCondition] = None
 
 
 @dataclass(frozen=True)
 class ItemSpawn:
     """A one-time item pickup at a fixed position within a zone."""
-    x:       int
-    y:       int
-    item_id: str
-    qty:     int = 1
+    x:         int
+    y:         int
+    item_id:   str
+    qty:       int = 1
+    condition: Optional[ZoneCondition] = None
+
+
+@dataclass(frozen=True)
+class NPCScheduleEntry:
+    """
+    One time-block in an NPC's daily schedule.
+
+    time_of_day matches WorldClock TimeOfDay.value strings:
+      "dawn" | "morning" | "afternoon" | "late_afternoon" | "dusk" | "night"
+
+    Entries are evaluated in list order; the first whose time_of_day matches
+    the current hour AND whose condition_key (if any) is witnessed wins.
+
+    condition_key is a quest entry_id string — empty means unconditional.
+    activity is descriptive and drives dialogue/animation state:
+      "sleep" | "work" | "patrol" | "idle" | "merchant" | "ritual"
+
+    zone_id: if non-empty and different from the current zone, the NPC is
+    treated as absent from the current zone for this time block (they are
+    physically elsewhere — in their home zone, another district, etc.).
+    Leave empty for entries that keep the NPC in the current zone.
+    """
+    time_of_day: str
+    x:           int
+    y:           int
+    activity:    str = "idle"
+    condition:   Optional[ZoneCondition] = None   # None = unconditional
+    zone_id:     str = ""     # non-empty = NPC is in this other zone at this hour
+
+
+@dataclass
+class NPCSchedule:
+    """
+    Daily schedule for a mobile NPC — evaluated each hour against the WorldClock.
+
+    Paired with an NPCSpawn of the same character_id.  WorldPlay evaluates
+    schedule entries every game-hour and A*-paths the NPC to the new target.
+    Falls back to NPCRoute patrol when no schedule entry matches.
+
+    condition gates the entire schedule: if not met, the NPC uses route/idle only.
+    """
+    character_id: str
+    entries:      list   # list[NPCScheduleEntry], first match wins
+    condition:    Optional[ZoneCondition] = None
 
 
 @dataclass
 class Zone:
-    zone_id:      str
-    realm:        Realm
-    name:         str
-    width:        int
-    height:       int
-    voxels:       dict[tuple[int, int], WorldTileKind]
-    player_spawn: tuple[int, int]     = field(default=(1, 1))
-    exits:        list[ZoneExit]      = field(default_factory=list)
-    npc_spawns:   list[NPCSpawn]      = field(default_factory=list)
-    portals:      list[DungeonPortal] = field(default_factory=list)
-    item_spawns:  list[ItemSpawn]     = field(default_factory=list)
+    zone_id:        str
+    realm:          Realm
+    name:           str
+    width:          int
+    height:         int
+    voxels:         dict[tuple[int, int], WorldTileKind]
+    player_spawn:   tuple[int, int]       = field(default=(1, 1))
+    exits:          list[ZoneExit]        = field(default_factory=list)
+    npc_spawns:     list[NPCSpawn]        = field(default_factory=list)
+    portals:        list[DungeonPortal]   = field(default_factory=list)
+    item_spawns:    list[ItemSpawn]       = field(default_factory=list)
+    npc_routes:     list[NPCRoute]        = field(default_factory=list)
+    npc_schedules:  list[NPCSchedule]     = field(default_factory=list)
 
     def tile_at(self, x: int, y: int) -> WorldTileKind:
         """Return tile kind at (x, y), VOID if out of bounds."""
@@ -159,6 +246,13 @@ class Zone:
     def npc_at(self, x: int, y: int) -> Optional[NPCSpawn]:
         for n in self.npc_spawns:
             if n.x == x and n.y == y:
+                return n
+        return None
+
+    def npc_by_char(self, character_id: str) -> Optional[NPCSpawn]:
+        """Return the NPCSpawn record for a character_id regardless of position."""
+        for n in self.npc_spawns:
+            if n.character_id == character_id:
                 return n
         return None
 
@@ -234,91 +328,6 @@ class WorldMap:
 
     def zone(self, zone_id: str) -> Optional[Zone]:
         return self.zones.get(zone_id)
-
-
-# ── ASCII zone builder ────────────────────────────────────────────────────────
-
-_ASCII_TILE: dict[str, WorldTileKind] = {
-    "#": WorldTileKind.WALL,
-    ".": WorldTileKind.FLOOR,
-    "+": WorldTileKind.DOOR,
-    ",": WorldTileKind.GRASS,
-    "=": WorldTileKind.ROAD,
-    "D": WorldTileKind.DIRT,
-    "S": WorldTileKind.STONE,
-    "~": WorldTileKind.WATER,
-    "/": WorldTileKind.BRIDGE,
-    "^": WorldTileKind.STAIRS_UP,
-    "v": WorldTileKind.STAIRS_DOWN,
-    "P": WorldTileKind.PORTAL,
-    "E": WorldTileKind.DUNGEON_ENTRANCE,
-    " ": WorldTileKind.VOID,
-    # Surface material tiles
-    "T": WorldTileKind.TREE,
-    "M": WorldTileKind.MARBLE,
-    "Y": WorldTileKind.YELLOW_BRICK,
-    "C": WorldTileKind.CERAMIC,
-    "L": WorldTileKind.SLATE,
-    "X": WorldTileKind.SILICA,
-    "W": WorldTileKind.WALL_FACE,
-    # Placement markers — resolved to FLOOR at build time
-    "@": WorldTileKind.FLOOR,   # player spawn
-    "N": WorldTileKind.FLOOR,   # NPC spawn (matched to npc_ids in order)
-    "F": WorldTileKind.FLOOR,   # furniture interact point (entity tracked separately)
-    "?": WorldTileKind.FLOOR,   # generic trigger point
-}
-
-
-def build_zone_from_ascii(
-    zone_id:     str,
-    realm:       Realm,
-    name:        str,
-    rows:        list[str],
-    exits:       list[ZoneExit]      = (),
-    portals:     list[DungeonPortal] = (),
-    npc_ids:     list[str]           = (),
-    item_spawns: list[ItemSpawn]     = (),
-) -> Zone:
-    """
-    Parse an ASCII zone map into a Zone.
-
-    '@' → player spawn tile (one per map).
-    'N' → NPC spawn tile, matched to npc_ids in left-to-right, top-to-bottom
-          order.  Excess 'N' markers get placeholder IDs.
-    """
-    width  = max(len(r) for r in rows) if rows else 1
-    height = len(rows)
-    voxels: dict[tuple[int, int], WorldTileKind] = {}
-    player_spawn: tuple[int, int] = (1, 1)
-    npc_spawns:   list[NPCSpawn]  = []
-    npc_id_iter   = iter(npc_ids)
-
-    for y, row in enumerate(rows):
-        for x, ch in enumerate(row):
-            tile = _ASCII_TILE.get(ch, WorldTileKind.VOID)
-            voxels[(x, y)] = tile
-            if ch == "@":
-                player_spawn = (x, y)
-            elif ch == "N":
-                cid = next(npc_id_iter, f"npc_{x}_{y}")
-                npc_spawns.append(NPCSpawn(x=x, y=y, character_id=cid))
-        # Pad short rows to full width
-        for x in range(len(row), width):
-            voxels[(x, y)] = WorldTileKind.VOID
-
-    return Zone(
-        zone_id=zone_id,
-        realm=realm,
-        name=name,
-        width=width,
-        height=height,
-        voxels=voxels,
-        player_spawn=player_spawn,
-        exits=list(exits),
-        npc_spawns=npc_spawns,
-        portals=list(portals),
-        item_spawns=list(item_spawns),
-    )
 
 
 # ── Atelier export loader ─────────────────────────────────────────────────────

@@ -299,7 +299,7 @@ def test_formula_bonus_from_alzedroswune():
     reading  = _make_reading("0036_KLIT", permeability=0.8)
     approach = TreatmentApproach(approach_mode="formula")
     presence = PresenceState(permeability=0.8)
-    inv      = {"0076_KLOB": 5, "0077_KLOB": 5, "8000_KLOB": 1, "2000_KLOB": 1, "0030_KLOB": 1, "0007_KLOB": 1}
+    inv      = {"8000_KLOB": 1, "2000_KLOB": 1, "0030_KLOB": 1, "0007_KLOB": 1}
 
     ctx_alz    = get_alchemy_calendar_context(AeraluneDate(1, 240))   # citrinitas, alz present
     ctx_no_alz = get_alchemy_calendar_context(AeraluneDate(1, 385))   # Vrwumane — alz absent, but subject unlocked

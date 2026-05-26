@@ -276,81 +276,63 @@ class DreamCalibrationSession:
 
         "7_KLGS": {
             # Ko's Labyrinth — first dream sequence.
-            # Player: total unknowing. No named location, no named caller,
-            # no apprenticeship context. Ko reads before the player has
-            # any orientation to perform.
+            # Each prompt is a disposition statement grounded in the domain of
+            # one of the seven sin rulers (unnamed) or in Nature / Culture.
+            # The player places themselves on a slider; the resonance feeds VITRIOL.
+            # Ko does not explain what is being measured.
+            #
+            # Sakura (orientation): Lucifer/Levity, Asmodeus/Vitality, Nature
+            # Rose   (relational):  Mammon/Ostentation, Satan/Introspection, Culture
+            # Lotus  (ground):      Beelzebub/Tactility, Belphegor/Reflectivity, Leviathan/Ingenuity
             CalibrationTongue.SAKURA: [
-                # Reads: can the player remain present at a moving boundary?
-                # Va (Order) is not offered as rescue. Vo (Chaos/mutation)
-                # is simply present. The question reads whether the player
-                # can stay with that or immediately reaches for resolution.
-                "The edge is moving. Not toward you — it is simply moving. "
-                "What is already happening in you in response?",
+                # Lucifer — Pride / Levity
+                "When I walk into a room, I know where I stand in it. "
+                "Not defensively — I simply know. "
+                "Other people's assessments of me arrive late, if at all.",
 
-                # Reads: directional pull without named destination.
-                # Traveling/Meeting/Parting (Di/Da/Do) without a fixed origin.
-                # The player is already oriented before the question arrives —
-                # the prompt reads which way, not whether.
-                "There is a direction here that has no name. "
-                "You are already turned toward something. Notice what.",
+                # Asmodeus — Lust / Vitality
+                "My body knows what it wants before I do. "
+                "I don't talk myself into desires — I notice I already have them. "
+                "The body is the first one to arrive.",
 
-                # Reads: presence at a threshold versus collapse into content.
-                # Something breaks open — player is present but not the cause.
-                # The question reads whether the player stays at the event
-                # or immediately relocates into the event's content.
-                "Something is breaking open. You are present at this. "
-                "What is present in you?",
+                # Nature
+                "The non-human world makes sense to me in ways I don't bother explaining. "
+                "I notice weather, stone, the behavior of animals. "
+                "It's not mysticism — it's attention.",
             ],
 
             CalibrationTongue.ROSE: [
-                # Reads: pre-linguistic spectral register.
-                # Something has arrived. Does the player have an internal
-                # frequency response before they have words for what it is?
-                # Probes the chromatic strip (Ru through AE) as felt register.
-                "Something has arrived before you have words for it. "
-                "What does it register as — not what is it, but what registers?",
+                # Mammon — Greed / Ostentation
+                "I know what things are worth. "
+                "Not just in coin — I can feel the weight of what I'm looking at. "
+                "And what I own, I tend to make visible. Not to impress. Because I like seeing it.",
 
-                # Reads: polarity sensitivity.
-                # Ha/Ga (Absolute Positive/Negative) as felt weight, not
-                # named concept. Are the poles already present in the player's
-                # sensing, or does the question create them?
-                "There are two poles to what you are sensing. "
-                "You do not need to name them. "
-                "Are they in balance, or is one pulling?",
+                # Satan — Wrath / Introspection
+                "When something strikes me — unfairness, violation, being misread — "
+                "I go inward before I go outward. "
+                "The anger is real, but I want to know what it's made of before I spend it.",
 
-                # Reads: qualitative rather than causal orientation.
-                # Not why something called the player here, but the felt
-                # quality of the call. Rose's Na/Wu/Ung strip — process,
-                # integration, point — as pre-reflective sensation.
-                "The quality of what called you here — "
-                "not the reason, not the purpose. "
-                "The quality. What is it?",
+                # Culture
+                "Human systems — cities, laws, art, ceremony — "
+                "feel like something I'm inside of rather than looking at. "
+                "When they work, I notice. When they fail, I take it personally.",
             ],
 
             CalibrationTongue.LOTUS: [
-                # Reads: elemental threshold character.
-                # The Ty/Zu/Ly/Mu/Fy/Pu/Shy/Ku strip — each threshold pair
-                # has a character (material beginning, feeling toward, thought
-                # toward, pattern toward). The question reads which character
-                # the player's ground state is made of.
-                "What is the character of the beginning you are standing in? "
-                "Not its content — its character.",
+                # Beelzebub — Gluttony / Tactility
+                "I experience things through contact. "
+                "Eating, handling, touching — these are how I know something is real. "
+                "Appetite is not a problem I have. It's a faculty.",
 
-                # Reads: Known/Unknown boundary (Fi/Pe strip).
-                # Sha (Intellect of spirit) and Ko (Experience/intuition)
-                # are also present. The question reads whether the player's
-                # boundary between known and unknown is a felt architecture
-                # or an imported map.
-                "What do you already know here? "
-                "And what is already outside what you know?",
+                # Belphegor — Sloth / Reflectivity
+                "I don't move until I'm ready. "
+                "Other people call this slow. I call it not wasting the motion. "
+                "The pause before I act is not nothing — that's where I work.",
 
-                # Reads: Ko (byte 19 — Experience/intuition as ground).
-                # The deepest Lotus register: not what is happening,
-                # but what is the ground that has assembled under this moment.
-                # Zo (absence) and Ke (incoherence/illness) are also readable
-                # here if the player's ground is absent or fractured.
-                "What is the ground that has assembled itself under this moment? "
-                "Not the moment — the ground.",
+                # Leviathan — Envy / Ingenuity
+                "When I see something in someone else — a quality, a capability — "
+                "I want to understand its architecture. "
+                "Not to take it. To build the equivalent in myself, or something better.",
             ],
         },
     }

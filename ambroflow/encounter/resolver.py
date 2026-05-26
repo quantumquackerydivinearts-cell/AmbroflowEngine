@@ -32,6 +32,10 @@ class EncounterContext:
     actor_skill_ranks: dict[str, int] = field(default_factory=dict)
     actor_perks: list[str] = field(default_factory=list)
     extra: dict[str, Any] = field(default_factory=dict)
+    # World physics pressure [0.0–1.0]: normalised kinetic energy of the
+    # physics world at the moment of encounter.  High pressure = active /
+    # unstable world state = harder encounters.  0.0 when no world is attached.
+    physics_pressure: float = 0.0
 
 
 @dataclass
@@ -51,12 +55,14 @@ def _resolve_combat(action: str, ctx: EncounterContext) -> EncounterResult:
            ctx.actor_skill_ranks.get("guns", 0) or \
            ctx.actor_skill_ranks.get("unarmed", 0)
     effective = rank / 50.0
-    if effective >= ctx.difficulty:
+    # High world pressure makes combat harder — the world is fighting back
+    difficulty = min(1.0, ctx.difficulty + ctx.physics_pressure * 0.20)
+    if effective >= difficulty:
         return EncounterResult(
             outcome="success",
             sanity_delta={"terrestrial": 0.02},
         )
-    elif effective >= ctx.difficulty * 0.6:
+    elif effective >= difficulty * 0.6:
         return EncounterResult(
             outcome="partial",
             sanity_delta={"terrestrial": -0.01},
@@ -86,10 +92,12 @@ def _resolve_negotiation(action: str, ctx: EncounterContext) -> EncounterResult:
 def _resolve_observation(action: str, ctx: EncounterContext) -> EncounterResult:
     # Observation encounters always partially succeed — they are about witnessing,
     # not winning.  Depth Meditation perk deepens the yield.
+    # A pressurised world adds cosmic weight to what is observed.
     deep = "depth_meditation" in ctx.actor_perks
-    delta = {"cosmic": 0.02, "narrative": 0.02}
+    cosmic_bonus = round(ctx.physics_pressure * 0.03, 4)
+    delta = {"cosmic": 0.02 + cosmic_bonus, "narrative": 0.02}
     if deep:
-        delta = {"cosmic": 0.04, "narrative": 0.03}
+        delta = {"cosmic": 0.04 + cosmic_bonus, "narrative": 0.03}
     return EncounterResult(
         outcome="success",
         sanity_delta=delta,
@@ -101,7 +109,9 @@ def _resolve_trap(action: str, ctx: EncounterContext) -> EncounterResult:
     survival = ctx.actor_skill_ranks.get("survival", 0)
     lockpick = ctx.actor_skill_ranks.get("lockpick", 0)
     effective = max(survival, lockpick) / 50.0
-    if effective >= ctx.difficulty:
+    # Pressure destabilises traps — mechanisms behave less predictably
+    difficulty = min(1.0, ctx.difficulty + ctx.physics_pressure * 0.15)
+    if effective >= difficulty:
         return EncounterResult(outcome="success")
     return EncounterResult(
         outcome="failure",
@@ -129,14 +139,32 @@ _HANDLERS = {
 }
 
 
-def resolve(action: str, player: Any, dungeon_def: Any, context: dict[str, Any]) -> dict[str, Any]:
+def resolve(
+    action: str,
+    player: Any,
+    dungeon_def: Any,
+    context: dict[str, Any],
+    physics_world: Any = None,
+) -> dict[str, Any]:
     """
     Thin adapter used by DungeonRuntime.act().
+
+    physics_world: optional PhysicsWorld.  When provided, current KE is
+    normalised to [0,1] and passed as physics_pressure to the encounter.
 
     Returns a plain dict for compatibility with the runtime layer.
     """
     enc_type = context.get("encounter_type", "combat")
     difficulty = context.get("difficulty", 0.5)
+
+    # Derive physics pressure from current world energy
+    pressure = 0.0
+    if physics_world is not None:
+        try:
+            ke = physics_world.total_kinetic_energy()
+            pressure = min(1.0, ke / 10.0)   # normalise: 10 J ≈ full pressure
+        except Exception:
+            pass
 
     ctx = EncounterContext(
         encounter_type=enc_type,
@@ -145,6 +173,7 @@ def resolve(action: str, player: Any, dungeon_def: Any, context: dict[str, Any])
         actor_skill_ranks=getattr(player, "skill_ranks", {}),
         actor_perks=getattr(player, "unlocked_perks", []),
         extra=context,
+        physics_pressure=pressure,
     )
 
     handler = _HANDLERS.get(enc_type, _HANDLERS["combat"])

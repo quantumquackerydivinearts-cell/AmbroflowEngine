@@ -208,27 +208,27 @@ FAE_DUNGEONS: list[DungeonDef] = [
 MINES_DUNGEONS: list[DungeonDef] = [
     DungeonDef(
         id="mine_iron",
-        name="Iron Mine",
+        name="Iron Shaft",
         realm="overworld",
         dungeon_type="mine",
-        floor_count=3, encounter_density=0.3,
-        special_tiles=["ore_vein", "forge_access"],
+        floor_count=7, encounter_density=0.3,
+        special_tiles=["ore_vein", "ore_cart", "forge_access"],
     ),
     DungeonDef(
         id="mine_silver",
-        name="Silver Mine",
+        name="Silver Shaft",
         realm="overworld",
         dungeon_type="mine",
-        floor_count=4, encounter_density=0.35,
-        special_tiles=["silver_vein", "refining_station"],
+        floor_count=8, encounter_density=0.35,
+        special_tiles=["silver_vein", "ore_cart", "refining_station"],
     ),
     DungeonDef(
         id="mine_gold",
-        name="Gold Mine",
+        name="Gold Shaft",
         realm="overworld",
         dungeon_type="mine",
-        floor_count=5, encounter_density=0.4,
-        special_tiles=["gold_vein", "desire_crystal_cache"],
+        floor_count=9, encounter_density=0.4,
+        special_tiles=["gold_vein", "ore_cart", "desire_crystal_cache"],
     ),
 ]
 

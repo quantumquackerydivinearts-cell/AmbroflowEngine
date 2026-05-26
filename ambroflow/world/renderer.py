@@ -362,10 +362,12 @@ class WorldRenderer:
 
     def render(
         self,
-        screen: object,
-        zone:   object,   # Zone
-        player: object,   # WorldPlayer
-        hint:   str = "",
+        screen:           object,
+        zone:             object,         # Zone
+        player:           object,         # WorldPlayer
+        hint:             str  = "",
+        npc_overrides:    dict = None,    # {character_id: (x, y)} — mobile live positions
+        visible_npc_ids:  set  = None,    # if set, only draw NPCs in this set
     ) -> None:
         """Render the full world view to screen — tile grid, entities, HUD."""
         if not _PG:
@@ -386,10 +388,15 @@ class WorldRenderer:
                 tile = zone.tile_at(tx, ty)
                 self._draw_tile(screen, sx, sy, tile, zone.realm)
 
-        # NPC tokens
+        # NPC tokens — filtered by visibility (quest conditions, dead, absent)
+        overrides = npc_overrides or {}
         for npc in zone.npc_spawns:
-            sx = (npc.x - cam_x) * T
-            sy = (npc.y - cam_y) * T
+            if visible_npc_ids is not None and npc.character_id not in visible_npc_ids:
+                continue
+            pos = overrides.get(npc.character_id)
+            draw_x, draw_y = pos if pos is not None else (npc.x, npc.y)
+            sx = (draw_x - cam_x) * T
+            sy = (draw_y - cam_y) * T
             self._draw_npc(screen, sx, sy)
 
         # Player token

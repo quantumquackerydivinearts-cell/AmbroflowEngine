@@ -47,6 +47,9 @@ def test_build_game7_world_has_all_zones():
         "lapidus_azoth_approach",
         "lapidus_castle_azoth",
         "lapidus_mt_elaene_trail",
+        "lapidus_witch_forest",
+        "lapidus_dirt_trail",
+        "lapidus_the_rocks",
     }
     assert expected.issubset(set(wm.zones.keys()))
 
@@ -222,10 +225,10 @@ class TestAvenueCommon:
 # ── Sidhal NPC spawn ──────────────────────────────────────────────────────────
 
 def test_sidhal_spawns_in_temple_zone():
-    # Sidhal (0020_TOWN) is the temple custodian — placed on Goldshoot Street.
+    # Sidhal (0004_TOWN) is the temple custodian — placed on Goldshoot Street.
     z = build_goldshoot_street()
     cids = [n.character_id for n in z.npc_spawns]
-    assert "0020_TOWN" in cids, "Sidhal should be on Goldshoot Street"
+    assert "0004_TOWN" in cids, "Sidhal should be on Goldshoot Street"
 
 def test_nexiott_spawns_in_heartvein_zone():
     # Nexiott (0017_ROYL) is a noble — placed on Youthspring Road.
@@ -343,10 +346,12 @@ class TestElaeneTrail:
             assert is_passable(self.z.tile_at(2, row))
 
     def test_forest_walls(self):
-        # Rows 10–13 should be TREE
+        # Rows 10–13: cols 1-2 are trail corridor (GRASS), all others TREE
         for col in range(20):
             for row in range(10, 14):
-                assert self.z.tile_at(col, row) == WorldTileKind.TREE
+                expected = WorldTileKind.GRASS if col in (1, 2) else WorldTileKind.TREE
+                assert self.z.tile_at(col, row) == expected, \
+                    f"col {col} row {row}: expected {expected}"
 
     def test_exit_west_to_wiltoll(self):
         ex = exit_at(self.z, 0, 6, "west")
@@ -471,8 +476,8 @@ class TestMarketInterior:
 
     def test_vendor_npcs_present(self):
         ids = [n.character_id for n in self.z.npc_spawns]
-        assert "0006_TOWN" in ids
-        assert "0007_TOWN" in ids
+        assert "0018_TOWN" in ids   # Howard Stone — general market
+        assert "0019_TOWN" in ids   # Lucy Clement — herbs/forager
 
     def test_exit_south_to_avenue(self):
         ex0 = exit_at(self.z, 10, 19, "south")
@@ -491,10 +496,9 @@ def test_vendor_catalogs_no_home_apothecary():
     assert "0005_TOWN" not in VENDOR_CATALOGS
 
 def test_vendor_catalogs_market_general():
-    assert "0006_TOWN" in VENDOR_CATALOGS
-    cat = VENDOR_CATALOGS["0006_TOWN"]
-    assert "0076_KLOB" in cat   # Raw Desire Stone
-    assert "0077_KLOB" in cat   # Asmodean Essence
+    assert "0018_TOWN" in VENDOR_CATALOGS   # Howard Stone — general market
+    cat = VENDOR_CATALOGS["0018_TOWN"]
+    assert "0075_KLOB" in cat   # Binding Wax
 
 def test_vendor_coin_prices_positive():
     for vendor_id, catalog in VENDOR_CATALOGS.items():

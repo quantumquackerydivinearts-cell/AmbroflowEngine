@@ -17,6 +17,8 @@ ID groupings:
   3001-3099   Minerals
   4001-4099   Gems and special stones
   5001-5099   Writing materials
+  6001-6099   Cybernetics (Azoth Corp era augmentation components)
+  7001-7099   Occult wares (ritual materials, Witch network and Sulphera trade)
   8000, 2000  Grinding tools (Mortar, Pestle)
   9001-9099   Quest / realm-specific materials and outputs
 """
@@ -52,6 +54,8 @@ CATEGORIES = frozenset({
     "mineral",         # Granite, Obsidian, Chalk, Quartz, Flint, Shark Tooth
     "gem",             # Amethyst, Ruby, Sapphire, Emerald, Diamond, Jade, etc.
     "writing",         # Pulp, Paper, Ink, Pen
+    "cybernetic",      # Azoth Corp augmentation components (Game 6+)
+    "occult",          # Ritual materials — Witch network, Sulphera trade
     "quest_material",  # Demonic Iron, Angelic Spear, Crystal Dust, Salt Water, intermediates
     "quest_output",    # Infernal Salve, Nexiott Poison, Colt .45
 })
@@ -104,10 +108,6 @@ ALL_OBJECTS: tuple[KlobObject, ...] = (
                note="Dried herb with mental-axis affinity — noise reduction, restorative"),
     KlobObject("0075_KLOB", "Binding Wax",          "material",
                note="Rendered wax — cohesive agent, fixes field resonance in salves"),
-    KlobObject("0076_KLOB", "Raw Desire Stone",     "material",
-               note="Unrefined Asmodean crystal — spatial field, high intensity unfocused"),
-    KlobObject("0077_KLOB", "Asmodean Essence",     "material",
-               note="Refined desire-field liquid — concentrated spatial-axis reagent"),
 
     # ── Processing materials ──────────────────────────────────────────────────
     KlobObject("1001_KLOB", "Sand",                 "material"),
@@ -163,6 +163,88 @@ ALL_OBJECTS: tuple[KlobObject, ...] = (
     KlobObject("5001_KLOB", "Pulp",                 "writing"),
     KlobObject("5002_KLOB", "Paper",                "writing"),
     KlobObject("5003_KLOB", "Ink",                  "writing"),
+
+    # ── Cybernetics (6001-6099) ───────────────────────────────────────────────
+    # Components (6001-6029) and finished devices (6050-6099).
+    # Azoth Corp / Korra Pelori era (Game 6, 3227). Both paths to the founding crime
+    # involve this architecture reaching Aeralune and producing the war of year 50.
+
+    # Raw components
+    KlobObject("6001_KLOB", "Photonic Substrate",       "cybernetic",
+               note="Light-conductive semiconductor — base of all photonic augments"),
+    KlobObject("6002_KLOB", "Neural Contact Array",     "cybernetic",
+               note="Gold-trace mesh for cortical interface — bonds to grey matter"),
+    KlobObject("6003_KLOB", "Signal Coil",              "cybernetic",
+               note="Copper-wound signal conduit — routes between implant nodes"),
+    KlobObject("6004_KLOB", "Photonic Power Cell",      "cybernetic",
+               note="Compact cell tuned to photonics grid frequency"),
+    KlobObject("6005_KLOB", "Biophotonic Gel",          "cybernetic",
+               note="Interfacing medium between synthetic components and organic tissue"),
+    KlobObject("6006_KLOB", "Titanium Bone Anchor",     "cybernetic",
+               note="Mechanical attachment point for structural augmentations"),
+    KlobObject("6007_KLOB", "Synthetic Synaptic Fiber", "cybernetic",
+               note="Artificial nerve bundle — tunable conductance, Korra design"),
+    KlobObject("6008_KLOB", "Entropy Buffer Chip",      "cybernetic",
+               note="Isolated storage immune to Sulphera bleed — DjinnOS construction component"),
+    KlobObject("6009_KLOB", "Pre-Photonic Magnetic Core", "cybernetic",
+               note="Older-tech memory storage — harder to compromise via photonics grid"),
+    KlobObject("6010_KLOB", "Signal Encoding Module",   "cybernetic",
+               note="Frequency encoding hardware for subdermal comms — St. Alaro compatible"),
+
+    # Finished augmentation devices (Korra's shelf)
+    KlobObject("6050_KLOB", "Photonic Nerve Interface", "cybernetic",
+               note="Basic photonic augmentation, starter tier — Korra Pelori's standard stock"),
+    KlobObject("6051_KLOB", "Sensory Enhancement Implant", "cybernetic",
+               note="General perceptual augmentation — heightens all sensory channels"),
+    KlobObject("6052_KLOB", "Neural Firewall",          "cybernetic",
+               note="Cortical protection implant — carries hypnagogic resistance (property unknown at purchase)"),
+    KlobObject("6053_KLOB", "Reflex Booster",           "cybernetic",
+               note="Neural response augmentation — reduces reaction latency"),
+    KlobObject("6054_KLOB", "Cortical Data Stack",      "cybernetic",
+               note="Cognitive storage module — external memory with direct cortical access"),
+    KlobObject("6055_KLOB", "Skeletal Bracers",         "cybernetic",
+               note="Structural bone reinforcement — anchored to periosteum, Korra design"),
+    KlobObject("6056_KLOB", "Marrow Stimulator",        "cybernetic",
+               note="Bone marrow production enhancement — healing rate and immune function"),
+    KlobObject("6057_KLOB", "Cardiac Monitor",          "cybernetic",
+               note="Heart monitoring with active intervention capability"),
+    KlobObject("6058_KLOB", "Gene Amplifier",           "cybernetic",
+               note="Targeted genetic expression enhancement — Korra's most experimental line"),
+    KlobObject("6059_KLOB", "Metabolic Suppressant",    "cybernetic",
+               note="Controlled metabolic suppression — subjective time slowing, extended focus"),
+    KlobObject("6060_KLOB", "Subdermal Signal Receiver","cybernetic",
+               note="Passive comms implant — receives St. Alaro broadcast without visible hardware"),
+    KlobObject("6061_KLOB", "Augmentation Maintenance Kit", "cybernetic",
+               note="Calibration and upkeep tools for installed augments — Korra-format"),
+
+    # ── Occult wares (7001-7099) ──────────────────────────────────────────────
+    # Ritual materials — available through the Witch network and Sulphera trade.
+    # Used in meditation augmentation, field amplification, and BreathOfKo prep.
+
+    KlobObject("7001_KLOB", "Black Candle",             "occult",
+               note="Ritual candle — temporal field marker, burns for 3 hours"),
+    KlobObject("7002_KLOB", "White Candle",             "occult",
+               note="Ritual candle — mental field marker, used in albedo work"),
+    KlobObject("7003_KLOB", "Sigil Paper",              "occult",
+               note="Specially prepared paper — holds inscribed intention without decay"),
+    KlobObject("7004_KLOB", "Salt Circle",              "occult",
+               note="Loose salt for protective boundary inscription"),
+    KlobObject("7005_KLOB", "Blank Grimoire",           "occult",
+               note="Empty ritual journal — receives witness attestations in the Bodyska"),
+    KlobObject("7006_KLOB", "Charm Bone",               "occult",
+               note="Small bone — carrier object for a single inscribed intention"),
+    KlobObject("7007_KLOB", "Spirit Bottle",            "occult",
+               note="Sealed dark glass vessel — used in Shakzefan workings"),
+    KlobObject("7008_KLOB", "Incense Bundle",           "occult",
+               note="Dried herbs and resin — spatial field opener, scent-based"),
+    KlobObject("7009_KLOB", "Black Mirror Shard",       "occult",
+               note="Obsidian sliver — reflective surface for void contact"),
+    KlobObject("7010_KLOB", "Lodestone",                "occult",
+               note="Naturally magnetised stone — compass for the subtle body"),
+    KlobObject("7011_KLOB", "Vervain",                  "occult",
+               note="Sacred herb — amplifies meditation field coherence"),
+    KlobObject("7012_KLOB", "Grave Dirt",               "occult",
+               note="Earth from a consecrated burial site — Ohadame-linked material"),
 
     # ── Quest / realm-specific materials ─────────────────────────────────────
     KlobObject("9001_KLOB", "Demonic Iron",         "quest_material",

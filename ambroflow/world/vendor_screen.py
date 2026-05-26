@@ -19,8 +19,6 @@ _ITEM_NAMES: dict[str, str] = {
     "0073_KLOB": "Herb (Common)",
     "0074_KLOB": "Herb (Restorative)",
     "0075_KLOB": "Binding Wax",
-    "0076_KLOB": "Raw Desire Stone",
-    "0077_KLOB": "Asmodean Essence",
     # ── Processing chemicals ──────────────────────────────────────────────────
     "1003_KLOB": "Diatom Earth",
     "1004_KLOB": "Glycerine",
@@ -74,8 +72,6 @@ STARTING_CATALOG: list[tuple[str, int]] = [
     ("0073_KLOB", 2),   # Herb (Common)
     ("0074_KLOB", 4),   # Herb (Restorative)
     ("0075_KLOB", 5),   # Binding Wax
-    ("0076_KLOB", 8),   # Raw Desire Stone
-    ("0077_KLOB", 12),  # Asmodean Essence
     ("0040_KLOB", 1),   # Water Flask
     # Chemicals
     ("1007_KLOB", 3),   # Sulphur

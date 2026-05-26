@@ -520,7 +520,7 @@ class GameFlow:
         return max(scores) if scores else 1
 
     def _derive_rank(self, letter: str) -> int:
-        """Auto-derive starting rank from VITRIOL score for a given letter."""
+        """Auto-derive starting rank (1–3) from VITRIOL score — maps to 10/18/25 on the 1–100 scale."""
         score = self._letter_score(letter)
         return 1 + (1 if score >= 5 else 0) + (1 if score >= 8 else 0)
 

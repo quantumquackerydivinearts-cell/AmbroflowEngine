@@ -21,21 +21,29 @@ from ambroflow.engine.shader   import Shader
 from ambroflow.engine.texture  import Texture
 from ambroflow.engine.buffer   import Buffer, VertexArray
 from ambroflow.render.world    import WorldRenderer, LAPIDUS_LIGHTING, _TILE_VERTS, _TILE_INDICES, _STRIDE_TILE, _STRIDE_INST
-from ambroflow.world.map       import Realm, build_zone_from_ascii
+from ambroflow.world.map              import Realm
+from ambroflow.world.kobra_zone_loader import load_zone_from_kobra
 
 from PIL import Image
 
-# ── tiny zone ─────────────────────────────────────────────────────────────────
-_MAP = [
-    "#########",
-    "#,,,,,,,#",
-    "#,S.S.S,#",
-    "#,S@S.S,#",
-    "#,S.S.S,#",
-    "#,,,,,,,#",
-    "#########",
-]
-_ZONE = build_zone_from_ascii("test", Realm.LAPIDUS, "Test", _MAP)
+# ── tiny zone (9×7, 63 tiles) ─────────────────────────────────────────────────
+def _k(x, y, t): return f"g|{x},{y} : [{t}]"
+
+_ZONE = load_zone_from_kobra(
+    source="\n".join([
+        *[_k(x, 0, "Vo Ka") for x in range(9)],
+        *[_k(x, 6, "Vo Ka") for x in range(9)],
+        *[_k(0, y, "Vo Ka") for y in range(1, 6)],
+        *[_k(8, y, "Vo Ka") for y in range(1, 6)],
+        *[_k(x, y, "Va Ki grass") for y in range(1, 6) for x in range(1, 8)],
+        *[_k(x, y, "Va Na stone") for y in (2, 3, 4) for x in (2, 4, 6)],
+        *[_k(x, y, "Va Ha floor") for y in (2, 4) for x in (3, 5)],
+        _k(5, 3, "Va Ha floor"),
+        _k(3, 3, "Va Ha St"),
+    ]),
+    zone_id="test", name="Test", realm=Realm.LAPIDUS,
+    player_spawn=(3, 3), exits=[],
+)
 
 # ── solid atlas ────────────────────────────────────────────────────────────────
 def make_atlas():

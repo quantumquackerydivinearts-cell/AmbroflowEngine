@@ -42,8 +42,6 @@ def game7_starting_inventory() -> dict[str, int]:
         "0073_KLOB": 8,   # Herb (Common)       — base for Basic Tincture
         "0074_KLOB": 6,   # Herb (Restorative)  — base for Restorative Tincture
         "0075_KLOB": 4,   # Binding Wax         — Infernal Salve cohesive
-        "0076_KLOB": 2,   # Raw Desire Stone    — Desire Crystal ingredient
-        "0077_KLOB": 2,   # Asmodean Essence    — Desire Crystal ingredient
         "0040_KLOB": 6,   # Water Flask         — universal solvent
 
         # ── Processing chemicals ──────────────────────────────────────────────
@@ -68,57 +66,50 @@ def game7_starting_inventory() -> dict[str, int]:
 
 # ── Starting skill ranks ──────────────────────────────────────────────────────
 #
-# All skills begin at rank 1 — the player is an apprentice who has been
-# trained in the fundamentals, not a beginner starting from zero.
-# Ranks are 1–5; rank 1 = foundational competence.
+# Derived directly from the canonical skill registry — no separate list to drift.
+# All skills begin at rank 5 (1–100 scale) — foundational competence.
+# VITRIOL-derived skills reach 10–25; tagged skills reach 30.
 
-GAME7_SKILLS: tuple[str, ...] = (
-    "alchemy",
-    "medicine",
-    "meditation",
-    "survival",
-    "hack",
-    "combat",
-    "persuasion",
-    "stealth",
-    "crafting",
-    "herbalism",
-    "navigation",
-    "lore",
-    "music",
-    "athletics",
-    "perception",
-    "smithing",
-    "cooking",
-    "trading",
-    "engineering",
-)
+from ambroflow.skills.registry import SKILLS as _SKILLS
+
+GAME7_SKILLS: tuple[str, ...] = tuple(s.id for s in _SKILLS)
+
+# Base starting rank on the 1–100 scale
+_BASE_RANK     = 5
+_VITRIOL_LOW   = 10   # VITRIOL score 1–4
+_VITRIOL_MID   = 18   # VITRIOL score 5–7
+_VITRIOL_HIGH  = 25   # VITRIOL score 8–10
+_TAG_RANK      = 30   # manually tagged skill floor
 
 
 def game7_starting_skill_ranks(chargen=None) -> dict[str, int]:
     """
-    Build starting skill ranks for Game 7.
+    Build starting skill ranks for Game 7 on the 1–100 scale.
 
-    Without chargen: all skills start at rank 1.
+    Without chargen: all skills start at rank 5.
     With chargen (from ChargenState after SKILL_SELECT):
-      - VITRIOL-derived ranks are applied (auto-computed from VITRIOL profile)
-      - Tag picks get an additional +1 rank boost
+      - VITRIOL-derived ranks replace the base (10 / 18 / 25 by tier)
+      - Tag picks floor the skill at 30, regardless of derived rank
     """
-    base: dict[str, int] = {skill: 1 for skill in GAME7_SKILLS}
+    base: dict[str, int] = {skill: _BASE_RANK for skill in GAME7_SKILLS}
     if chargen is None:
         return base
 
-    # Layer 1 — VITRIOL-derived base ranks
+    # Layer 1 — VITRIOL-derived ranks
     derived: dict[str, int] = getattr(chargen, "vitriol_skill_ranks", {})
     for skill_id, rank in derived.items():
         if skill_id in base:
-            base[skill_id] = max(base[skill_id], rank)
+            # rank is 1–3 from _derive_rank(); map to 1–100 tiers
+            tier_rank = (_VITRIOL_LOW if rank == 1 else
+                         _VITRIOL_MID if rank == 2 else
+                         _VITRIOL_HIGH)
+            base[skill_id] = max(base[skill_id], tier_rank)
 
-    # Layer 2 — manual tag picks (+1 on top of derived)
+    # Layer 2 — manual tag picks: floor at _TAG_RANK
     tag_picks: list[str] = getattr(chargen, "tag_picks", [])
     for skill_id in tag_picks:
         if skill_id in base:
-            base[skill_id] = min(base[skill_id] + 1, 5)   # cap at max rank 5
+            base[skill_id] = max(base[skill_id], _TAG_RANK)
 
     return base
 

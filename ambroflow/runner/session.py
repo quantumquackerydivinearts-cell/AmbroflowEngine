@@ -33,6 +33,8 @@ from ..state.machine import GameStateMachine, GamePhase
 from ..ko.breath import BreathOfKo
 from ..ko.flags import FlagState
 from ..orrery.client import OrreryClient
+from ..physics.backend import get_backend
+from ..physics.world import PhysicsWorld
 
 
 # ── Null Orrery for offline/local sessions ────────────────────────────────────
@@ -71,6 +73,14 @@ class Session:
         self._machine:  Optional[GameStateMachine] = None
         self._active_slug: Optional[str] = None
         self._orrery   = self._init_orrery(orrery_url)
+        # Shared physics world — persists across games (world state is cumulative).
+        # Bodies are cleared at each game start; world history is preserved.
+        self._physics: PhysicsWorld = get_backend()
+
+    @property
+    def physics(self) -> PhysicsWorld:
+        """The shared physics world for this player session."""
+        return self._physics
 
     def _init_orrery(self, url: Optional[str]) -> Any:
         if url:
@@ -164,6 +174,8 @@ class Session:
             raise ValueError(f"Unknown game slug: {slug!r}")
 
         breath = self.breath()
+        # Clear player bodies from prior game — world history persists
+        self._physics.reset_session()
         machine = GameStateMachine(
             game_id=slug,
             game_number=entry.number,
@@ -213,6 +225,11 @@ class Session:
         progress.convergence_path = machine.state.ended_at_phase
         if progress.started_at:
             progress.play_time_seconds += time.time() - progress.started_at
+
+        # Bake current physics world state into BreathOfKo before snapshotting.
+        # The world's accumulated energy/collision history at game-end becomes
+        # part of the Azoth calculation for this game's Mandelbrot save image.
+        machine._breath.attach_physics(self._physics)
 
         # Persist breath snapshot
         self._profile.breath_snapshot = machine._breath.snapshot()
