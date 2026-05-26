@@ -484,6 +484,18 @@ class GLApp:
                 orrery   = orrery,
             )
 
+            from ..quests.runtime import QuestRuntime
+            _qsave = None
+            if self._session.profile:
+                _gp = self._session.profile.progress("7_KLGS")
+                _qsave = getattr(_gp, "quest_state", None) or None
+            quest_runtime = QuestRuntime.for_game(
+                game_slug = "7_KLGS",
+                player_id = self._player_id or "anon",
+                orrery    = orrery,
+                save_dict = _qsave,
+            )
+
             wp = WorldPlay(
                 chargen         = chargen,
                 world_map       = world_map,
@@ -495,6 +507,7 @@ class GLApp:
                 journal         = journal,
                 breath          = self._active_breath,
                 physics_world   = self._session.physics,
+                quest_runtime   = quest_runtime,
             )
             # Post-FateKnocks: player exits through the home's front door onto
             # Wiltoll Lane.  Spawn at the exterior lane position in front of
@@ -545,11 +558,18 @@ class GLApp:
             self._gl_world_play = None
             self._chargen = None
             self._starting_inventory = {}
-            # Sync BreathOfKo snapshot back to session profile before saving
-            if self._active_breath is not None and self._session.profile is not None:
+            # Sync BreathOfKo and quest state back to session before saving
+            if self._session.profile is not None:
                 try:
-                    self._session.profile.breath_snapshot = \
-                        self._active_breath.snapshot()
+                    if self._active_breath is not None:
+                        self._session.profile.breath_snapshot = \
+                            self._active_breath.snapshot()
+                    # Save quest runtime state into GameProgress
+                    _wp = getattr(self._gl_world_play, "_wp", None)
+                    _qr = getattr(_wp, "_quest_runtime", None)
+                    if _qr is not None:
+                        self._session.profile.progress("7_KLGS").quest_state = \
+                            _qr.as_save_dict()
                     self._session.save()
                 except Exception:
                     pass

@@ -40,6 +40,7 @@ class GameProgress:
     ended_at:         Optional[float] = None
     convergence_path: Optional[str]   = None
     play_time_seconds: float          = 0.0
+    quest_state:      Optional[dict]  = None   # QuestRuntime.as_save_dict()
 
 
 @dataclass

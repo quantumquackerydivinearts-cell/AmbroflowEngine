@@ -207,6 +207,7 @@ class WorldPlay:
         vendor_catalogs:  Optional[Dict[str, Dict[str, int]]] = None,
         breath:           object                          = None,  # BreathOfKo instance
         physics_world:    object                          = None,  # PhysicsWorld instance
+        quest_runtime:    object                          = None,  # QuestRuntime instance
     ) -> None:
         self.width     = width
         self.height    = height
@@ -260,6 +261,9 @@ class WorldPlay:
 
         # Physics world — passed into treat() for session-persistent simulation
         self._physics_world = physics_world
+
+        # Quest runtime — KeyRing + QuestTracker + SceneRunner bundle
+        self._quest_runtime = quest_runtime
 
         # Alchemy (optional — graceful no-ops when absent)
         self._alchemy       = alchemy
@@ -523,6 +527,13 @@ class WorldPlay:
             entries[entry_id] = entry
             self._quest_state = {**self._quest_state, "entries": entries}
 
+        # Propagate through the KeyRing / SceneRunner pipeline
+        if self._quest_runtime is not None:
+            try:
+                self._quest_runtime.grant(entry_id)
+            except Exception:
+                pass
+
     # ── Key handling ──────────────────────────────────────────────────────────
 
     def _handle_key(self, key: int) -> None:
@@ -763,11 +774,19 @@ class WorldPlay:
 
         "witnessed" — the quest key has been witnessed in this session.
         "pending"   — the quest key has NOT yet been witnessed.
+
+        Checks the legacy quest_state dict first, then the KeyRing as fallback
+        so both the old advance_quest() path and the new QuestRuntime path work.
         """
         if condition is None:
             return True
-        entries  = self._quest_state.get("entries") or {}
-        done     = entries.get(condition.key, {}).get("witness_state") == "witnessed"
+        entries = self._quest_state.get("entries") or {}
+        done    = entries.get(condition.key, {}).get("witness_state") == "witnessed"
+        if not done and self._quest_runtime is not None:
+            try:
+                done = self._quest_runtime.keyring.has(condition.key)
+            except Exception:
+                pass
         return done if condition.mode == "witnessed" else not done
 
     def _visible_npc_ids(self) -> set:
@@ -1062,6 +1081,19 @@ class WorldPlay:
 
         self._init_mobile_npcs(target)
 
+        # Sync runner hour with clock
+        if self._quest_runtime is not None:
+            self._quest_runtime.set_hour(self._current_hour)
+
+        # Fire auto-scenes and grant their keys (ENV-only, non-interactive)
+        if self._quest_runtime is not None:
+            new_keys = self._quest_runtime.on_zone_entry(exit_trig.target_zone)
+            for key in new_keys:
+                entries = dict(self._quest_state.get("entries") or {})
+                if key not in entries:
+                    entries[key] = {"witness_state": "witnessed", "witnessed_candidate": "auto"}
+                    self._quest_state = {**self._quest_state, "entries": entries}
+
         # First-visit: journal entry + item spawn collection
         zone_id = exit_trig.target_zone
         if zone_id not in self._seen_zones:
@@ -1178,10 +1210,20 @@ class WorldPlay:
         self._frozen_bg               = None
         self._dialogue_bytes          = None
 
-        # First-meeting character note
+        # First-meeting character note + quest key grant
         if char_id not in self._met_npcs:
             self._met_npcs.add(char_id)
             self._journal_npc_met(npc)
+            # Grant "met_<char_id>" key so quests can gate on first encounter
+            self.advance_quest(f"met_{char_id}", "met")
+
+        # Fire available dialogue topics for this character (grants topic keys)
+        if self._quest_runtime is not None:
+            try:
+                for topic in self._quest_runtime.available_topics(char_id):
+                    self._quest_runtime.runner.fire_topic(topic)
+            except Exception:
+                pass
 
         if _HAS_DIALOGUE and self._bundle is not None:
             realm_id = (

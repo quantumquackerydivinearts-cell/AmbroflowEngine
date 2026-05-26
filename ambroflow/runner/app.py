@@ -290,7 +290,24 @@ class AmbroflowApp:
                 # Transition into waking play (world navigation)
                 try:
                     from ..world.zones.lapidus import VENDOR_CATALOGS
+                    from ..orrery.client import OrreryClient
+                    from ..quests.runtime import QuestRuntime
                     world_map = build_game7_world()
+                    _orrery = OrreryClient(
+                        workspace_id = self._player_id or "anon",
+                        game_id      = "7_KLGS",
+                        base_url     = os.getenv("ATELIER_API_URL", ""),
+                    )
+                    _qsave = None
+                    if self._session.profile:
+                        _gp   = self._session.profile.progress("7_KLGS")
+                        _qsave = getattr(_gp, "quest_state", None) or None
+                    quest_runtime = QuestRuntime.for_game(
+                        game_slug = "7_KLGS",
+                        player_id = self._player_id or "anon",
+                        orrery    = _orrery,
+                        save_dict = _qsave,
+                    )
                     self._world_play = WorldPlay(
                         chargen=chargen,
                         world_map=world_map,
@@ -298,6 +315,7 @@ class AmbroflowApp:
                         height=self._H,
                         vendor_catalogs=VENDOR_CATALOGS,
                         physics_world=self._session.physics,
+                        quest_runtime=quest_runtime,
                     )
                     self._go("WORLD_PLAY")
                 except Exception:

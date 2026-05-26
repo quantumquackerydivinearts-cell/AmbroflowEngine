@@ -4,6 +4,7 @@ from .keyring      import KeyRing
 from .schema       import Lock, Beat, DialogueResponse, DialogueTopic, Scene, QuestScript
 from .scene_runner import SceneRunner
 from .quest_loader import load_quest_script, load_quest_scripts
+from .runtime      import QuestRuntime
 
 __all__ = [
     "QuestTracker", "QuestStatus",
@@ -12,4 +13,5 @@ __all__ = [
     "Lock", "Beat", "DialogueResponse", "DialogueTopic", "Scene", "QuestScript",
     "SceneRunner",
     "load_quest_script", "load_quest_scripts",
+    "QuestRuntime",
 ]
