@@ -41,6 +41,7 @@ class GameProgress:
     convergence_path: Optional[str]   = None
     play_time_seconds: float          = 0.0
     quest_state:      Optional[dict]  = None   # QuestRuntime.as_save_dict()
+    world_state:      Optional[dict]  = None   # clock, ng_plus flag, misc world state
 
 
 @dataclass
@@ -64,6 +65,7 @@ class PersistenceBackend(Protocol):
     def load_profile(self, player_id: str) -> Optional[PlayerProfile]: ...
     def save_profile(self, profile: PlayerProfile) -> None: ...
     def list_profiles(self) -> list[str]: ...   # returns player_ids
+    def delete_profile(self, player_id: str) -> None: ...
     @property
     def mode(self) -> str: ...   # "hosted" | "local"
 
@@ -149,6 +151,10 @@ class LocalPersistence:
             ).fetchall()
         return [r["player_id"] for r in rows]
 
+    def delete_profile(self, player_id: str) -> None:
+        with self._connect() as conn:
+            conn.execute("DELETE FROM players WHERE player_id = ?", (player_id,))
+
     @staticmethod
     def _row_to_profile(row: sqlite3.Row) -> PlayerProfile:
         progress_raw = json.loads(row["progress_json"] or "{}")
@@ -206,6 +212,9 @@ class HostedPersistence:
         resp = self._client.get("/v1/ambroflow/players")
         resp.raise_for_status()
         return [p["player_id"] for p in resp.json()]
+
+    def delete_profile(self, player_id: str) -> None:
+        self._client.delete(self._profile_url(player_id)).raise_for_status()
 
     @staticmethod
     def _serialize(profile: PlayerProfile) -> dict:

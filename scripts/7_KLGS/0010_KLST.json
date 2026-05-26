@@ -1,0 +1,70 @@
+{
+  "quest_id":       "0010_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "Perfect Circles",
+  "completion_key": "infernal_meditation_learned",
+  "scenes": [
+    {
+      "id":           "0010_KLST.infernal_salve_crafted",
+      "zone":         "player_home_ground",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["infernal_salve_path_open"], "excludes": ["infernal_salve_made"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "The two materials bind cleanly. A pale green salve with a faintly luminescent edge. Not dangerous. Not inert. Something in between.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["infernal_salve_made"],
+      "repeatable": false
+    }
+  ],
+  "topics": [
+    {
+      "id":       "0010_KLST.alfir_rings_lesson",
+      "char_id":  "0006_WTCH",
+      "prompt":   "Ask him to teach you Infernal Meditation",
+      "lock":     {"requires": ["imp_departed", "alfir_met_properly"], "excludes": ["alfir_lesson_received"]},
+      "opening_beats": [
+        {
+          "speaker":   "0006_WTCH",
+          "text":      "You are asking me for the right reason or you would not have made it this far. Sit down.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "0006_WTCH",
+          "text":      "I lost a wife and a daughter. Both in Sulphera. Not to the rings — to the time between entries. The technique I will teach you was not born from spiritual ambition. It was born from grief and it is sustained by something that is not grief but is adjacent to it.",
+          "addressee": "PLAYER",
+          "grants":    ["alfir_grief_known"]
+        },
+        {
+          "speaker":   "0006_WTCH",
+          "text":      "I go to the Visitor's Ring on certain days. I sit in the space that holds the dead who left things unfinished. It is not a comfortable space. It is the only one I have.",
+          "addressee": "PLAYER",
+          "grants":    ["alfir_visits_sulphera", "visitor_ring_known"]
+        }
+      ],
+      "responses": [
+        {
+          "text":  "Show me the ring structure.",
+          "beats": [
+            {
+              "speaker":   "0006_WTCH",
+              "text":      "Nine rings. The outer eight are organised by the sins that give them their texture. The ninth is innermost — the Royal Ring. Most people never know it exists. Asmodeus guards the passage between the Lust Ring and it. You will not pass without his approval.",
+              "addressee": "PLAYER",
+              "grants":    ["rings_explained"]
+            },
+            {
+              "speaker":   "0006_WTCH",
+              "text":      "What gets you through the outer rings is pure desire. Not ambition — desire. Ambition is desire pointed at a goal. Pure desire is desire pointed at the thing itself, without strategy. The rings read this with more precision than you will be comfortable with.",
+              "addressee": "PLAYER",
+              "grants":    ["pure_desire_named"]
+            }
+          ]
+        }
+      ],
+      "grants": ["alfir_lesson_received", "infernal_meditation_learned"]
+    }
+  ]
+}

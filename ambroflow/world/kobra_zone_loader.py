@@ -330,6 +330,7 @@ def _tile_kind(p: ParsedPlacement) -> WorldTileKind:
         "dirt":             WorldTileKind.DIRT,
         "floor":            WorldTileKind.FLOOR,
         "wall":             WorldTileKind.WALL,
+        "bed":              WorldTileKind.BED,
     }
     for tok in p.lex:
         if tok.lower() in _LEX_OVERRIDE:

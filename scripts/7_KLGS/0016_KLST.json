@@ -1,0 +1,156 @@
+{
+  "quest_id":       "0016_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "Transcendental",
+  "completion_key": "transcendental_meditation_available",
+  "scenes": [
+    {
+      "id":           "0016_KLST.ship_ready",
+      "zone":         "lapidus_ocean_shore",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["ship_construction_begun", "leave_plateau_urge"], "excludes": ["ship_launched"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "The ship is not beautiful. It was not built to be beautiful — it was built to move in deep water and survive what deep water does. The keel is Gnome-processed Hieronymus iron. It sits in the shallows at first light and it is the most real thing you have made with your hands.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["ship_launched"],
+      "repeatable": false
+    },
+    {
+      "id":           "0016_KLST.storm_thrown",
+      "zone":         "lapidus_ocean_shore",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["ship_launched"], "excludes": ["thrown_from_ship"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "A day out. The plateau has dropped below the horizon when the weather comes in fast from the west — the kind that has no warning and no interest in your plans. The ship holds for longer than it should. Then it does not hold.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "ENV",
+          "text":      "The water is not cold the way cold usually is. It is absolute. You go under once. When you surface, the ship is already past you.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["thrown_from_ship", "ocean_entered"],
+      "repeatable": false
+    },
+    {
+      "id":           "0016_KLST.faygoru_rescue",
+      "zone":         "lapidus_ocean_shore",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["thrown_from_ship"], "excludes": ["faygoru_met"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "Something lifts you. Not a wave — something deliberate, underneath. You are deposited on a shelf of rock that was not there before. Beside you, a figure with gold and turquoise scales is doing the same for someone else — someone pulled from the wreckage who is breathing, barely.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "ENV",
+          "text":      "The Undine watches you find your feet. There is something in her expression that is not urgency and not amusement. It is the face of someone who has seen this particular kind of arrival many times and finds it meaningful each time regardless.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["faygoru_met", "chazak_met_here"],
+      "repeatable": false
+    }
+  ],
+  "topics": [
+    {
+      "id":       "0016_KLST.faygoru_greeting",
+      "char_id":  "1009_UNDI",
+      "prompt":   "Thank her",
+      "lock":     {"requires": ["faygoru_met"], "excludes": ["faygoru_introduced"]},
+      "opening_beats": [
+        {
+          "speaker":   "1009_UNDI",
+          "text":      "Gratitude is not necessary. I was here when you fell. Being here when things fall is part of what I do. My name is Faygoru.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "1009_UNDI",
+          "text":      "The other one is Chazak. He does not need your thanks either, but he will appreciate it if you offer it anyway. He was meditating when the storm came and he considers interruption a form of information.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "You knew we would fall?",
+          "beats": [
+            {
+              "speaker":   "1009_UNDI",
+              "text":      "I knew the storm. I knew what it would do to a ship with that particular keel design in water of this depth. The rest was arithmetic.",
+              "addressee": "PLAYER",
+              "grants":    ["faygoru_temporal_awareness_sensed"]
+            }
+          ]
+        },
+        {
+          "text":  "What is this place?",
+          "beats": [
+            {
+              "speaker":   "1009_UNDI",
+              "text":      "Between. The plateau does not reach here and the depths do not start here. It is a useful kind of place. Things arrive here that are not yet what they are going to be.",
+              "addressee": "PLAYER"
+            }
+          ]
+        }
+      ],
+      "grants": ["faygoru_introduced"]
+    },
+    {
+      "id":       "0016_KLST.chazak_teaching",
+      "char_id":  "1010_SALA",
+      "prompt":   "Ask about what he was meditating on",
+      "lock":     {"requires": ["faygoru_introduced"], "excludes": ["transcendental_meditation_available"]},
+      "opening_beats": [
+        {
+          "speaker":   "1010_SALA",
+          "text":      "Nothing. That is what Transcendental Meditation is — the practice of meditating on nothing and finding that nothing is not empty. It is the practice of sitting in the space before a thought arrives and discovering that space has texture.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "1010_SALA",
+          "text":      "You will need this. Not because the path ahead is difficult — it is — but because difficulty that you meet with a full mind breaks the mind. Difficulty met with empty space passes through.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "Teach me.",
+          "beats": [
+            {
+              "speaker":   "1010_SALA",
+              "text":      "Sit. Not because sitting is the meditation — it is not. Sit because the posture signals to everything else that you are choosing this, not falling into it.",
+              "addressee": "PLAYER"
+            },
+            {
+              "speaker":   "ENV",
+              "text":      "The lesson takes the remainder of the day. By evening you can feel the difference — not in your thoughts, but in the space between them.",
+              "addressee": "PLAYER",
+              "grants":    ["transcendental_meditation_available"]
+            }
+          ],
+          "grants": ["chazak_teacher"]
+        },
+        {
+          "text":  "What does Moshize have to do with this?",
+          "beats": [
+            {
+              "speaker":   "1010_SALA",
+              "text":      "Moshize is what this practice is in relationship to the divine. The practice exists whether or not you know Moshize exists. But knowing Moshize makes the practice larger.",
+              "addressee": "PLAYER",
+              "grants":    ["moshize_named"]
+            }
+          ]
+        }
+      ],
+      "grants": ["transcendental_meditation_available"]
+    }
+  ]
+}

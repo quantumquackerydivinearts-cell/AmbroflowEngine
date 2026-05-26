@@ -1,0 +1,59 @@
+{
+  "quest_id":       "0007_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "A Dream of Glass",
+  "completion_key": "hypnotic_meditation_available",
+  "scenes": [
+    {
+      "id":           "0007_KLST.sulphera_dream",
+      "zone":         "player_home_upper",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["kelly_debriefed"], "excludes": ["sulphera_vision_first"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "The room goes quiet in a way that is not silence. There is a brightness beneath it — the particular light of something that is both on fire and completely still. You are not asleep. You are not awake. You are standing somewhere in between.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "ENV",
+          "text":      "A crystal forms in your hand. Asmodean — you know this somehow the way you know things in dreams, without knowing how you know them. It is beautiful and it is already fading.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["sulphera_vision_first", "asmodean_crystal_dreamed"],
+      "repeatable": false
+    },
+    {
+      "id":           "0007_KLST.dust_morning",
+      "zone":         "player_home_ground",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["asmodean_crystal_dreamed"], "excludes": ["crystal_dissolved"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "Morning. There is a fine residue on the floor where you were standing. Dust. The crystal is gone but something remains.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["crystal_dissolved"],
+      "repeatable": false
+    },
+    {
+      "id":           "0007_KLST.save_dust",
+      "zone":         "player_home_ground",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["crystal_dissolved"], "excludes": ["crystal_dust_saved", "crystal_dust_lost", "hypnotic_meditation_available"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "The dust catches the light. It is not ash. It has a specific quality — structured, crystalline at the edges. Something that was real left this behind.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["alchemy_trained_at_dream", "crystal_dust_saved", "hypnotic_meditation_available"],
+      "repeatable": false
+    }
+  ],
+  "topics": []
+}

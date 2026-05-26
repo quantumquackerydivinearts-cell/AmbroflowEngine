@@ -134,6 +134,11 @@ class Session:
     def list_profiles(self) -> list[str]:
         return self._backend.list_profiles()
 
+    def delete_profile(self, player_id: str) -> None:
+        self._backend.delete_profile(player_id)
+        if self._profile and self._profile.player_id == player_id:
+            self._profile = None
+
     def save(self) -> None:
         if self._profile:
             self._backend.save_profile(self._profile)

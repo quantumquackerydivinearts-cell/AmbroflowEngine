@@ -15,22 +15,23 @@ from typing import Optional
 
 
 WEAPON_ITEMS: frozenset[str] = frozenset({
-    "0014_KLIT",  # Dagger
-    "0015_KLIT",  # Sword
-    "0017_KLIT",  # Bow
-    "0019_KLIT",  # Staff
-    "0022_KLIT",  # Hypatia's Dagger
-    "0029_KLIT",  # Angelic Spear
-    "0030_KLIT",  # Angelic Gun
+    "0017_KLIT",  # Dagger
+    "0018_KLIT",  # Sword
+    "0020_KLIT",  # Bow
+    "0022_KLIT",  # Staff
+    "0024_KLIT",  # Angelic Spear
+    "0025_KLIT",  # Angelic Gun
+    "0026_KLIT",  # Demonic Irons
+    "0027_KLIT",  # Hypatia's Dagger
 })
 
 ARMOR_ITEMS: frozenset[str] = frozenset({
-    "0016_KLIT",  # Shield
+    "0019_KLIT",  # Shield
 })
 
 RING_ITEMS: frozenset[str] = frozenset({
-    "0010_KLIT",  # Necklace
-    "0011_KLIT",  # Ring
+    "0013_KLIT",  # Necklace
+    "0014_KLIT",  # Ring
 })
 
 CLOTHES_ITEMS: frozenset[str] = frozenset()

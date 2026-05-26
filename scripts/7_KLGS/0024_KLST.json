@@ -1,0 +1,124 @@
+{
+  "quest_id":       "0024_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "Mercenary Type",
+  "completion_key": "assassin_inducted",
+  "scenes": [
+    {
+      "id":           "0024_KLST.enclave_interior",
+      "zone":         "lapidus_the_rocks",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["hue_invitation_accepted"], "excludes": ["enclave_interior_seen"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "The camp at night. Firelight and the smell of pine resin and something else — not food, not smoke. The smell of people who are very good at being somewhere and not being seen there at the same time. Hue meets you at the edge and walks you in without ceremony.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["enclave_interior_seen"],
+      "repeatable": false
+    },
+    {
+      "id":           "0024_KLST.sophia_presence",
+      "zone":         "lapidus_the_rocks",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["enclave_interior_seen"], "excludes": ["sophia_presence_felt"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "There is a figure at the far edge of the firelight who is not doing anything. She does not need to do anything — her presence is the doing. Red and black with silver scaling. She is watching you the way deep water watches, which is to say she is not watching you at all, she simply contains the space you are in.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["sophia_presence_felt"],
+      "repeatable": false
+    }
+  ],
+  "topics": [
+    {
+      "id":       "0024_KLST.hue_introduction",
+      "char_id":  "0011_ASSN",
+      "prompt":   "Ask about the order",
+      "lock":     {"requires": ["enclave_interior_seen"], "excludes": ["assassin_order_explained"]},
+      "opening_beats": [
+        {
+          "speaker":   "0011_ASSN",
+          "text":      "We are not soldiers. Soldiers follow orders and believe the orders. We do not follow orders — we accept contracts, and we accept them only after we have decided whether the thing we are being asked to do is the kind of thing we do.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "0011_ASSN",
+          "text":      "Sophia is our teacher. Lectura keeps the books. I handle the contracts that require discretion about the contractor. You are here because Kore mentioned you and Kore does not mention people unless the mention is already a kind of vetting.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "What would I be asked to do?",
+          "beats": [
+            {
+              "speaker":   "0011_ASSN",
+              "text":      "Nothing you would not choose to do if you understood the situation fully. We operate on that condition or we do not operate.",
+              "addressee": "PLAYER"
+            }
+          ]
+        },
+        {
+          "text":  "Who decides what kinds of things you do?",
+          "beats": [
+            {
+              "speaker":   "0011_ASSN",
+              "text":      "Each of us decides, for ourselves, each time. That is the structure. It is uncomfortable in the way that honest structures are always uncomfortable.",
+              "addressee": "PLAYER"
+            }
+          ]
+        }
+      ],
+      "grants": ["assassin_order_explained"]
+    },
+    {
+      "id":       "0024_KLST.sophia_test",
+      "char_id":  "1007_UNDI",
+      "prompt":   "Meet Sophia",
+      "lock":     {"requires": ["sophia_presence_felt"], "excludes": ["assassin_inducted"]},
+      "opening_beats": [
+        {
+          "speaker":   "1007_UNDI",
+          "text":      "You are not here for money. I can tell because the people who come here for money look at the fire differently — they see what it costs to keep it burning. You are looking at the space around it.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "1007_UNDI",
+          "text":      "The order exists because some things need to be ended and the people who should end them do not have the standing, the access, or the will. We provide the will. You provide the access, in time, if you stay.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "I want to stay.",
+          "beats": [
+            {
+              "speaker":   "1007_UNDI",
+              "text":      "Then you are already a member. The induction is the wanting. The rest is practice.",
+              "addressee": "PLAYER",
+              "grants":    ["assassin_inducted"]
+            }
+          ]
+        },
+        {
+          "text":  "What do you need from me specifically?",
+          "beats": [
+            {
+              "speaker":   "1007_UNDI",
+              "text":      "Nothing yet. Be present. Pay attention to who in the city can be moved and who cannot. That is the first skill — reading the difference between stubbornness and gravity.",
+              "addressee": "PLAYER",
+              "grants":    ["assassin_inducted"]
+            }
+          ]
+        }
+      ],
+      "grants": ["sophia_met", "assassin_inducted"]
+    }
+  ]
+}

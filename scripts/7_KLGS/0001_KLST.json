@@ -1,0 +1,142 @@
+{
+  "quest_id":       "0001_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "Fate Knocks",
+  "completion_key": "found_hypatia_lab",
+  "scenes": [
+    {
+      "id":           "0001_KLST.letter_at_home",
+      "zone":         "player_home_ground",
+      "participants": ["ENV"],
+      "lock":         {"requires": [], "excludes": ["letter_received"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "A sealed envelope sits on the table. The wax crest is Castle Azoth. Your name is written on it in a hand that took its time.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["letter_received"],
+      "repeatable": false
+    },
+    {
+      "id":           "0001_KLST.leave_home",
+      "zone":         "lapidus_wiltoll_lane",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["letter_received"], "excludes": ["left_home"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "The lane is quiet. The letter is in your pocket. The city is ahead.",
+          "addressee": "AMBIENT"
+        }
+      ],
+      "grants":     ["left_home"],
+      "repeatable": false
+    },
+    {
+      "id":           "0001_KLST.arrive_castle",
+      "zone":         "lapidus_castle_azoth",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["left_home"], "excludes": ["arrived_castle_azoth"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "Castle Azoth fills the top of the hill. The zodiac fountain runs in the courtyard. Guards at the gate wave you through without asking.",
+          "addressee": "AMBIENT"
+        }
+      ],
+      "grants":     ["arrived_castle_azoth"],
+      "repeatable": false
+    },
+    {
+      "id":           "0001_KLST.hypatia_tower",
+      "zone":         "lapidus_castle_hypatia_tower",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["arrived_castle_azoth"], "excludes": ["found_hypatia_lab"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "The tower room smells of sulfur and lamp oil. Alembics on every shelf, notes in a handwriting you don't recognise yet. Someone works here — or did.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["found_hypatia_lab"],
+      "repeatable": false
+    }
+  ],
+  "topics": [
+    {
+      "id":       "0001_KLST.elsa_first_meeting",
+      "char_id":  "0024_TOWN",
+      "prompt":   "Tell her about the letter",
+      "lock":     {"requires": ["letter_received"], "excludes": ["met_elsa"]},
+      "opening_beats": [
+        {
+          "speaker":   "0024_TOWN",
+          "text":      "I saw the messenger this morning. I thought you'd be upset. You don't look upset.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "I'm not sure what I feel yet.",
+          "beats": [
+            {
+              "speaker":   "0024_TOWN",
+              "text":      "That is probably the right amount of feeling for now. Let me know if you need anything before you go.",
+              "addressee": "PLAYER"
+            }
+          ]
+        },
+        {
+          "text":  "I'm going. Whatever they want from me.",
+          "beats": [
+            {
+              "speaker":   "0024_TOWN",
+              "text":      "Good luck. This lane will still be here when you come back. So will I.",
+              "addressee": "PLAYER"
+            }
+          ]
+        }
+      ],
+      "grants": ["met_elsa"]
+    },
+    {
+      "id":       "0001_KLST.sidhal_offer",
+      "char_id":  "0004_TOWN",
+      "prompt":   "Ask about the road to Castle Azoth",
+      "lock":     {"requires": ["letter_received"], "excludes": ["met_sidhal"]},
+      "opening_beats": [
+        {
+          "speaker":   "0004_TOWN",
+          "text":      "You have the letter. I can see it in how you're standing. I'll guide you through Hopefare Road — the streets between here and the castle aren't what they look like from above.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "I'd appreciate that.",
+          "beats": [
+            {
+              "speaker":   "0004_TOWN",
+              "text":      "Good. Meet me at the road's edge. There are people down there who should know you before they see a stranger walking through.",
+              "addressee": "PLAYER"
+            }
+          ]
+        },
+        {
+          "text":  "I think I can find it myself.",
+          "beats": [
+            {
+              "speaker":   "0004_TOWN",
+              "text":      "You can. But you will miss things that matter later. The offer stands if you change your mind.",
+              "addressee": "PLAYER"
+            }
+          ]
+        }
+      ],
+      "grants": ["met_sidhal"]
+    }
+  ]
+}

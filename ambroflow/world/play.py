@@ -44,7 +44,7 @@ from ..pathfinding.astar import astar as _astar
 from .player import WorldPlayer, Direction
 
 
-_TICKS_PER_HOUR:  int = 3_000   # ~50 real-seconds per game-hour at 60 fps
+_TICKS_PER_HOUR:  int = 3_750   # ~62.5 real-seconds per game-hour at 60 fps (25 min/day)
 _SCHED_STEP_TICKS: int = 45    # path-following step rate (slightly faster than patrol)
 
 
@@ -342,6 +342,7 @@ class WorldPlay:
         self._passable_cache:  dict = {}   # passable voxels for A* (reset per zone)
         self._hour_tick_acc:   int  = 0
         self._current_hour:    int  = 6    # dawn default; syncs from WorldClock when present
+        self._sleep_pending:   bool = False
         self._init_mobile_npcs(starting)
 
         # HUD hint text
@@ -531,6 +532,14 @@ class WorldPlay:
         if self._quest_runtime is not None:
             try:
                 self._quest_runtime.grant(entry_id)
+            except Exception:
+                pass
+
+        # Quest-key → inventory grants (items given during dialogue, not found on floor)
+        _item = self._QUEST_ITEM_GRANTS.get(entry_id)
+        if _item is not None and self._inventory is not None:
+            try:
+                self._inventory.add(_item[0], _item[1])
             except Exception:
                 pass
 
@@ -899,6 +908,12 @@ class WorldPlay:
     # not simulated as mechanical NPC death in this session.
 
     _INFERNAL_SALVE: str = "0037_KLIT"
+
+    # Keys that grant items directly when witnessed (dialogue gifts, not floor pickups)
+    _QUEST_ITEM_GRANTS: dict[str, tuple[str, int]] = {
+        "dagger_received":      ("0027_KLIT", 1),   # Hypatia's Dagger — given at end of 0002_KLST
+        "crystal_received":     ("0023_KLIT", 1),   # Asmodean Crystal — imp trade in 0009_KLST
+    }
     # Castle Azoth fountain tile bounds (rows 5–9, cols 10–18 in lapidus_castle_azoth)
     _FOUNTAIN_ZONE: str  = "lapidus_castle_azoth"
     _FOUNTAIN_X0:   int  = 10
@@ -1143,6 +1158,10 @@ class WorldPlay:
 
     # ── Interaction ───────────────────────────────────────────────────────────
 
+    def _facing_tile_kind(self):
+        ax, ay = self._player.facing_tile()
+        return self._zone.voxels.get((ax, ay))
+
     def _interact(self) -> None:
         zone = self._zone
         npc  = self._facing_npc()
@@ -1151,6 +1170,10 @@ class WorldPlay:
                 self._begin_vendor(npc)
             else:
                 self._begin_dialogue(npc)
+            return
+        from .map import WorldTileKind
+        if self._facing_tile_kind() == WorldTileKind.BED:
+            self._sleep_pending = True
             return
         if self._has_necromancy_perk():
             # Fountain ritual — facing fountain stone/water tiles in Castle Azoth
@@ -1186,6 +1209,10 @@ class WorldPlay:
             if dead_npc is not None:
                 self._hint = "[space]  Pick up body"
                 return
+        from .map import WorldTileKind
+        if self._facing_tile_kind() == WorldTileKind.BED:
+            self._hint = "[space]  Sleep"
+            return
         portal = self._player.facing_portal(zone)
         if portal is not None:
             self._hint = "[space]  Enter dungeon"
@@ -1218,10 +1245,15 @@ class WorldPlay:
             self.advance_quest(f"met_{char_id}", "met")
 
         # Fire available dialogue topics for this character (grants topic keys)
+        # Flow granted keys back to quest_state dict so old-format dialogue
+        # selector can gate on them via required_witnesses.
         if self._quest_runtime is not None:
             try:
                 for topic in self._quest_runtime.available_topics(char_id):
-                    self._quest_runtime.runner.fire_topic(topic)
+                    granted = self._quest_runtime.runner.fire_topic(topic)
+                    for key in (granted or []):
+                        if key:
+                            self.advance_quest(key, "granted")
             except Exception:
                 pass
 

@@ -1,0 +1,103 @@
+{
+  "quest_id":       "0006_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "Twaddlespeak",
+  "completion_key": "kelly_debriefed",
+  "scenes": [],
+  "topics": [
+    {
+      "id":       "0006_KLST.kelly_debrief_opening",
+      "char_id":  "0014_ROYL",
+      "prompt":   "Ask what he wants",
+      "lock":     {"requires": ["kelly_intervened"], "excludes": ["kelly_debriefed"]},
+      "opening_beats": [
+        {
+          "speaker":   "0014_ROYL",
+          "text":      "Let us speak plainly, in the way of people who are not speaking plainly. You heard something in the canopy. I will not ask you what it was. I will tell you something adjacent to it instead.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "0014_ROYL",
+          "text":      "The kingdom is not of one mind. Those who built the castle are not the same as those who currently occupy it, and those who occupy it are not the same as those who inherited the arguments.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "Who is behind the war on the Fae?",
+          "beats": [
+            {
+              "speaker":   "0014_ROYL",
+              "text":      "The man you heard does not make wars. He makes them possible by making them profitable. The distinction is not a legal one but it is a real one.",
+              "addressee": "PLAYER"
+            },
+            {
+              "speaker":   "0014_ROYL",
+              "text":      "The priesthood provides the moral architecture. The caravan trade provides the economic justification. Neither could sustain the other alone.",
+              "addressee": "PLAYER",
+              "grants":    ["nexiott_war_pretext_known"]
+            }
+          ],
+          "grants": []
+        },
+        {
+          "text":  "Tell me about Alfir.",
+          "beats": [
+            {
+              "speaker":   "0014_ROYL",
+              "text":      "Alfir. An interesting choice of subject. When he was young — perhaps nineteen, twenty — he and Eomann wandered into the Faewilds through the mine's deepest passage. Neither knew what they were walking into.",
+              "addressee": "PLAYER"
+            },
+            {
+              "speaker":   "0014_ROYL",
+              "text":      "A Fae queen named Amelia found them before the wilds did. She sent them back. Eomann has been sworn to her since that day — the kind of debt that does not expire. Alfir carries the memory differently.",
+              "addressee": "PLAYER",
+              "grants":    ["alfir_eomann_mines_story_heard", "amelia_named", "echo_named", "eomann_sworn_amelia"]
+            }
+          ],
+          "grants": []
+        },
+        {
+          "text":  "Why was Alfir removed as your advisor?",
+          "beats": [
+            {
+              "speaker":   "0014_ROYL",
+              "text":      "He was not removed. The more precise description is that the position he occupied was eliminated and a new one was created in its place, staffed by someone whose connections did not extend to the Faewilds. Eomann had appointed Alfir when Alfir was in his twenties. Saffron undid that quietly over a season.",
+              "addressee": "PLAYER",
+              "grants":    ["alfir_priesthood_origin_known", "saffron_replaced_alfir", "rachelle_identified", "alfir_trained_rachelle"]
+            }
+          ],
+          "grants": []
+        }
+      ],
+      "grants": ["kingdom_division_known", "priesthood_history_known", "kelly_not_nexiott"]
+    },
+    {
+      "id":       "0006_KLST.kelly_close",
+      "char_id":  "0014_ROYL",
+      "prompt":   "What should I do now?",
+      "lock":     {"requires": ["kingdom_division_known"], "excludes": ["kelly_debriefed"]},
+      "opening_beats": [
+        {
+          "speaker":   "0014_ROYL",
+          "text":      "Do your work. That is the most useful thing you can do. A person who is visibly useful attracts confidence and confidence is a form of access. You will need access.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "I'll remember that.",
+          "beats": [
+            {
+              "speaker":   "0014_ROYL",
+              "text":      "I suspect you will remember more than you expect to. Good afternoon.",
+              "addressee": "PLAYER"
+            }
+          ],
+          "grants": ["kelly_debriefed", "kelly_trust_ambiguous"]
+        }
+      ],
+      "grants": []
+    }
+  ]
+}

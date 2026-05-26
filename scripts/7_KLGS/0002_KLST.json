@@ -1,0 +1,157 @@
+{
+  "quest_id":       "0002_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "Destiny Calls",
+  "completion_key": "skills_defined",
+  "scenes": [
+    {
+      "id":           "0002_KLST.hypatia_intro_scene",
+      "zone":         "lapidus_castle_hypatia_tower",
+      "participants": ["0000_0451"],
+      "lock":         {"requires": ["found_hypatia_lab"], "excludes": ["hypatia_met"]},
+      "beats": [
+        {
+          "speaker":   "0000_0451",
+          "text":      "You found it. Good. I have been waiting to see what the Lottery would send me.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "0000_0451",
+          "text":      "Sit down. We have work to do before I leave, and not much time to do it in.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["hypatia_met"],
+      "repeatable": false
+    }
+  ],
+  "topics": [
+    {
+      "id":       "0002_KLST.hypatia_skills",
+      "char_id":  "0000_0451",
+      "prompt":   "What do you need to teach me?",
+      "lock":     {"requires": ["hypatia_met"], "excludes": ["hypatia_taught_skills"]},
+      "opening_beats": [
+        {
+          "speaker":   "0000_0451",
+          "text":      "What you already know shapes what I can teach you quickly. Don't tell me what you think I want to hear. Tell me what you have actually done with your hands.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "0000_0451",
+          "text":      "We will start from there.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "I've spent most of my time working with materials — alchemy, craft.",
+          "beats": [
+            {
+              "speaker":   "0000_0451",
+              "text":      "Then I can give you what the materials cannot teach you alone: how to read what is happening underneath the reaction, not just on the surface. Alchemical Meditation. It will come naturally to someone already practiced.",
+              "addressee": "PLAYER"
+            }
+          ],
+          "grants": ["alchemical_meditation_taught", "hypatia_taught_skills"]
+        },
+        {
+          "text":  "Survival, mostly. Moving through difficult terrain, finding what I need.",
+          "beats": [
+            {
+              "speaker":   "0000_0451",
+              "text":      "Useful. And honest. Alchemical thinking will expand what you already know about reading an environment. Start there — it will translate.",
+              "addressee": "PLAYER"
+            }
+          ],
+          "grants": ["alchemical_meditation_taught", "hypatia_taught_skills"]
+        },
+        {
+          "text":  "I'm not sure how to describe it. A little of everything.",
+          "beats": [
+            {
+              "speaker":   "0000_0451",
+              "text":      "Generalists are harder to teach and harder to kill. I can work with that. Alchemical Meditation first — it gives structure to instinct.",
+              "addressee": "PLAYER"
+            }
+          ],
+          "grants": ["alchemical_meditation_taught", "hypatia_taught_skills"]
+        }
+      ],
+      "grants": []
+    },
+    {
+      "id":       "0002_KLST.hypatia_dagger",
+      "char_id":  "0000_0451",
+      "prompt":   "What are you leaving me?",
+      "lock":     {"requires": ["hypatia_taught_skills"], "excludes": ["dagger_received"]},
+      "opening_beats": [
+        {
+          "speaker":   "0000_0451",
+          "text":      "This.",
+          "addressee": "PLAYER",
+          "action":    "places dagger on the workbench"
+        },
+        {
+          "speaker":   "0000_0451",
+          "text":      "It has done what I needed it to do. I no longer need it where I am going. You might.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "Where are you going?",
+          "beats": [
+            {
+              "speaker":   "0000_0451",
+              "text":      "Somewhere I can only reach alone. You will understand later. For now — listen to Chancellor Kelly. And Duke Eomann when he speaks. They know things that will matter before this is over.",
+              "addressee": "PLAYER",
+              "grants":    ["hypatia_advised_kelly_eomann"]
+            }
+          ],
+          "grants": ["dagger_received"]
+        },
+        {
+          "text":  "You're not coming back.",
+          "beats": [
+            {
+              "speaker":   "0000_0451",
+              "text":      "Not soon. But I know where you will be. Pay attention to Chancellor Kelly and Duke Eomann — they are not what they appear to their peers. That distinction will matter.",
+              "addressee": "PLAYER",
+              "grants":    ["hypatia_advised_kelly_eomann"]
+            }
+          ],
+          "grants": ["dagger_received"]
+        }
+      ],
+      "grants": []
+    },
+    {
+      "id":       "0002_KLST.skills_confirmed",
+      "char_id":  "0000_0451",
+      "prompt":   "I'm ready.",
+      "lock":     {"requires": ["dagger_received"], "excludes": ["skills_defined"]},
+      "opening_beats": [
+        {
+          "speaker":   "0000_0451",
+          "text":      "Then go. Everything I can give you in this room, I have given you.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "I'll find you.",
+          "beats": [
+            {
+              "speaker":   "0000_0451",
+              "text":      "I know.",
+              "addressee": "PLAYER"
+            }
+          ],
+          "grants": ["skills_defined"]
+        }
+      ],
+      "grants": []
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "quest_id":       "0020_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "Wish Upon a Falling Star",
+  "completion_key": "giann_met",
+  "scenes": [
+    {
+      "id":           "0020_KLST.giann_light",
+      "zone":         "lapidus_the_rocks",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["keshi_met"], "excludes": ["giann_light_seen"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "Out at the plateau edge at night — the light comes from above rather than from the city. Not a star falling. A star that has already fallen and is being what it became. It settles onto the rock with no sound and no heat. It is the warmth of something that has been giving for a very long time and has not stopped.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["giann_light_seen"],
+      "repeatable": false
+    }
+  ],
+  "topics": [
+    {
+      "id":       "0020_KLST.giann_contrast",
+      "char_id":  "1016_DJNN",
+      "prompt":   "Approach the light",
+      "lock":     {"requires": ["giann_light_seen"], "excludes": ["giann_met"]},
+      "opening_beats": [
+        {
+          "speaker":   "1016_DJNN",
+          "text":      "You have met my brother. I can see what he gave you. I am not here to take it back — that is not how it works. I am here so that you have a point of comparison.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "1016_DJNN",
+          "text":      "His gifts are real. That is what makes them dangerous — a false gift would not cost you anything. A real gift that costs you something real is the structure. He did not lie to you. He told you the truth in an order that made the truth function like a lie.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "Can you help me with what he gave me?",
+          "beats": [
+            {
+              "speaker":   "1016_DJNN",
+              "text":      "Not by taking it. By giving you something else alongside it. Two things given freely can hold each other in a way that prevents either one from consuming you. This is not balance. Balance implies opposing forces. This is something else.",
+              "addressee": "PLAYER",
+              "grants":    ["giann_boon_offered"]
+            }
+          ],
+          "grants": ["giann_met"]
+        },
+        {
+          "text":  "Why are you here at all?",
+          "beats": [
+            {
+              "speaker":   "1016_DJNN",
+              "text":      "Because you are at a point where what you do next will have consequences that outlast your understanding of them. That is the point where I exist — not before it, when you could still act carelessly, and not after it, when the consequences have already propagated.",
+              "addressee": "PLAYER"
+            },
+            {
+              "speaker":   "1016_DJNN",
+              "text":      "I am the Heart of Kael. Kael is generative excess. Where the system tips toward creating more than it destroys, I am there. You are at that tip.",
+              "addressee": "PLAYER",
+              "grants":    ["kael_nature_known"]
+            }
+          ],
+          "grants": ["giann_met"]
+        },
+        {
+          "text":  "What is your boon?",
+          "beats": [
+            {
+              "speaker":   "1016_DJNN",
+              "text":      "Choose the thing you want to protect more than you want to succeed. Name it. The boon is naming it clearly enough that you do not lose track of it when the pressure gets specific.",
+              "addressee": "PLAYER",
+              "grants":    ["giann_boon_offered"]
+            }
+          ],
+          "grants": ["giann_met"]
+        }
+      ],
+      "grants": ["giann_met"]
+    }
+  ]
+}

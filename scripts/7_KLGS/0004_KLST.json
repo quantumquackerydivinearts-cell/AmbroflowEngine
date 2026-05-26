@@ -1,0 +1,149 @@
+{
+  "quest_id":       "0004_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "The Golden Path",
+  "completion_key": "saffron_satisfied",
+  "failure_key":    "saffron_deceived",
+  "scenes": [
+    {
+      "id":           "0004_KLST.enter_temple",
+      "zone":         "lapidus_temple_interior",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["warrens_traversed"], "excludes": ["saffron_met"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "The temple interior is cooler than the street. Stone altar ahead, lamplight along the nave. A figure in vestments stands at the dais without looking up.",
+          "addressee": "AMBIENT"
+        }
+      ],
+      "grants":     [],
+      "repeatable": false
+    },
+    {
+      "id":           "0004_KLST.kore_catches_theft",
+      "zone":         "lapidus_witch_forest",
+      "participants": ["0005_WTCH"],
+      "lock":         {"requires": ["crystals_mission_accepted"], "excludes": ["kore_undetected", "kore_detected"]},
+      "beats": [
+        {
+          "speaker":   "0005_WTCH",
+          "text":      "Put it down.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "0005_WTCH",
+          "text":      "I know what you were sent here for. I also know who sent you. The question is whether you know what you are actually carrying.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["kore_detected", "kore_interrogated", "kore_told_crystal_truth", "weapon_purpose_known", "gnome_crystal_origin_known"],
+      "repeatable": false
+    }
+  ],
+  "topics": [
+    {
+      "id":       "0004_KLST.saffron_first_meeting",
+      "char_id":  "0008_PRST",
+      "prompt":   "Present yourself",
+      "lock":     {"requires": ["warrens_traversed"], "excludes": ["saffron_met"]},
+      "opening_beats": [
+        {
+          "speaker":   "0008_PRST",
+          "text":      "Hypatia's apprentice. I was informed. The lottery is useful that way — it delivers the right person at the right moment, if you know what you are asking for.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "0008_PRST",
+          "text":      "I have a task for you. It requires discretion and a willingness to travel to the forest commune without announcing yourself.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "What do you need?",
+          "beats": [
+            {
+              "speaker":   "0008_PRST",
+              "text":      "Crystals. The witches hold them in the commune — they were gifted to them and I need them returned to the temple for a ritual of completion. Retrieve them quietly. The witches will not be harmed if this is done cleanly.",
+              "addressee": "PLAYER"
+            }
+          ],
+          "grants": ["crystals_mission_accepted", "saffron_lied_crystal_purpose"]
+        }
+      ],
+      "grants": ["saffron_met"]
+    },
+    {
+      "id":       "0004_KLST.kore_allied_path",
+      "char_id":  "0005_WTCH",
+      "prompt":   "Hear her out",
+      "lock":     {"requires": ["kore_interrogated"], "excludes": ["kore_allied", "kore_refused"]},
+      "opening_beats": [
+        {
+          "speaker":   "0005_WTCH",
+          "text":      "What you are carrying is not for a ritual. Those crystals were given to us by the Gnomes — handed over at significant cost to people who cannot afford to lose them. They refine into a plasma weapon. Do you understand what that means?",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "0005_WTCH",
+          "text":      "You can take the real crystals back to Saffron and do what you were told. Or you can take the fakes I will give you, and Saffron gets a performance. The crystals go somewhere safer.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "Give me the fakes.",
+          "beats": [
+            {
+              "speaker":   "0005_WTCH",
+              "text":      "Good. I will remember this. So will everyone here. When you need us, come to the commune — not the front path, the one from the east tree line.",
+              "addressee": "PLAYER"
+            }
+          ],
+          "grants": ["kore_allied", "false_crystals_delivered"]
+        },
+        {
+          "text":  "I was given a task. I'm going to complete it.",
+          "beats": [
+            {
+              "speaker":   "0005_WTCH",
+              "text":      "Then you are choosing to not know. That is also a choice. You will live with it.",
+              "addressee": "PLAYER"
+            }
+          ],
+          "grants": ["kore_refused", "real_crystals_delivered"]
+        }
+      ],
+      "grants": []
+    },
+    {
+      "id":       "0004_KLST.deliver_to_saffron",
+      "char_id":  "0008_PRST",
+      "prompt":   "Deliver the crystals",
+      "lock":     {"requires": ["saffron_met", "crystals_mission_accepted"], "excludes": ["saffron_satisfied", "saffron_suspicious", "saffron_deceived"]},
+      "opening_beats": [
+        {
+          "speaker":   "0008_PRST",
+          "text":      "You have them. Good.",
+          "addressee": "PLAYER",
+          "action":    "examines the crystals"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "As requested.",
+          "beats": [
+            {
+              "speaker":   "0008_PRST",
+              "text":      "The ritual will proceed. You have done well.",
+              "addressee": "PLAYER"
+            }
+          ],
+          "grants": ["saffron_satisfied"]
+        }
+      ],
+      "grants": []
+    }
+  ]
+}

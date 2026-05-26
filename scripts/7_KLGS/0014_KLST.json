@@ -1,0 +1,121 @@
+{
+  "quest_id":       "0014_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "Bombast",
+  "completion_key": "bombastus_mission_received",
+  "scenes": [
+    {
+      "id":           "0014_KLST.throne_room_audience",
+      "zone":         "lapidus_castle_main_hall",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["alfir_met_properly"], "excludes": ["bombastus_audience_held"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "The king does not sit on the throne when he receives you. He stands at the window that looks north — toward the mines, away from the city. He is a large man who holds himself like someone who was told being large was a problem and then spent forty years proving otherwise.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["bombastus_audience_held"],
+      "repeatable": false
+    }
+  ],
+  "topics": [
+    {
+      "id":       "0014_KLST.bombastus_request",
+      "char_id":  "0015_ROYL",
+      "prompt":   "Wait for him to speak",
+      "lock":     {"requires": ["bombastus_audience_held"], "excludes": ["bombastus_mission_received"]},
+      "opening_beats": [
+        {
+          "speaker":   "0015_ROYL",
+          "text":      "Alfir says you can be trusted. He does not say that about many people. The people he does say it about have a tendency to end up doing difficult things in difficult places, and I have not found a pattern that suggests this is accidental.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "0015_ROYL",
+          "text":      "My court alchemist has been missing for half a year. Hypatia. You know who she is — you were her student. I am not asking where she went. I am asking you to find her and bring her answer back, whatever it is.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "0015_ROYL",
+          "text":      "There is a second thing. The Fae court. I have been receiving intelligence reports about them for twenty years and I no longer trust the source. I want a different set of eyes on what is actually happening in those Faewilds.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "Why not send your own soldiers?",
+          "beats": [
+            {
+              "speaker":   "0015_ROYL",
+              "text":      "Soldiers see what they expect to see. They are trained for it. I need someone who does not yet know what to expect.",
+              "addressee": "PLAYER"
+            }
+          ],
+          "grants": ["bombastus_mission_received"]
+        },
+        {
+          "text":  "Who has been giving you the intelligence reports?",
+          "beats": [
+            {
+              "speaker":   "0015_ROYL",
+              "text":      "That is the right question. A perceptive one. I will not answer it — not because I do not trust you, but because answering it would tell you what I suspect and I need you to come back with what you find, not with what I suspect confirmed.",
+              "addressee": "PLAYER",
+              "grants":    ["bombastus_source_question_asked"]
+            }
+          ],
+          "grants": ["bombastus_mission_received"]
+        },
+        {
+          "text":  "I'll find her.",
+          "beats": [
+            {
+              "speaker":   "0015_ROYL",
+              "text":      "I know. I would not have asked otherwise.",
+              "addressee": "PLAYER"
+            }
+          ],
+          "grants": ["bombastus_mission_received", "hypatia_search_committed"]
+        }
+      ],
+      "grants": ["bombastus_met", "bombastus_trusts_alfir_judgment"]
+    },
+    {
+      "id":       "0014_KLST.bombastus_aside",
+      "char_id":  "0015_ROYL",
+      "prompt":   "Ask about the Fae war",
+      "lock":     {"requires": ["bombastus_mission_received"], "excludes": ["bombastus_war_view_known"]},
+      "opening_beats": [
+        {
+          "speaker":   "0015_ROYL",
+          "text":      "I did not start it. I inherited it with the crown and the thing about inherited wars is that by the time you understand them well enough to end them, the people who benefit from their continuation have been benefiting for long enough to resist any ending.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "Do you want it to end?",
+          "beats": [
+            {
+              "speaker":   "0015_ROYL",
+              "text":      "I want many things. The distance between wanting and achieving, in matters of this scale, is measured in decades. That is not an excuse. It is the arithmetic.",
+              "addressee": "PLAYER"
+            }
+          ]
+        },
+        {
+          "text":  "Who benefits from it continuing?",
+          "beats": [
+            {
+              "speaker":   "0015_ROYL",
+              "text":      "That is also the right question. I notice you keep asking those. Go find Hypatia. She will have more useful answers than I do.",
+              "addressee": "PLAYER"
+            }
+          ]
+        }
+      ],
+      "grants": ["bombastus_war_view_known"]
+    }
+  ]
+}

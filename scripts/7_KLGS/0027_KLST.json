@@ -1,0 +1,120 @@
+{
+  "quest_id":       "0027_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "Good Grief",
+  "completion_key": "zen_meditation_available",
+  "scenes": [
+    {
+      "id":           "0027_KLST.savvi_revelation",
+      "zone":         "lapidus_ocean_shore",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["orrery_glimpsed"], "excludes": ["savvi_met"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "He is at the shoreline when you arrive — the fire salamander, the one who was with Genovise's supply chain before you understood what that supply chain was. He does not hide what he is carrying. There is no reason to. The weapons are not illegal here. They are not illegal anywhere they have arrived.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "ENV",
+          "text":      "Savvi, Child of Vios and Drovitth. The Bane of Misfortune. You know his parentage now that you have met the father — and knowing the parentage makes the work he does into something that requires sitting with for a moment.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["savvi_met", "savvi_parentage_known"],
+      "repeatable": false
+    }
+  ],
+  "topics": [
+    {
+      "id":       "0027_KLST.savvi_account",
+      "char_id":  "1012_SALA",
+      "prompt":   "Ask what he does",
+      "lock":     {"requires": ["savvi_met"], "excludes": ["savvi_role_understood"]},
+      "opening_beats": [
+        {
+          "speaker":   "1012_SALA",
+          "text":      "I move materials that end things. I am not subtle about this. The Sulpheran order requires that weapons exist — consequence requires that endings are possible. I am the part of the supply chain that ensures the means are available.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "1012_SALA",
+          "text":      "My father watches outcomes. My mother knows souls. I am the point between them — the thing that acts in the gap between knowing and having already happened.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "You're selling weapons into Lapidus.",
+          "beats": [
+            {
+              "speaker":   "1012_SALA",
+              "text":      "I am making available what will be used one way or another. The alternative is not peace — the alternative is that the weapons arrive through a different channel with different documentation and different accountability. I prefer accountability.",
+              "addressee": "PLAYER"
+            },
+            {
+              "speaker":   "1012_SALA",
+              "text":      "What troubles you is not the weapons. What troubles you is that something you trusted is more complicated than it appeared. That is grief. It is the right response.",
+              "addressee": "PLAYER",
+              "grants":    ["savvi_grief_named"]
+            }
+          ]
+        },
+        {
+          "text":  "The Genovise network. You've been feeding it from the start.",
+          "beats": [
+            {
+              "speaker":   "1012_SALA",
+              "text":      "Since before you arrived, yes. Genovise does not ask what she is distributing. That is a quality I require in a partner. What she builds with not knowing is her own business.",
+              "addressee": "PLAYER"
+            }
+          ]
+        },
+        {
+          "text":  "How do you live with this?",
+          "beats": [
+            {
+              "speaker":   "1012_SALA",
+              "text":      "By not confusing what I do with what I am. I am the Bane of Misfortune. The work and the nature agree. What you are asking is how I hold the weight of consequence without being crushed by it. That is the question Zen practice answers.",
+              "addressee": "PLAYER",
+              "grants":    ["zen_practice_introduced"]
+            }
+          ]
+        }
+      ],
+      "grants": ["savvi_role_understood"]
+    },
+    {
+      "id":       "0027_KLST.zen_teaching",
+      "char_id":  "1012_SALA",
+      "prompt":   "Ask him to teach you",
+      "lock":     {"requires": ["savvi_role_understood"], "excludes": ["zen_meditation_available"]},
+      "opening_beats": [
+        {
+          "speaker":   "1012_SALA",
+          "text":      "The practice is this: find the grief and do not resolve it. Hold it as it is without moving it toward meaning or lesson or use. Grief that has been made into something is no longer grief — it is material. Both are real. Zen practice is for the grief that is still grief.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "1012_SALA",
+          "text":      "You have been making material out of everything you encounter. That is alchemy and it is your gift. This is the practice that sits beside your gift without being consumed by it.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "I'm ready to learn.",
+          "beats": [
+            {
+              "speaker":   "ENV",
+              "text":      "The lesson is not instruction — it is sitting at the water's edge until the distinction between what happened and what you feel about it becomes clear without becoming useful. It takes the rest of the afternoon.",
+              "addressee": "PLAYER",
+              "grants":    ["zen_meditation_available"]
+            }
+          ]
+        }
+      ],
+      "grants": ["zen_meditation_available"]
+    }
+  ]
+}

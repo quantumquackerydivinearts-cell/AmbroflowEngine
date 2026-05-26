@@ -1,0 +1,82 @@
+{
+  "quest_id":       "0011_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "The Siren Sounds",
+  "completion_key": "depth_meditation_gate_open",
+  "scenes": [
+    {
+      "id":           "0011_KLST.plateau_edge_reached",
+      "zone":         "lapidus_the_rocks",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["infernal_meditation_learned"], "excludes": ["hieronymus_plateau_edge_reached"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "The land drops away at the edge. The ocean is a long way down and west. At night the sound of it carries up the cliff face — not waves exactly, more like breathing. Something large and patient.",
+          "addressee": "AMBIENT"
+        }
+      ],
+      "grants":     ["hieronymus_plateau_edge_reached"],
+      "repeatable": false
+    },
+    {
+      "id":           "0011_KLST.ocean_pull",
+      "zone":         "lapidus_ocean_shore",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["hieronymus_plateau_edge_reached"], "excludes": ["ocean_felt_first"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "Standing at the water's edge, the pull is different than looking at it from above. It is not a desire to drown. It is a desire to go somewhere that the plateau cannot reach — past the horizon, past whatever is managing everything back there.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["ocean_felt_first", "leave_plateau_urge", "depth_meditation_gate_open"],
+      "repeatable": false
+    }
+  ],
+  "topics": [
+    {
+      "id":       "0011_KLST.hue_invitation",
+      "char_id":  "0011_ASSN",
+      "prompt":   "Ask what he wants",
+      "lock":     {"requires": ["infernal_meditation_learned"], "excludes": ["hue_met"]},
+      "opening_beats": [
+        {
+          "speaker":   "0011_ASSN",
+          "text":      "Kore mentioned you. We keep records of people who do things that Kore notices. You have been doing things Kore notices.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "0011_ASSN",
+          "text":      "Come to the camp tonight. The western plateau edge. We have food and the view is worth the walk.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "I'll come.",
+          "beats": [
+            {
+              "speaker":   "0011_ASSN",
+              "text":      "Good. After dark. The route is through The Rocks going north at the second split.",
+              "addressee": "PLAYER"
+            }
+          ],
+          "grants": ["hue_invitation_accepted"]
+        },
+        {
+          "text":  "Not tonight.",
+          "beats": [
+            {
+              "speaker":   "0011_ASSN",
+              "text":      "The offer does not expire. When you are ready.",
+              "addressee": "PLAYER"
+            }
+          ]
+        }
+      ],
+      "grants": ["hue_met", "hue_watching_player"]
+    }
+  ]
+}

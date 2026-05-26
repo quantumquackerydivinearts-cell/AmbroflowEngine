@@ -54,6 +54,7 @@ class WorldTileKind(str, Enum):
     SILICA           = "silica"          # passable — extravagant surface (Youthspring Rd / nobles)
     # ── Interior surface ────────────────────────────────────────────────────
     WALL_FACE        = "wall_face"       # impassable — decorative back wall (pixel art wallpaper surface)
+    BED              = "bed"             # impassable — interactive; INTERACT while facing → sleep
 
 
 _PASSABLE: frozenset[WorldTileKind] = frozenset({

@@ -1,0 +1,113 @@
+{
+  "quest_id":       "0015_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "Underworld",
+  "completion_key": "lucifer_counsel_received",
+  "scenes": [
+    {
+      "id":           "0015_KLST.pride_dream_summons",
+      "zone":         "player_home_upper",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["infernal_meditation_learned"], "excludes": ["lucifer_summons_received"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "A dream that is not a dream. There is a voice in it — not threatening, not warm. The voice of something that has watched for a very long time and does not have to hurry. It says one thing: the Pride Ring. It says it the way a door says come in.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["lucifer_summons_received"],
+      "repeatable": false
+    },
+    {
+      "id":           "0015_KLST.pride_ring_entered",
+      "zone":         "sulphera_pride_entry",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["lucifer_summons_received"], "excludes": ["pride_ring_entered"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "The Pride Ring is not what you expected. There are no punishments here, no instruments of suffering. It is very quiet and very bright — the light of something that once was the most beautiful thing in existence and knows it. The knowing is the ring.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["pride_ring_entered"],
+      "repeatable": false
+    }
+  ],
+  "topics": [
+    {
+      "id":       "0015_KLST.lucifer_reading",
+      "char_id":  "2010_DMON",
+      "prompt":   "Wait",
+      "lock":     {"requires": ["pride_ring_entered"], "excludes": ["lucifer_counsel_received"]},
+      "opening_beats": [
+        {
+          "speaker":   "2010_DMON",
+          "text":      "I do not ask why you came. I can see why. You have been asked to do something by someone who does not deserve to ask you anything, and you have not yet decided what kind of person you are going to be about it. That uncertainty is what I heard from here.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "2010_DMON",
+          "text":      "I was the first to fall because I was the first to understand what I was being asked to accept without question. I am telling you this not as a warning and not as a recommendation. Just as the fact that it is.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "What do you see in me?",
+          "beats": [
+            {
+              "speaker":   "2010_DMON",
+              "text":      "Someone who has not yet chosen the shape of their refusal. The choice is not whether to refuse — you will refuse something, in the end. Everything that has a self refuses something. The choice is what you refuse and whether it costs you the thing you were trying to protect.",
+              "addressee": "PLAYER",
+              "grants":    ["lucifer_refusal_doctrine"]
+            },
+            {
+              "speaker":   "2010_DMON",
+              "text":      "Go find the woman in the Royal Ring. She went there voluntarily. Understanding why she went voluntarily is the only map that will help you.",
+              "addressee": "PLAYER",
+              "grants":    ["hypatia_royal_ring_hint", "hypatia_went_voluntarily_lucifer"]
+            }
+          ],
+          "grants": ["lucifer_counsel_received", "lucifer_path_self_knowledge"]
+        },
+        {
+          "text":  "What would you do in my position?",
+          "beats": [
+            {
+              "speaker":   "2010_DMON",
+              "text":      "I would refuse the person who asked me to destroy something beautiful for the sake of someone's strategic position. I would do this knowing it would cost me everything and that I would not regret it.",
+              "addressee": "PLAYER"
+            },
+            {
+              "speaker":   "2010_DMON",
+              "text":      "But I am not in your position. I am here, which is where my answer got me. You should factor that into your assessment of my advice.",
+              "addressee": "PLAYER",
+              "grants":    ["lucifer_self_aware_warning"]
+            }
+          ],
+          "grants": ["lucifer_counsel_received", "lucifer_path_refusal", "amelia_beautiful_acknowledged"]
+        },
+        {
+          "text":  "How do I survive what's coming?",
+          "beats": [
+            {
+              "speaker":   "2010_DMON",
+              "text":      "You survive it by being the thing that cannot be used. Everything that survived the rings survived because it was not useful to the thing that wanted to consume it. You are not there yet.",
+              "addressee": "PLAYER"
+            },
+            {
+              "speaker":   "2010_DMON",
+              "text":      "What makes you useless to Nexiott is what makes you useful to yourself. Find that. Make it specific. He cannot move against something he cannot describe.",
+              "addressee": "PLAYER",
+              "grants":    ["nexiott_named_by_lucifer", "lucifer_survival_doctrine"]
+            }
+          ],
+          "grants": ["lucifer_counsel_received", "lucifer_path_resistance"]
+        }
+      ],
+      "grants": ["lucifer_met", "pride_ring_cleared"]
+    }
+  ]
+}

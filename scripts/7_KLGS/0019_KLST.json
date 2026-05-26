@@ -1,0 +1,89 @@
+{
+  "quest_id":       "0019_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "Wish Upon a Horse",
+  "completion_key": "keshi_gift_received",
+  "scenes": [
+    {
+      "id":           "0019_KLST.keshi_arrival",
+      "zone":         "player_home_ground",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["shop_established"], "excludes": ["keshi_arrived"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "Something is in the shop when you open in the morning. Not a customer — it is there before the door opens, which is not possible by ordinary means. It looks at you with the expression of something that has been waiting patiently for a long time and considers waiting an act of generosity in itself.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["keshi_arrived"],
+      "repeatable": false
+    }
+  ],
+  "topics": [
+    {
+      "id":       "0019_KLST.keshi_offer",
+      "char_id":  "1017_DJNN",
+      "prompt":   "Ask what it wants",
+      "lock":     {"requires": ["keshi_arrived"], "excludes": ["keshi_gift_received"]},
+      "opening_beats": [
+        {
+          "speaker":   "1017_DJNN",
+          "text":      "Nothing from you. I am here to give. That is my nature — I give, and what I give is useful, and what the useful thing costs you is not my business because the cost comes later and later is not now.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "1017_DJNN",
+          "text":      "What would help you most today? I can see the shape of your situation. I know what would relieve the immediate pressure. I am offering it.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "Accept the gift.",
+          "beats": [
+            {
+              "speaker":   "1017_DJNN",
+              "text":      "There. That is already done. You will feel it working. The working is real. What the working costs, you will discover later. I want you to know I am not concealing this from you — I am telling you exactly how this works.",
+              "addressee": "PLAYER",
+              "grants":    ["keshi_gift_received", "keshi_gift_corrupts_later"]
+            },
+            {
+              "speaker":   "1017_DJNN",
+              "text":      "I am the Gift Horse. I advise you not to look in my mouth.",
+              "addressee": "PLAYER"
+            }
+          ]
+        },
+        {
+          "text":  "What does it cost?",
+          "beats": [
+            {
+              "speaker":   "1017_DJNN",
+              "text":      "Something you have not identified yet as valuable. That is always the price. If you knew what it cost ahead of time you would not pay it, and then you would not have the gift, and the gift is genuine.",
+              "addressee": "PLAYER"
+            },
+            {
+              "speaker":   "1017_DJNN",
+              "text":      "I will give it to you anyway. You are going to need it.",
+              "addressee": "PLAYER",
+              "grants":    ["keshi_gift_received", "keshi_gift_corrupts_later"]
+            }
+          ]
+        },
+        {
+          "text":  "I don't want it.",
+          "beats": [
+            {
+              "speaker":   "1017_DJNN",
+              "text":      "You already have it. I gave it before I offered. The offering is a courtesy. The refusing is also a courtesy — I respect it. But you have the gift.",
+              "addressee": "PLAYER",
+              "grants":    ["keshi_gift_received", "keshi_gift_corrupts_later", "keshi_gift_refused_too_late"]
+            }
+          ]
+        }
+      ],
+      "grants": ["keshi_met", "keshi_nature_known"]
+    }
+  ]
+}

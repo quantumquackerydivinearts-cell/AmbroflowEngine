@@ -1,0 +1,119 @@
+{
+  "quest_id":       "0023_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "Good Soldiers",
+  "completion_key": "nexiott_gnome_mission_done",
+  "scenes": [
+    {
+      "id":           "0023_KLST.nexiott_labor_order",
+      "zone":         "lapidus_youthspring_road",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["nexiott_met"], "excludes": ["gnome_labor_order_received"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "Nexiott has a document waiting when you arrive. He does not explain it — he slides it across the desk the way you pass someone something they already know they are expected to sign.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["gnome_labor_order_received"],
+      "repeatable": false
+    }
+  ],
+  "topics": [
+    {
+      "id":       "0023_KLST.nexiott_order_explain",
+      "char_id":  "0017_ROYL",
+      "prompt":   "Read the document",
+      "lock":     {"requires": ["gnome_labor_order_received"], "excludes": ["gnome_mission_briefed"]},
+      "opening_beats": [
+        {
+          "speaker":   "0017_ROYL",
+          "text":      "The Gnomes in the mine have been logging materials outside the contracted scope. Clint particularly — he has been tracking veins that are not his to track and recording finds that complicate the ownership structure. I need that stopped.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "0017_ROYL",
+          "text":      "I am not asking you to harm anyone. I am asking you to make clear to them that certain work is above their pay grade. They will understand the conversation. They have had versions of it before.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "I'll deliver the message.",
+          "beats": [
+            {
+              "speaker":   "0017_ROYL",
+              "text":      "Good. This is what being useful looks like in practice.",
+              "addressee": "PLAYER"
+            }
+          ],
+          "grants": ["gnome_mission_accepted", "gnome_mission_briefed"]
+        },
+        {
+          "text":  "What if they don't comply?",
+          "beats": [
+            {
+              "speaker":   "0017_ROYL",
+              "text":      "Gnomes comply when the alternative is clear. Make the alternative clear.",
+              "addressee": "PLAYER"
+            }
+          ],
+          "grants": ["gnome_mission_accepted", "gnome_mission_briefed"]
+        },
+        {
+          "text":  "I won't intimidate people in the mines.",
+          "beats": [
+            {
+              "speaker":   "0017_ROYL",
+              "text":      "Then you are not useful to me yet. Come back when you have reconsidered what useful means.",
+              "addressee": "PLAYER"
+            }
+          ],
+          "grants": ["gnome_mission_refused", "gnome_mission_briefed", "nexiott_gnome_mission_done"]
+        }
+      ],
+      "grants": []
+    },
+    {
+      "id":       "0023_KLST.clint_confrontation",
+      "char_id":  "1001_GNOM",
+      "prompt":   "Deliver Nexiott's message",
+      "lock":     {"requires": ["gnome_mission_accepted"], "excludes": ["nexiott_gnome_mission_done"]},
+      "opening_beats": [
+        {
+          "speaker":   "1001_GNOM",
+          "text":      "I know who sent you. I have been waiting for this conversation for two seasons. I will not pretend it is a surprise.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "He wants you to stop logging the deeper veins.",
+          "beats": [
+            {
+              "speaker":   "1001_GNOM",
+              "text":      "I know what he wants. The question is what you want. You have been down here. You know what those veins contain. You know who the children are. You are standing in front of me now — so tell me what you are actually doing here.",
+              "addressee": "PLAYER",
+              "grants":    ["clint_nexiott_conflict_known"]
+            }
+          ],
+          "grants": ["nexiott_gnome_mission_done", "gnomes_told_to_comply", "clint_trust_damaged"]
+        },
+        {
+          "text":  "I'm warning you privately. Comply on paper but keep your actual records safe.",
+          "beats": [
+            {
+              "speaker":   "1001_GNOM",
+              "text":      "That is a different kind of useful. I can work with that.",
+              "addressee": "PLAYER",
+              "grants":    ["clint_records_protected", "gnome_nexiott_deceived"]
+            }
+          ],
+          "grants": ["nexiott_gnome_mission_done", "gnomes_secretly_protected"]
+        }
+      ],
+      "grants": []
+    }
+  ]
+}

@@ -1,0 +1,207 @@
+{
+  "quest_id":       "0003_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "Yellow Brick Road",
+  "completion_key": "black_market_known",
+  "scenes": [
+    {
+      "id":           "0003_KLST.enter_warrens",
+      "zone":         "lapidus_warren_grimes",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["met_sidhal"], "excludes": ["warrens_traversed"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "The warren opens up. Packed earth, low-slung structures built close together against the cold. The smell of coal smoke and damp wool. People who know exactly how much space they occupy.",
+          "addressee": "AMBIENT"
+        }
+      ],
+      "grants":     [],
+      "repeatable": false
+    },
+    {
+      "id":           "0003_KLST.reach_serpents_pass",
+      "zone":         "lapidus_serpents_pass",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["met_lavelle", "met_wells"], "excludes": ["warrens_traversed"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "The canyon widens at its far end. The wind off the mountain is different here — clean and cold, coming from somewhere open.",
+          "addressee": "AMBIENT"
+        }
+      ],
+      "grants":     ["warrens_traversed"],
+      "repeatable": false
+    }
+  ],
+  "topics": [
+    {
+      "id":       "0003_KLST.joannah_meet",
+      "char_id":  "0001_TOWN",
+      "prompt":   "Ask about the warren",
+      "lock":     {"requires": ["met_sidhal"], "excludes": ["met_joannah"]},
+      "opening_beats": [
+        {
+          "speaker":   "0001_TOWN",
+          "text":      "You're new. You're with Sidhal, I think, from the way you're walking. This is The Grimes. Don't lose anything you can't afford to lose.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "What should I know about this place?",
+          "beats": [
+            {
+              "speaker":   "0001_TOWN",
+              "text":      "Everyone here knows everyone else's business. Not because they're nosy — because they have to. It's how you stay safe. If someone asks you something personal, they're probably not being rude.",
+              "addressee": "PLAYER"
+            }
+          ]
+        }
+      ],
+      "grants": ["met_joannah"]
+    },
+    {
+      "id":       "0003_KLST.james_meet",
+      "char_id":  "0005_TOWN",
+      "prompt":   "Ask about the aqueduct work",
+      "lock":     {"requires": ["met_sidhal"], "excludes": ["met_james"]},
+      "opening_beats": [
+        {
+          "speaker":   "0005_TOWN",
+          "text":      "You from the castle? I can tell by the letter in your pocket. Castle lottery. First time I've seen one of them come through Aetherfield on foot.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "What's the aqueduct situation like here?",
+          "beats": [
+            {
+              "speaker":   "0005_TOWN",
+              "text":      "Three breaks in the last six weeks. Same section every time. The stone there is old — pre-construction. Nobody's authorised to replace it because it's technically under temple jurisdiction. So we patch it and wait.",
+              "addressee": "PLAYER"
+            }
+          ]
+        }
+      ],
+      "grants": ["met_james"]
+    },
+    {
+      "id":       "0003_KLST.tyrone_meet",
+      "char_id":  "0006_TOWN",
+      "prompt":   "Ask about the aqueduct crew",
+      "lock":     {"requires": ["met_sidhal"], "excludes": ["met_tyrone"]},
+      "opening_beats": [
+        {
+          "speaker":   "0006_TOWN",
+          "text":      "James told me about you. The lottery apprentice. We don't get many of those down here. Usually they find someone who already lives near the castle.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "How long have you been working the aqueduct?",
+          "beats": [
+            {
+              "speaker":   "0006_TOWN",
+              "text":      "Nine years. I know every section of it. I know which parts the foreman reports accurately and which parts he rounds down on the damage assessments. Both kinds matter to know.",
+              "addressee": "PLAYER"
+            }
+          ]
+        }
+      ],
+      "grants": ["met_tyrone"]
+    },
+    {
+      "id":       "0003_KLST.genovise_meet",
+      "char_id":  "0011_TOWN",
+      "prompt":   "Ask about the shop",
+      "lock":     {"requires": ["met_sidhal"], "excludes": ["met_genovise"]},
+      "opening_beats": [
+        {
+          "speaker":   "0011_TOWN",
+          "text":      "You're not here to buy candles. The candles are for the people who come here to buy candles. You look like you want something else. That's fine. I have something else.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "What kind of something else?",
+          "beats": [
+            {
+              "speaker":   "0011_TOWN",
+              "text":      "The kind that moves when the market doesn't have space for it. Materials, mostly. Information sometimes. If you need access to either, you come back when you know exactly what you need. I don't do browsing.",
+              "addressee": "PLAYER"
+            }
+          ],
+          "grants": ["black_market_known"]
+        },
+        {
+          "text":  "Just looking.",
+          "beats": [
+            {
+              "speaker":   "0011_TOWN",
+              "text":      "Nobody just looks in here. Come back when you need something real.",
+              "addressee": "PLAYER"
+            }
+          ]
+        }
+      ],
+      "grants": ["met_genovise"]
+    },
+    {
+      "id":       "0003_KLST.wells_meet",
+      "char_id":  "0002_TOWN",
+      "prompt":   "Introduce yourself",
+      "lock":     {"requires": ["met_sidhal"], "excludes": ["met_wells"]},
+      "opening_beats": [
+        {
+          "speaker":   "0002_TOWN",
+          "text":      "Sidhal mentioned you were coming through. Lottery apprentice. I've been foreman here for eleven years and I've never seen one of you come this way before. That's interesting.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "What's interesting about it?",
+          "beats": [
+            {
+              "speaker":   "0002_TOWN",
+              "text":      "Most apprentices arrive at the castle from the north road. Someone who comes through Serpent's Pass either doesn't know the direct route or chose not to take it. I'm assuming Sidhal made the choice for you. He doesn't do that without a reason.",
+              "addressee": "PLAYER"
+            }
+          ]
+        }
+      ],
+      "grants": ["met_wells"]
+    },
+    {
+      "id":       "0003_KLST.lavelle_meet",
+      "char_id":  "0003_TOWN",
+      "prompt":   "Say hello",
+      "lock":     {"requires": ["met_sidhal"], "excludes": ["met_lavelle"]},
+      "opening_beats": [
+        {
+          "speaker":   "0003_TOWN",
+          "text":      "You've been through The Grimes. I can tell. You have that look people get when they see things they're not sure what to do with yet.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "It was a lot to take in.",
+          "beats": [
+            {
+              "speaker":   "0003_TOWN",
+              "text":      "That is the correct response. The people who take it in quickly either already knew or didn't really see it. You'll do better than both of those.",
+              "addressee": "PLAYER"
+            }
+          ]
+        }
+      ],
+      "grants": ["met_lavelle"]
+    }
+  ]
+}

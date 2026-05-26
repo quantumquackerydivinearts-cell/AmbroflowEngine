@@ -1,0 +1,178 @@
+{
+  "quest_id":       "0012_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "The Mines",
+  "completion_key": "ship_materials_gathered",
+  "scenes": [
+    {
+      "id":           "0012_KLST.mine_entrance_reached",
+      "zone":         "lapidus_mine_entrance",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["shop_established"], "excludes": ["mines_entered"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "The mine entrance is cut low into the Hieronymus rock face. Timber beams, lantern hooks, cart tracks worn smooth by decades of wheels. Several workers pass without looking up. Two of them are no older than fourteen.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["mines_entered", "child_labor_witnessed"],
+      "repeatable": false
+    },
+    {
+      "id":           "0012_KLST.deep_vein",
+      "zone":         "lapidus_mine_entrance",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["mines_entered", "clint_met_mines"], "excludes": ["deep_vein_located"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "Clint leads you deeper past the copper level. The vein changes at the second gallery — iron and dense granite, but also something harder that the human workers mark with chalk and leave for the Gnomes to log. The rock here is honest about what it can bear.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["deep_vein_located"],
+      "repeatable": false
+    },
+    {
+      "id":           "0012_KLST.materials_secured",
+      "zone":         "lapidus_mine_entrance",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["deep_vein_located", "winnona_consulted"], "excludes": ["ship_materials_gathered"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "Winnona runs the test ingot through a quick field assay. Nods once. The yield is sufficient — not for a full hull, but for a keel and inner rib structure. Enough to begin. The materials are packed and marked. Whatever comes next, the ship has a spine now.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["ship_materials_gathered", "ship_construction_begun"],
+      "repeatable": false
+    }
+  ],
+  "topics": [
+    {
+      "id":       "0012_KLST.kaelith_work_conditions",
+      "char_id":  "0009_TOWN",
+      "prompt":   "Ask about the work here",
+      "lock":     {"requires": ["mines_entered"], "excludes": ["kaelith_conditions_known"]},
+      "opening_beats": [
+        {
+          "speaker":   "0009_TOWN",
+          "text":      "It pays. Less than it did. The contracts changed two years back — Nexiott took over the supply terms. Since then the quota is higher and the inspection schedules are gone. Fall behind and you lose the week.",
+          "addressee": "PLAYER",
+          "grants":    ["nexiott_mine_contracts_known"]
+        },
+        {
+          "speaker":   "0009_TOWN",
+          "text":      "The children are not mine. I want that said plainly. Someone is sending them down here and someone is collecting from their work. Joannah has been trying to find out who for three months.",
+          "addressee": "PLAYER",
+          "grants":    ["joannah_investigating_mines"]
+        }
+      ],
+      "responses": [
+        {
+          "text":  "Are you safe here?",
+          "beats": [
+            {
+              "speaker":   "0009_TOWN",
+              "text":      "Safe enough. The rock is honest — it does not pretend to be something it is not. I prefer working with honest things.",
+              "addressee": "PLAYER"
+            }
+          ]
+        },
+        {
+          "text":  "What would change the contracts?",
+          "beats": [
+            {
+              "speaker":   "0009_TOWN",
+              "text":      "Someone above Nexiott's pay grade who actually cares. Or a problem loud enough he cannot manage it quietly. Neither seems close.",
+              "addressee": "PLAYER"
+            }
+          ]
+        }
+      ],
+      "grants": ["kaelith_conditions_known", "kaelith_mine_ally"]
+    },
+    {
+      "id":       "0012_KLST.clint_survey",
+      "char_id":  "1001_GNOM",
+      "prompt":   "Ask about the geology",
+      "lock":     {"requires": ["mines_entered"], "excludes": ["clint_met_mines"]},
+      "opening_beats": [
+        {
+          "speaker":   "1001_GNOM",
+          "text":      "You are the alchemist. Joannah said you might come down. I have been mapping the second vein for three seasons — it is unusually regular. Not what the Hieronymus formation usually yields. Lapidus leaves its marks in the rock here and you have to know where to look.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "1001_GNOM",
+          "text":      "What do you need? Crafting, structure, passage? Different purposes, different cuts.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "I need materials for a ship's hull.",
+          "beats": [
+            {
+              "speaker":   "1001_GNOM",
+              "text":      "Ambitious. The iron at this level is dense enough for pressure tolerance at depth if Winnona processes it correctly. I can show you the vein. Yield will not be large but it will be specific — that is usually better.",
+              "addressee": "PLAYER",
+              "grants":    ["ship_materials_surveyed"]
+            }
+          ],
+          "grants": ["ship_survey_requested"]
+        },
+        {
+          "text":  "What else have you found down here?",
+          "beats": [
+            {
+              "speaker":   "1001_GNOM",
+              "text":      "Moldavite trace at the third gallery. Impact origin. Old. Lapidus goes deeper than the city thinks it does.",
+              "addressee": "PLAYER"
+            }
+          ]
+        }
+      ],
+      "grants": ["clint_met_mines"]
+    },
+    {
+      "id":       "0012_KLST.winnona_process",
+      "char_id":  "1003_GNOM",
+      "prompt":   "Ask about processing the ore",
+      "lock":     {"requires": ["clint_met_mines", "ship_materials_surveyed"], "excludes": ["winnona_consulted"]},
+      "opening_beats": [
+        {
+          "speaker":   "1003_GNOM",
+          "text":      "Clint says you want ship-grade iron. I can do it. One condition — you use it for something that actually moves. Not a gate. Not a monument. A ship that goes somewhere.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "It will go somewhere. I promise you that.",
+          "beats": [
+            {
+              "speaker":   "1003_GNOM",
+              "text":      "Good enough. Give me a day. I work faster without being watched, so come back when the light is long.",
+              "addressee": "PLAYER"
+            }
+          ],
+          "grants": ["winnona_processing_commissioned"]
+        },
+        {
+          "text":  "What does ship-grade mean to a Gnome?",
+          "beats": [
+            {
+              "speaker":   "1003_GNOM",
+              "text":      "It means the tolerances are not guesses. Depth is not gentle. It does not accept approximations.",
+              "addressee": "PLAYER"
+            }
+          ]
+        }
+      ],
+      "grants": ["winnona_consulted"]
+    }
+  ]
+}

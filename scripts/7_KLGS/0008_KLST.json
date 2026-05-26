@@ -1,0 +1,117 @@
+{
+  "quest_id":       "0008_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "Bunsen for Hire",
+  "completion_key": "sulphera_network_accessed",
+  "scenes": [
+    {
+      "id":           "0008_KLST.hypatia_absence",
+      "zone":         "lapidus_castle_hypatia_tower",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["hypnotic_meditation_available"], "excludes": ["hypatia_absence_noticed"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "The tower is empty. Her tools are where she left them. The notes are where she left them. Everything is exactly where it was except her.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["hypatia_absence_noticed"],
+      "repeatable": false
+    },
+    {
+      "id":           "0008_KLST.shop_open",
+      "zone":         "player_home_ground",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["alfir_met_properly"], "excludes": ["shop_established"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "The front room is clear. The sign hangs outside. The first customer has not arrived yet but the door is open.",
+          "addressee": "AMBIENT"
+        }
+      ],
+      "grants":     ["shop_established", "market_sign_acquired"],
+      "repeatable": false
+    },
+    {
+      "id":           "0008_KLST.imp_customer",
+      "zone":         "player_home_ground",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["shop_established"], "excludes": ["imp_disguised_encountered"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "A customer comes in asking about metalwork. His hands are wrong. Not wrong in a way you can name immediately — wrong in the way a thing is wrong when something underneath is making an effort to look right.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["imp_disguised_encountered", "imp_disguise_detected"],
+      "repeatable": false
+    },
+    {
+      "id":           "0008_KLST.shipmaker_visit",
+      "zone":         "player_home_ground",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["shop_established"], "excludes": ["shipmaker_met"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "A broad-shouldered woman enters carrying a blueprint rolled under one arm. She introduces herself as a shipmaker from Alzedroswune. She needs specific metalwork — the kind that requires an understanding of pressure tolerances at depth.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["shipmaker_met", "shipmaker_alzedroswune_known"],
+      "repeatable": false
+    },
+    {
+      "id":           "0008_KLST.sulphera_pipeline",
+      "zone":         "lapidus_warren_rhododendron",
+      "participants": ["0011_TOWN"],
+      "lock":         {"requires": ["shop_established", "met_genovise"], "excludes": ["goods_smuggled_sulphera"]},
+      "beats": [
+        {
+          "speaker":   "0011_TOWN",
+          "text":      "Your work has been moving. People have been talking about it the way people talk about things that are genuinely useful. There is a channel I can show you now that I could not have shown you before.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "0011_TOWN",
+          "text":      "It runs down. All the way down. If you want access to what is at the bottom, you need to start here.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["goods_smuggled_sulphera", "sulphera_network_accessed", "contracts_underway"],
+      "repeatable": false
+    }
+  ],
+  "topics": [
+    {
+      "id":       "0008_KLST.alfir_seek",
+      "char_id":  "0006_WTCH",
+      "prompt":   "Ask about Hypatia",
+      "lock":     {"requires": ["hypatia_absence_noticed"], "excludes": ["alfir_met_properly"]},
+      "opening_beats": [
+        {
+          "speaker":   "0006_WTCH",
+          "text":      "She is gone. You know that already or you would not be here. I have suspicions about why but I will not share them until I know more. What I can tell you is that she did not leave without thinking about it carefully.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "What should I do while she's gone?",
+          "beats": [
+            {
+              "speaker":   "0006_WTCH",
+              "text":      "Work. Open your shop. Make yourself known to the people who need what you can make. Hypatia will not be away forever, but the distance will be long enough that idle hands will make it worse.",
+              "addressee": "PLAYER"
+            }
+          ],
+          "grants": ["alfir_sought"]
+        }
+      ],
+      "grants": ["alfir_met_properly", "alfir_suspicion_known"]
+    }
+  ]
+}

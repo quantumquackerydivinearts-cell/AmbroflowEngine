@@ -1,0 +1,96 @@
+{
+  "quest_id":       "0026_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "Assassination",
+  "completion_key": "assassination_plot_formed",
+  "scenes": [
+    {
+      "id":           "0026_KLST.target_council",
+      "zone":         "lapidus_the_rocks",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["witch_bounties_announced", "assassin_inducted"], "excludes": ["target_council_held"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "Sophia calls the council. Not a meeting — a council, which in the order's usage means a decision is being made that will have permanent consequences. Hue, Cyrus, Asmoth. You. The fire is low and no one tends it.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["target_council_held"],
+      "repeatable": false
+    }
+  ],
+  "topics": [
+    {
+      "id":       "0026_KLST.sophia_target_question",
+      "char_id":  "1007_UNDI",
+      "prompt":   "Hear the question",
+      "lock":     {"requires": ["target_council_held"], "excludes": ["assassination_plot_formed"]},
+      "opening_beats": [
+        {
+          "speaker":   "1007_UNDI",
+          "text":      "The bounties did not happen by accident. They happened because someone decided it was time for them to happen. We need to decide whether to respond to the symptom or the cause.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "1007_UNDI",
+          "text":      "The symptom is the bounty hunters. The cause is more complicated. It depends on what you believe the actual engine of this is — the priesthood, the caravan network, or the crown.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "The source is Nexiott. End Nexiott.",
+          "beats": [
+            {
+              "speaker":   "1007_UNDI",
+              "text":      "Nexiott is protected by his usefulness. Many people profit from his continued operation. His removal requires the right sequence — not just the act, but the exposure that makes the act legible as justice rather than murder.",
+              "addressee": "PLAYER",
+              "grants":    ["nexiott_plot_begun", "assassination_plot_formed"]
+            },
+            {
+              "speaker":   "0011_ASSN",
+              "text":      "There is a route. Through his own network. Joannah has been tracing the contracts — she does not know what she is building toward, but the shape is already there.",
+              "addressee": "PLAYER",
+              "grants":    ["nexiott_joannah_route_seen"]
+            }
+          ]
+        },
+        {
+          "text":  "Saffron is the public face. Remove her first.",
+          "beats": [
+            {
+              "speaker":   "0013_ASSN",
+              "text":      "Saffron is seventy-two. She has lived this long because she is careful and because the temple protects her. But a careful old woman with a guilty conscience has vulnerabilities. I know what they are.",
+              "addressee": "PLAYER",
+              "grants":    ["saffron_plot_begun", "assassination_plot_formed"]
+            }
+          ]
+        },
+        {
+          "text":  "Bombastus signed nothing. Bring him the evidence first.",
+          "beats": [
+            {
+              "speaker":   "0012_ASSN",
+              "text":      "That is not an assassination. That is a strategy. But it could lead to one if Bombastus is not what Kelly believes he is. I can move through the castle without being seen. I will find out.",
+              "addressee": "PLAYER",
+              "grants":    ["bombastus_investigation_begun", "assassination_plot_formed"]
+            }
+          ]
+        },
+        {
+          "text":  "The whole line. Cascade removal.",
+          "beats": [
+            {
+              "speaker":   "1007_UNDI",
+              "text":      "That is a war, not an assassination. The order does not run wars. But if you are serious about this — seriously, not reflexively — there is a structure for it. It requires that each removal be justified individually. The line is not a target. Each person in it is.",
+              "addressee": "PLAYER",
+              "grants":    ["royl_cascade_considered", "assassination_plot_formed"]
+            }
+          ]
+        }
+      ],
+      "grants": ["sophia_council_spoken"]
+    }
+  ]
+}

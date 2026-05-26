@@ -33,6 +33,7 @@ from .lapidus import (
     build_hopefare_junction,
     build_june_quarter,
     build_goldshoot_street,
+    build_temple_interior,
     build_youthspring_road,
     # Castle Azoth interior floors
     build_castle_main_hall,
@@ -75,7 +76,7 @@ def build_game7_world() -> WorldMap:
     Stubs (show "(nothing that way yet)"):
         lapidus_slum_interior           Azonithia Slum (9 warrens / 13 passages)
         lapidus_market_interior         Market district interior
-        lapidus_temple_interior         Temple of the Gods
+        lapidus_temple_interior         Temple of the Gods interior (Saffron, Lucion)
         lapidus_heartvein_interior      Heartvein Heights
         lapidus_mt_elaene_summit        Mt. Elaene / Elaene desert gateway
     """
@@ -95,6 +96,7 @@ def build_game7_world() -> WorldMap:
         build_hopefare_junction(),
         build_june_quarter(),
         build_goldshoot_street(),
+        build_temple_interior(),
         build_youthspring_road(),
         build_litleaf_thoroughfare(),
         build_azonithia_slum(),

@@ -1,0 +1,152 @@
+{
+  "quest_id":       "0018_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "Growing Pains",
+  "completion_key": "townsfolk_plight_known",
+  "scenes": [
+    {
+      "id":           "0018_KLST.joannah_revelation",
+      "zone":         "lapidus_the_grimes",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["mines_entered", "joannah_investigating_mines"], "excludes": ["joannah_investigation_advanced"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "Joannah has the papers spread across the table when you arrive. She does not look up. She has been tracking the mine contracts against the census records and the numbers do not reconcile in a way that is accidental.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["joannah_investigation_advanced"],
+      "repeatable": false
+    }
+  ],
+  "topics": [
+    {
+      "id":       "0018_KLST.joannah_findings",
+      "char_id":  "0001_TOWN",
+      "prompt":   "Ask what she found",
+      "lock":     {"requires": ["joannah_investigation_advanced"], "excludes": ["nexiott_child_contracts_known"]},
+      "opening_beats": [
+        {
+          "speaker":   "0001_TOWN",
+          "text":      "Fourteen children. Jackie and Gwev's kids, yes, but also others — four from the Orebustle corridor who are not on any official register. No ages recorded. No parental consent on the forms because the form that would require it does not exist.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "0001_TOWN",
+          "text":      "The contracts go back to Nexiott's caravan company. The payments go to a shell account that does not exist in any registry I can find. Someone created it specifically for this arrangement and did it carefully.",
+          "addressee": "PLAYER",
+          "grants":    ["nexiott_child_contracts_known"]
+        }
+      ],
+      "responses": [
+        {
+          "text":  "What do we do with this?",
+          "beats": [
+            {
+              "speaker":   "0001_TOWN",
+              "text":      "Carefully. If we move too fast, the records disappear and the children stay. I need three more weeks to trace the shell account. You can help by keeping the mine workers calm — Kaelith tells me they are close to something that would get them killed.",
+              "addressee": "PLAYER"
+            }
+          ]
+        },
+        {
+          "text":  "This could be used against Nexiott.",
+          "beats": [
+            {
+              "speaker":   "0001_TOWN",
+              "text":      "Yes. But use it wrong and you get Nexiott defending himself loudly in public and fourteen children as collateral to that defense. I need you to wait until I say the time is right.",
+              "addressee": "PLAYER"
+            }
+          ]
+        }
+      ],
+      "grants": ["nexiott_child_contracts_known", "joannah_three_weeks"]
+    },
+    {
+      "id":       "0018_KLST.wells_burden",
+      "char_id":  "0002_TOWN",
+      "prompt":   "Ask about the aqueduct situation",
+      "lock":     {"requires": ["shop_established"], "excludes": ["wells_burden_known"]},
+      "opening_beats": [
+        {
+          "speaker":   "0002_TOWN",
+          "text":      "The aqueduct serves the June Street market district and the upper city. It does not serve Orebustle. It has not served Orebustle since the reroute twelve years ago. The reroute was Nexiott's infrastructure proposal.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "Why does it matter?",
+          "beats": [
+            {
+              "speaker":   "0002_TOWN",
+              "text":      "Because Orebustle buys water now. From Nexiott's caravan supply line. From the same company that employs the children. The aqueduct is not an infrastructure problem. It is a revenue structure.",
+              "addressee": "PLAYER",
+              "grants":    ["nexiott_water_monopoly_known"]
+            }
+          ]
+        }
+      ],
+      "grants": ["wells_burden_known"]
+    },
+    {
+      "id":       "0018_KLST.lavelle_risk",
+      "char_id":  "0003_TOWN",
+      "prompt":   "Ask about the explosives",
+      "lock":     {"requires": ["shop_established"], "excludes": ["lavelle_risk_known"]},
+      "opening_beats": [
+        {
+          "speaker":   "0003_TOWN",
+          "text":      "The laundry gives me access to the castle staff quarters. I know things because of that. I also make things because I cannot stop myself — I read about a powder compound two years ago and I have been refining it since. It has a use I have not found yet. I keep it anyway.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "What kind of use are you looking for?",
+          "beats": [
+            {
+              "speaker":   "0003_TOWN",
+              "text":      "Something that opens a door that should not stay closed. I will know it when I find it.",
+              "addressee": "PLAYER"
+            }
+          ]
+        }
+      ],
+      "grants": ["lavelle_risk_known", "lavelle_explosive_ready"]
+    },
+    {
+      "id":       "0018_KLST.sidhal_burden",
+      "char_id":  "0004_TOWN",
+      "prompt":   "Ask about the temple work",
+      "lock":     {"requires": ["shop_established"], "excludes": ["sidhal_burden_known"]},
+      "opening_beats": [
+        {
+          "speaker":   "0004_TOWN",
+          "text":      "I tend the temple because Marcia asked me to and because it is honest work. It is also work that gives me access to what Saffron's congregation hears on Seventh Days. I have been keeping notes for eighteen months.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "0004_TOWN",
+          "text":      "The sermons have shifted. Eighteen months ago they were about sin and governance. Now they are about the Fae. The language has become specific in ways I do not like.",
+          "addressee": "PLAYER",
+          "grants":    ["saffron_sermon_shift_known"]
+        }
+      ],
+      "responses": [
+        {
+          "text":  "What kind of language?",
+          "beats": [
+            {
+              "speaker":   "0004_TOWN",
+              "text":      "The language you use when you are preparing people to accept something. Not persuasion — preparation. There is a difference.",
+              "addressee": "PLAYER"
+            }
+          ]
+        }
+      ],
+      "grants": ["sidhal_burden_known", "townsfolk_plight_known"]
+    }
+  ]
+}

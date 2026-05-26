@@ -1,0 +1,84 @@
+{
+  "quest_id":       "0021_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "Starlight Shows",
+  "completion_key": "orrery_glimpsed",
+  "scenes": [
+    {
+      "id":           "0021_KLST.drovitth_contact",
+      "zone":         "player_home_upper",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["giann_met"], "excludes": ["drovitth_contact_made"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "The map on the wall — the one you have been adding to since arriving in Lapidus — begins to rearrange itself in your sleep. Not randomly. It is being corrected. Someone with better information than you has spent the night making it accurate.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "ENV",
+          "text":      "In the center, where the map would need a fourth dimension to continue, there is a new symbol. It is not a place. It is the shape of something that tracks places — a machine that does not move but watches everything that does.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["drovitth_contact_made", "orrery_symbol_seen"],
+      "repeatable": false
+    }
+  ],
+  "topics": [
+    {
+      "id":       "0021_KLST.drovitth_orrery",
+      "char_id":  "1018_DJNN",
+      "prompt":   "Follow the symbol",
+      "lock":     {"requires": ["orrery_symbol_seen"], "excludes": ["orrery_glimpsed"]},
+      "opening_beats": [
+        {
+          "speaker":   "1018_DJNN",
+          "text":      "You found it. Or — more precisely — you were shown it, which is the same thing at the scale I work at. The Orrery is not a place you go. It is a place that becomes visible when you are tracking the same things it is.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "1018_DJNN",
+          "text":      "I built it in the Royal Ring because Sulphera is the only substrate that does not change underneath you while you are building. Consequence is consistent. Everything else in the three realms varies. I needed the thing that does not vary.",
+          "addressee": "PLAYER",
+          "grants":    ["orrery_royal_ring_location_known"]
+        }
+      ],
+      "responses": [
+        {
+          "text":  "What does it track?",
+          "beats": [
+            {
+              "speaker":   "1018_DJNN",
+              "text":      "Causal chains. The threads between events that are not visible unless you are watching from far enough back that the pattern resolves. Right now there is a chain I am watching that terminates in a birth. The birth has not happened yet. The chain is intact — barely.",
+              "addressee": "PLAYER",
+              "grants":    ["saelith_chain_sensed"]
+            }
+          ]
+        },
+        {
+          "text":  "Is Hypatia there?",
+          "beats": [
+            {
+              "speaker":   "1018_DJNN",
+              "text":      "Yes. She came to the Royal Ring deliberately. She is watching the same chain I am watching. She sent you the symbol because she knows you are the part of the chain that still has freedom of movement.",
+              "addressee": "PLAYER",
+              "grants":    ["hypatia_royal_ring_confirmed", "hypatia_watching_chain"]
+            }
+          ]
+        },
+        {
+          "text":  "Why show me this now?",
+          "beats": [
+            {
+              "speaker":   "1018_DJNN",
+              "text":      "Because you have reached the point in your trajectory where knowing changes what you do. Before now, it would have been noise. You have earned the signal.",
+              "addressee": "PLAYER"
+            }
+          ]
+        }
+      ],
+      "grants": ["orrery_glimpsed", "drovitth_met"]
+    }
+  ]
+}

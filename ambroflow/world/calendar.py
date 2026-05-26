@@ -256,6 +256,16 @@ class WorldClock:
         day_of_year = total_days % DAYS_PER_YEAR + 1
         return AeraluneDate(year=year, day_of_year=day_of_year)
 
+    @classmethod
+    def from_total_hours(cls, total_hours: int) -> "WorldClock":
+        """Reconstruct a WorldClock from a raw total-hours count (e.g. from save data)."""
+        n           = max(0, int(total_hours))
+        total_days  = n // HOURS_PER_DAY
+        year        = total_days // DAYS_PER_YEAR + 1
+        day_of_year = total_days % DAYS_PER_YEAR + 1
+        hour        = n % HOURS_PER_DAY
+        return cls(year=year, day_of_year=day_of_year, hour=hour)
+
     # ── Mutation ──────────────────────────────────────────────────────────────
 
     def advance(self, hours: int = 1) -> None:

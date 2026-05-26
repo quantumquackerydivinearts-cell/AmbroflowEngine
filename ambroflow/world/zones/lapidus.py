@@ -472,6 +472,8 @@ def build_wiltoll_home() -> Zone:
         for x in range(27, 39):         # Meditation
             lines.append(_floor(x, y))
 
+    # Bed at (5,3) — centre of Bedroom
+    lines.append(_floor(5, 3, "bed"))
     # Staircase at (9,2) — north-east corner of Bedroom
     lines.append(_floor(9, 2, "stairs_up"))
 
@@ -996,8 +998,9 @@ def build_witch_forest() -> Zone:
     # Door on south wall
     lines.append(_floor(18, 16, "door"))
 
-    # Forest Witch in the clearing outside the cottage
+    # Forest Witch and Kore in the commune clearing
     lines.append(_npc_tile(11, 13, "0007_WTCH"))
+    lines.append(_npc_tile(22, 11, "0005_WTCH"))   # Kore: commune guardian
 
     # Player spawn on the path just inside the tree line
     spawn = (17, 2)
@@ -1122,6 +1125,13 @@ def build_mine_entrance() -> Zone:
     lines.append(_portal(10, 7, "mine_iron",   "Ru"))   # iron: rust-red
     lines.append(_portal(21, 7, "mine_silver", "Na"))   # silver: grey stone
     lines.append(_portal(32, 7, "mine_gold",   "El"))   # gold: warm yellow
+
+    # Kaelith works the iron shaft — same character as in The Grimes warrens
+    lines.append(_npc_tile(7, 5, "0009_TOWN"))
+    # Clint: Gnome geologist mapping the iron vein, south side of iron clearing
+    lines.append(_npc_tile(12, 10, "1001_GNOM"))
+    # Winnona: Gnome metallurgist near the gold shaft where she runs assays
+    lines.append(_npc_tile(30, 10, "1003_GNOM"))
 
     return _build(lines, "lapidus_mine_entrance", "Orebustle Mine Head",
                   Realm.LAPIDUS, (2, 6), _MINE_ENTRANCE_EXITS)
@@ -1467,6 +1477,70 @@ def build_goldshoot_street() -> Zone:
     return _kbuild(lines, "lapidus_goldshoot_street", "Goldshoot Street", SPAWN)
 
 
+# ── Temple Interior  (32 × 28) ───────────────────────────────────────────────
+#
+# Inner sanctum of the Temple of the Gods (Goldshoot Street, north end).
+# Stone nave, altar dais at north end (rows 4-8), side chapels east/west.
+# Saffron (0008_PRST) presides at the altar.
+# Lucion (0009_PRST) in east chapel.
+#
+# Exits:
+#   South (15,27)+(16,27) → lapidus_goldshoot_street (7,1)+(8,1)
+
+def build_temple_interior() -> Zone:
+    W, H = 32, 28
+    SPAWN = (16, 22)
+
+    SOUTH = {(15, H-1), (16, H-1)}
+    passable = SOUTH
+
+    lines: list[str] = []
+    walls: set[tuple[int, int]] = set()
+
+    _kperim(W, H, lines, passable)
+    for x in range(W):
+        walls.add((x, 0)); walls.add((x, H-1))
+    for y in range(H):
+        walls.add((0, y)); walls.add((W-1, y))
+    walls -= passable
+
+    # Altar dais: raised stone block, rows 4-8, cols 10-21
+    for y in range(4, 9):
+        for x in range(10, 22):
+            lines.append(_stone(x, y))
+            walls.add((x, y))
+
+    # Altar steps: open row 9 center
+    for x in range(13, 19):
+        walls.discard((x, 9))
+
+    # Nave pillars at rows 12, 16, 20 — pairs at cols 4 and 27
+    for ry in (12, 16, 20):
+        for cx in (4, 27):
+            lines.append(_kw(cx, ry)); walls.add((cx, ry))
+
+    # West chapel alcove: cols 1-4, rows 14-18
+    for y in range(14, 19):
+        for x in range(1, 5):
+            walls.discard((x, y))
+
+    # East chapel alcove: cols 27-30, rows 14-18
+    for y in range(14, 19):
+        for x in range(27, 31):
+            walls.discard((x, y))
+
+    _kfill(W, H, lines, walls, color="La")
+
+    lines.append(_ks(*SPAWN))
+    lines.append(_kn(16, 6,  "0008_PRST"))   # Saffron at the altar
+    lines.append(_kn(28, 15, "0009_PRST"))   # Lucion in east chapel
+
+    for (x, y) in SOUTH:
+        lines.append(_ke(x, y, "south", "lapidus_goldshoot_street", 7, 1))
+
+    return _kbuild(lines, "lapidus_temple_interior", "Temple Interior", SPAWN)
+
+
 # ── Youthspring Road  (22 × 28) ──────────────────────────────────────────────
 #
 # Melted silica approach to Heartvein Heights.
@@ -1563,7 +1637,8 @@ def build_castle_main_hall() -> Zone:
     _kfill(W, H, lines, walls, color="Ha")
 
     lines.append(_ks(*SPAWN))
-    lines.append(_kn(27, 4, "ROYL_BOMBASTUS"))
+    lines.append(_kn(27, 4, "0015_ROYL"))
+    lines.append(_kn(10, 14, "0014_ROYL"))   # Chancellor Kelly: colonnade, west side
 
     for (x, y) in SOUTH:
         lines.append(_ke(x, y, "south", "lapidus_castle_azoth", 19, 1))
@@ -1767,8 +1842,17 @@ def build_castle_hypatia_tower() -> Zone:
     for (x, y) in NORTH:
         lines.append(_ke(x, y, "north", "lapidus_castle_canopy", 15, 16))
 
-    return _kbuild(lines, "lapidus_castle_hypatia_tower",
+    zone = _kbuild(lines, "lapidus_castle_hypatia_tower",
                    "Hypatia's Tower", SPAWN)
+    # Dagger on the lab bench — condition gates it to after Hypatia leaves it there.
+    # Players who receive it via dialogue (dagger_received key → _QUEST_ITEM_GRANTS)
+    # will have it in inventory already; this spawn fires only if that path was missed.
+    from ..map import ItemSpawn as _IS, ZoneCondition as _ZC
+    zone = _dc_replace(zone, item_spawns=[
+        _IS(x=7, y=8, item_id="0027_KLIT", qty=1,
+            condition=_ZC(key="hypatia_taught_skills", mode="witnessed")),
+    ])
+    return zone
 
 
 # ── Castle Azoth — Glass Canopy  (32 × 18) ───────────────────────────────────

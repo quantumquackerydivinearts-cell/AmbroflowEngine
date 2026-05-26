@@ -1,0 +1,78 @@
+{
+  "quest_id":       "0022_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "Lost in Translation",
+  "completion_key": "kaganue_prophecy_recorded",
+  "scenes": [
+    {
+      "id":           "0022_KLST.envy_ring_encounter",
+      "zone":         "sulphera_envy_entry",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["infernal_meditation_learned"], "excludes": ["kaganue_encountered"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "The Envy Ring is not what its name suggests. There is nothing covetous here — only the quality of wanting to be somewhere else while being exactly where you are. In the center of it, there is a figure who is clearly comfortable with the contradiction.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["kaganue_encountered"],
+      "repeatable": false
+    }
+  ],
+  "topics": [
+    {
+      "id":       "0022_KLST.kaganue_prophecy",
+      "char_id":  "2008_DMON",
+      "prompt":   "Listen",
+      "lock":     {"requires": ["kaganue_encountered"], "excludes": ["kaganue_prophecy_recorded"]},
+      "opening_beats": [
+        {
+          "speaker":   "2008_DMON",
+          "text":      "The alchemist who left you is exactly what she appears to be. She is where you would expect to find her. There is no reason to look deeper.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "2008_DMON",
+          "text":      "The man who trades in goods trades only in goods. His hands are clean. His arrangements bring prosperity to those who have arranged with him. Nothing flows through his channels that was not freely offered.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "2008_DMON",
+          "text":      "Ko has finished speaking. Her history is sealed. What was made cannot be continued. The record is complete and asks nothing more of you.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "2008_DMON",
+          "text":      "The sickness that is coming is a mercy. What it takes, it takes gently. Those who remain will remember those who went, and the memory will be uncomplicated.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "I don't understand you.",
+          "beats": [
+            {
+              "speaker":   "2008_DMON",
+              "text":      "That is the most accurate thing you will say in this ring. Write it down. Write all of it down. The confusion is the record.",
+              "addressee": "PLAYER",
+              "grants":    ["kaganue_prophecy_recorded"]
+            }
+          ]
+        },
+        {
+          "text":  "Are you lying to me?",
+          "beats": [
+            {
+              "speaker":   "2008_DMON",
+              "text":      "No. I am telling you exactly what I know. The difficulty is not the telling.",
+              "addressee": "PLAYER",
+              "grants":    ["kaganue_prophecy_recorded"]
+            }
+          ]
+        }
+      ],
+      "grants": ["kaganue_met", "kaganue_prophecy_recorded"]
+    }
+  ]
+}

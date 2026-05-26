@@ -1,0 +1,85 @@
+{
+  "quest_id":       "0005_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "Darker Secrets",
+  "completion_key": "kelly_intervened",
+  "scenes": [
+    {
+      "id":           "0005_KLST.hypatia_pipeline_lesson",
+      "zone":         "lapidus_castle_hypatia_tower",
+      "participants": ["0000_0451"],
+      "lock":         {"requires": ["skills_defined"], "excludes": ["klob_pipeline_learned"]},
+      "beats": [
+        {
+          "speaker":   "0000_0451",
+          "text":      "Before I go, there is one more thing you need to understand. Not because you will use it now — because you will encounter it later and the recognition will matter.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "0000_0451",
+          "text":      "The KLOB manufacturing pipeline. Base alloy processing, field geometry, plasma channeling, final assembly. I will walk you through it once. Pay attention to the crystal seat — that is where the system's vulnerability lives.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["klob_pipeline_learned", "hypatia_last_lesson"],
+      "repeatable": false
+    },
+    {
+      "id":           "0005_KLST.canopy_eavesdrop",
+      "zone":         "lapidus_castle_canopy",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["klob_pipeline_learned"], "excludes": ["saffron_nexiott_overheard"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "Voices below, through the canopy grate. Saffron. A man you do not recognise, speaking with the certainty of someone who has not had to justify themselves in a long time.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "ENV",
+          "text":      "The weapon is the subject. The Fae are the target. The man frames it as logistics, not war — supply chains and asset clearance. The clarity of it is worse than if he had been angry.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["saffron_nexiott_overheard", "fae_war_known", "nexiott_identified"],
+      "repeatable": false
+    },
+    {
+      "id":           "0005_KLST.almost_caught",
+      "zone":         "lapidus_castle_canopy",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["saffron_nexiott_overheard"], "excludes": ["almost_caught_canopy"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "Footsteps on the stairs. The conversation below goes quiet. Someone is coming.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["almost_caught_canopy"],
+      "repeatable": false
+    },
+    {
+      "id":           "0005_KLST.kelly_arrival",
+      "zone":         "lapidus_castle_canopy",
+      "participants": ["0014_ROYL"],
+      "lock":         {"requires": ["almost_caught_canopy"], "excludes": ["kelly_intervened"]},
+      "beats": [
+        {
+          "speaker":   "0014_ROYL",
+          "text":      "There you are. I have been looking for the new apprentice. The west corridor is faster from here.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "0014_ROYL",
+          "text":      "Come. Quickly.",
+          "addressee": "PLAYER",
+          "action":    "turns without waiting for a response"
+        }
+      ],
+      "grants":     ["kelly_intervened", "kelly_knows_player_witnessed", "kelly_motive_unknown"],
+      "repeatable": false
+    }
+  ],
+  "topics": []
+}

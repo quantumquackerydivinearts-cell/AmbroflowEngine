@@ -1,0 +1,95 @@
+{
+  "quest_id":       "0017_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "Loss, I Fear",
+  "completion_key": "shakzefan_met",
+  "scenes": [
+    {
+      "id":           "0017_KLST.faewilds_threshold",
+      "zone":         "mercurie_threshold",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["faewilds_mine_passage_known"], "excludes": ["faewilds_entered_first"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "The mine passage ends not in stone but in something the stone does not have a border with. The Faewilds do not begin so much as assert themselves — the light changes, the air changes, and the sense that there are rules you know how to follow changes most of all.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["faewilds_entered_first"],
+      "repeatable": false
+    },
+    {
+      "id":           "0017_KLST.shakzefan_appears",
+      "zone":         "mercurie_threshold",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["faewilds_entered_first"], "excludes": ["shakzefan_met"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "She is not hiding. She is simply present in the way that fire is present — not coming toward you, not going away from you, not doing anything except being what she is in the place where she is. The light around her is the light of something growing. Also the light of something that has just finished.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["shakzefan_met"],
+      "repeatable": false
+    }
+  ],
+  "topics": [
+    {
+      "id":       "0017_KLST.shakzefan_war",
+      "char_id":  "2017_GODS",
+      "prompt":   "Ask what she is",
+      "lock":     {"requires": ["shakzefan_met"], "excludes": ["war_side_question_asked"]},
+      "opening_beats": [
+        {
+          "speaker":   "2017_GODS",
+          "text":      "I am what grows in the space where something has been lost. That is not comfort — it is just what I am. You came here because someone sent you toward a woman you have not yet decided whether to destroy. That is also just what it is.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "2017_GODS",
+          "text":      "The war has been going for twenty years because the thing feeding it is not a disagreement. It is a project. Projects do not end when the participants tire. They end when the object is achieved or when the architect is removed.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "Which side should I be on?",
+          "beats": [
+            {
+              "speaker":   "2017_GODS",
+              "text":      "That is a question for someone who does not yet know what they are. You will know what you are before this is over. What you are will tell you which side you are on. I cannot tell you before that.",
+              "addressee": "PLAYER"
+            }
+          ],
+          "grants": ["war_side_question_asked", "shakzefan_side_deferred"]
+        },
+        {
+          "text":  "What will I lose if I kill Amelia?",
+          "beats": [
+            {
+              "speaker":   "2017_GODS",
+              "text":      "More than you can currently measure. That is always the answer when the loss is large enough to be a turning point. You do not lose what you can measure ahead of time. You lose what you did not know existed.",
+              "addressee": "PLAYER",
+              "grants":    ["amelia_loss_weight_known"]
+            }
+          ],
+          "grants": ["war_side_question_asked", "shakzefan_amelia_warned"]
+        },
+        {
+          "text":  "What will I lose if I protect her?",
+          "beats": [
+            {
+              "speaker":   "2017_GODS",
+              "text":      "Less. But loss is not optional. Protection is not costless. Everything that grows also changes, and change is a form of losing what the thing was before it changed. You will lose the version of yourself who did not yet know what you are protecting.",
+              "addressee": "PLAYER"
+            }
+          ],
+          "grants": ["war_side_question_asked", "shakzefan_protection_doctrine"]
+        }
+      ],
+      "grants": ["shakzefan_spoken"]
+    }
+  ]
+}

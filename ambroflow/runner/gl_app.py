@@ -36,9 +36,11 @@ from .registry import GAMES
 from .game_flow import GameFlow, FlowPhase
 from .fate_knocks_gl import FateKnocksGLPlay
 from .gl_world_play import GLWorldPlay
-from .screens.title      import render_title_screen
+from .screens.title       import render_title_screen
 from .screens.game_select import render_game_select
 from .screens.name_entry  import render_name_entry
+from .screens.save_select import render_save_select
+from .screens.dream       import render_dream_screen
 
 from ..engine.window  import Window, InputEvent
 from ..engine.texture import Texture
@@ -133,9 +135,29 @@ class GLApp:
         # GL texture for current PIL frame
         self._screen_tex: Optional[Texture] = None
 
+        # Gray overlay texture for dream fade (cached)
+        self._gray_tex: Optional[Texture] = None
+
         # Raw text input accumulated between frames
         self._chars:    list[str] = []
         self._bs_count: int       = 0
+
+        # Delta-time for current frame (set at top of loop, used by handlers)
+        self._dt: float = 0.0
+
+        # ── Save / profile select state ────────────────────────────────────
+        self._save_entries:      list[dict] = []
+        self._save_sel_idx:      int        = 0
+        self._save_scroll:       int        = 0     # first visible entry index
+        self._ng_plus_unlocked:  bool       = False
+        self._ng_plus:           bool       = False # new-game-plus run in progress
+        self._confirm_delete:    bool       = False # waiting for DEL confirm
+
+        # ── Dream / sleep state ────────────────────────────────────────────
+        self._dream_fade:  float = 0.0   # 0→1 gray overlay opacity
+        self._dream_phase: str   = ""    # "fade_in" | "content"
+        self._dream_timer: float = 0.0
+        self._dream_frag:  int   = 0     # which atmospheric fragment to show
 
     # ── Persistence ───────────────────────────────────────────────────────────
 
@@ -189,6 +211,27 @@ class GLApp:
             self._screen_tex.delete()
         self._screen_tex = Texture.from_bytes(frame_bytes)
 
+    # ── Dream fade overlay ────────────────────────────────────────────────────
+
+    def _render_dream_fade_overlay(self, ui: UIRenderer) -> None:
+        """Render a gray-purple PIL layer on top of the frozen world scene."""
+        if not _PIL:
+            return
+        W, H = self._W, self._H
+        if self._gray_tex is None:
+            try:
+                from PIL import Image
+                import io
+                img = Image.new("RGB", (W, H), (52, 46, 68))   # muted gray-violet
+                buf = io.BytesIO()
+                img.save(buf, format="PNG")
+                self._gray_tex = Texture.from_bytes(buf.getvalue())
+            except Exception:
+                return
+        ui.add(self._gray_tex, (-1.0, -1.0, 1.0, 1.0), opacity=self._dream_fade)
+        ui.draw()
+        ui.clear()
+
     # ── PIL screen rendering ──────────────────────────────────────────────────
 
     def _render_pil_screen(self, ui: UIRenderer) -> None:
@@ -197,6 +240,36 @@ class GLApp:
 
         if self._screen == "TITLE":
             frame = render_title_screen(W, H, pulse=self._pulse)
+
+        elif self._screen == "SAVE_SELECT":
+            conf_name = ""
+            if self._confirm_delete and self._save_entries:
+                entry     = self._save_entries[self._save_sel_idx]
+                conf_name = entry.get("name", "") if entry.get("type") == "profile" else ""
+            frame = render_save_select(
+                self._save_entries,
+                self._save_sel_idx,
+                first_visible       = self._save_scroll,
+                ng_plus_unlocked    = self._ng_plus_unlocked,
+                confirm_delete_name = conf_name,
+                pulse               = self._pulse,
+                width               = W,
+                height              = H,
+            )
+
+        elif self._screen == "DREAM":
+            wp        = getattr(self._gl_world_play, "_wp", None)
+            clk       = getattr(wp, "_clock", None) if wp else None
+            date_str  = str(clk.date) if clk else ""
+            pname     = (self._session.profile.name
+                         if self._session.profile else "")
+            frame = render_dream_screen(
+                W, H,
+                pulse        = self._pulse,
+                player_name  = pname,
+                date_str     = date_str,
+                fragment_idx = self._dream_frag,
+            )
 
         elif self._screen == "NAME_ENTRY":
             frame = render_name_entry(
@@ -251,12 +324,149 @@ class GLApp:
         if events or self._chars or self._bs_count:
             self._chars.clear()
             self._bs_count = 0
-            if self._player_id:
-                prof = self._session.load_profile(self._player_id)
-                if prof:
-                    self._go("GAME_SELECT")
+            self._enter_save_select()
+
+    # ── Save / Profile select ─────────────────────────────────────────────────
+
+    def _enter_save_select(self) -> None:
+        """Load all profiles and build the entry list, then go to SAVE_SELECT."""
+        import time as _time
+        entries: list[dict] = []
+        ng_plus_unlocked = False
+
+        for pid in self._session.list_profiles():
+            prof = self._session._backend.load_profile(pid)
+            if prof is None:
+                continue
+            g7 = prof.progress("7_KLGS")
+            if g7.status == "complete":
+                ng_plus_unlocked = True
+            entries.append({
+                "type":              "profile",
+                "player_id":         pid,
+                "name":              prof.name,
+                "last_seen_at":      prof.last_seen_at,
+                "game7_status":      g7.status,
+                "play_time_seconds": g7.play_time_seconds,
+            })
+
+        entries.sort(key=lambda e: e.get("last_seen_at", 0), reverse=True)
+        entries.append({"type": "new_game"})
+        entries.append({"type": "ng_plus"})
+
+        self._save_entries     = entries
+        self._save_sel_idx     = 0
+        self._save_scroll      = 0
+        self._ng_plus_unlocked = ng_plus_unlocked
+        self._confirm_delete   = False
+        self._go("SAVE_SELECT")
+
+    def _handle_save_select(self, events: list[str]) -> None:
+        from ..engine.window import InputEvent
+        import glfw
+
+        self._chars.clear()
+        self._bs_count = 0
+        n = len(self._save_entries)
+
+        for ev in events:
+            if self._confirm_delete:
+                # Waiting for DEL again to confirm, or ESC to cancel
+                if ev == InputEvent.CANCEL:
+                    self._confirm_delete = False
+                    self._dirty = True
+                # DEL confirm is handled via raw key callback below (glfw.KEY_DELETE)
+            else:
+                if ev == InputEvent.MOVE_NORTH:
+                    self._save_sel_idx = max(0, self._save_sel_idx - 1)
+                    self._clamp_save_scroll()
+                    self._dirty = True
+                elif ev == InputEvent.MOVE_SOUTH:
+                    self._save_sel_idx = min(n - 1, self._save_sel_idx + 1)
+                    self._clamp_save_scroll()
+                    self._dirty = True
+                elif ev == InputEvent.INTERACT:
+                    self._select_save_entry()
                     return
+                elif ev == InputEvent.CANCEL:
+                    self._go("TITLE")
+                    return
+
+    def _handle_save_select_key(self, key: int) -> None:
+        """Handle raw key codes for the save-select screen (DELETE)."""
+        import glfw
+        if self._screen != "SAVE_SELECT":
+            return
+        if key == glfw.KEY_DELETE:
+            if self._confirm_delete:
+                self._delete_selected_profile()
+            else:
+                entry = self._save_entries[self._save_sel_idx] if self._save_entries else {}
+                if entry.get("type") == "profile":
+                    self._confirm_delete = True
+                    self._dirty = True
+        elif key == glfw.KEY_ESCAPE:
+            if self._confirm_delete:
+                self._confirm_delete = False
+                self._dirty = True
+
+    def _clamp_save_scroll(self) -> None:
+        """Keep selected entry in the visible window."""
+        max_vis = max(1, (800 - 110 - 80) // (88 + 6))   # approx, matches renderer
+        if self._save_sel_idx < self._save_scroll:
+            self._save_scroll = self._save_sel_idx
+        elif self._save_sel_idx >= self._save_scroll + max_vis:
+            self._save_scroll = self._save_sel_idx - max_vis + 1
+
+    def _select_save_entry(self) -> None:
+        if not self._save_entries:
+            self._ng_plus = False
             self._go("NAME_ENTRY")
+            return
+        entry = self._save_entries[self._save_sel_idx]
+        kind  = entry.get("type")
+
+        if kind == "new_game":
+            self._ng_plus = False
+            self._name_buf = ""
+            self._go("NAME_ENTRY")
+
+        elif kind == "ng_plus":
+            if not self._ng_plus_unlocked:
+                return   # locked — do nothing
+            self._ng_plus = True
+            self._name_buf = ""
+            self._go("NAME_ENTRY")
+
+        elif kind == "profile":
+            pid  = entry["player_id"]
+            prof = self._session.load_profile(pid)
+            if prof is None:
+                self._enter_save_select()   # stale entry — reload
+                return
+            self._player_id = pid
+            self._save_last_player_id(pid)
+            self._go("GAME_SELECT")
+
+    def _delete_selected_profile(self) -> None:
+        if not self._save_entries:
+            return
+        entry = self._save_entries[self._save_sel_idx]
+        if entry.get("type") != "profile":
+            return
+        pid = entry["player_id"]
+        try:
+            self._session.delete_profile(pid)
+            if self._player_id == pid:
+                self._player_id = None
+                try:
+                    import os
+                    os.remove(_PLAYER_ID_FILE)
+                except OSError:
+                    pass
+        except Exception:
+            pass
+        self._enter_save_select()   # rebuild list
 
     def _handle_name_entry(self, events: list[str]) -> None:
         for ch in self._chars:
@@ -446,6 +656,72 @@ class GLApp:
         """Render one loading frame then immediately build WorldPlay."""
         self._launch_world_play(ui)
 
+    # ── Dream / sleep flow ────────────────────────────────────────────────────
+
+    def _handle_dream_fade(self) -> None:
+        """Advance gray overlay; transition to DREAM once fully opaque."""
+        self._dream_fade = min(1.0, self._dream_fade + self._dt / 1.2)
+        if self._dream_fade >= 1.0:
+            self._dream_phase = "content"
+            self._screen      = "DREAM"
+            self._dream_timer = 0.0
+            self._dirty       = True
+
+    def _handle_dream(self, events: list[str]) -> None:
+        """Dream content screen — any key wakes the player."""
+        from ..engine.window import InputEvent
+        self._dream_timer += self._dt
+        # Pulse handled in _render_pil_screen via self._pulse
+        self._dirty = True   # animate the wake prompt
+        for ev in events:
+            if ev in (InputEvent.INTERACT, InputEvent.CANCEL,
+                      InputEvent.MOVE_NORTH, InputEvent.MOVE_SOUTH,
+                      InputEvent.MOVE_EAST,  InputEvent.MOVE_WEST):
+                wp = getattr(self._gl_world_play, "_wp", None)
+                if wp is not None:
+                    self._complete_sleep(wp)
+                return
+
+    def _complete_sleep(self, wp) -> None:
+        """Save game, advance clock to next dawn (hour 6), return to world."""
+        clock = getattr(wp, "_clock", None)
+        if clock is not None:
+            cur_hour         = clock.hour
+            hours_to_dawn    = (6 - cur_hour) % 24 or 24
+            clock.advance(hours_to_dawn)
+            wp._current_hour = clock.hour
+            wp._hour_tick_acc = 0
+            if wp._quest_runtime is not None:
+                wp._quest_runtime.set_hour(wp._current_hour)
+        wp._sleep_pending = False
+        self._dream_frag  = (self._dream_frag + 1) % 10
+        self._save_world_play_state(wp)
+        self._dream_fade  = 0.0
+        self._dream_phase = ""
+        self._screen      = "WORLD_PLAY"
+
+    def _save_world_play_state(self, wp) -> None:
+        """Persist quest state, breath snapshot, and clock into the player profile."""
+        if self._session.profile is None:
+            return
+        try:
+            if self._active_breath is not None:
+                self._session.profile.breath_snapshot = self._active_breath.snapshot()
+            gp = self._session.profile.progress("7_KLGS")
+            qr = getattr(wp, "_quest_runtime", None)
+            if qr is not None:
+                gp.quest_state = qr.as_save_dict()
+            clock = getattr(wp, "_clock", None)
+            ws    = dict(gp.world_state or {})
+            if clock is not None:
+                ws["clock_total_hours"] = clock.total_hours
+            if self._ng_plus:
+                ws["ng_plus"] = True
+            gp.world_state = ws or None
+            self._session.save()
+        except Exception:
+            pass
+
     def _launch_world_play(self, ui: "UIRenderer") -> None:
         """Build WorldPlay + GLWorldPlay and transition to WORLD_PLAY screen."""
         import logging, traceback
@@ -453,7 +729,7 @@ class GLApp:
 
         # ── Step 1: core WorldPlay (must succeed) ──────────────────────────
         try:
-            from ..world import WorldPlay, build_game7_world
+            from ..world import WorldPlay, WorldClock, build_game7_world
             from ..world.zones.lapidus import VENDOR_CATALOGS
             from ..alchemy.system import AlchemySystem
             from ..journal.journal import Journal
@@ -496,6 +772,13 @@ class GLApp:
                 save_dict = _qsave,
             )
 
+            # Restore clock from save, or start at year 1, day 1, dawn
+            _ws           = (self._session.profile.progress("7_KLGS").world_state or {}
+                             if self._session.profile else {})
+            _saved_hours  = _ws.get("clock_total_hours")
+            clock = (WorldClock.from_total_hours(int(_saved_hours))
+                     if _saved_hours is not None else WorldClock())
+
             wp = WorldPlay(
                 chargen         = chargen,
                 world_map       = world_map,
@@ -508,6 +791,7 @@ class GLApp:
                 breath          = self._active_breath,
                 physics_world   = self._session.physics,
                 quest_runtime   = quest_runtime,
+                clock           = clock,
             )
             # Post-FateKnocks: player exits through the home's front door onto
             # Wiltoll Lane.  Spawn at the exterior lane position in front of
@@ -519,6 +803,13 @@ class GLApp:
                 wp._player.x       = 3
                 wp._player.y       = 8
                 wp._zone           = lane
+
+            # Inject ng_plus into quest state when applicable
+            if self._ng_plus and quest_runtime is not None:
+                try:
+                    quest_runtime._ring.grant("new_game_plus")
+                except Exception:
+                    pass
         except Exception:
             _log.error("WorldPlay init failed:\n%s", traceback.format_exc())
             self._go("GAME_SELECT")
@@ -553,26 +844,24 @@ class GLApp:
             return
         for ev in events:
             self._gl_world_play.handle_event(ev)
+
+        # Check if the player has chosen to sleep
+        _wp = getattr(self._gl_world_play, "_wp", None)
+        if _wp is not None and getattr(_wp, "_sleep_pending", False):
+            self._dream_fade  = 0.0
+            self._dream_phase = "fade_in"
+            self._dream_timer = 0.0
+            self._screen      = "DREAM_FADE"
+            return
+
         if self._gl_world_play.is_done():
+            _wp_done = getattr(self._gl_world_play, "_wp", None)
+            if _wp_done is not None:
+                self._save_world_play_state(_wp_done)
             self._gl_world_play.delete()
             self._gl_world_play = None
             self._chargen = None
             self._starting_inventory = {}
-            # Sync BreathOfKo and quest state back to session before saving
-            if self._session.profile is not None:
-                try:
-                    if self._active_breath is not None:
-                        self._session.profile.breath_snapshot = \
-                            self._active_breath.snapshot()
-                    # Save quest runtime state into GameProgress
-                    _wp = getattr(self._gl_world_play, "_wp", None)
-                    _qr = getattr(_wp, "_quest_runtime", None)
-                    if _qr is not None:
-                        self._session.profile.progress("7_KLGS").quest_state = \
-                            _qr.as_save_dict()
-                    self._session.save()
-                except Exception:
-                    pass
             self._active_breath = None
             self._go("GAME_SELECT")
 
@@ -593,11 +882,14 @@ class GLApp:
             lambda _w, codepoint: self._chars.append(chr(codepoint)),
         )
 
-        # Extended key callback: also catches backspace, chains to Window's
+        # Extended key callback: catches backspace + delete, chains to Window's
         _orig = win._key_cb
         def _key_cb(w, key, sc, action, mods):
-            if action in (glfw.PRESS, glfw.REPEAT) and key == glfw.KEY_BACKSPACE:
-                self._bs_count += 1
+            if action in (glfw.PRESS, glfw.REPEAT):
+                if key == glfw.KEY_BACKSPACE:
+                    self._bs_count += 1
+                elif key in (glfw.KEY_DELETE, glfw.KEY_ESCAPE):
+                    self._handle_save_select_key(key)
             _orig(w, key, sc, action, mods)
         glfw.set_key_callback(win._handle, _key_cb)
 
@@ -623,10 +915,13 @@ class GLApp:
                 if self._screen == "TITLE":
                     self._dirty = True
 
+                self._dt = dt
                 events = win.consume_events()
 
                 if self._screen == "TITLE":
                     self._handle_title(events)
+                elif self._screen == "SAVE_SELECT":
+                    self._handle_save_select(events)
                 elif self._screen == "NAME_ENTRY":
                     self._handle_name_entry(events)
                 elif self._screen == "GAME_SELECT":
@@ -639,6 +934,10 @@ class GLApp:
                     self._handle_loading(ui)
                 elif self._screen == "WORLD_PLAY":
                     self._handle_world_play(events)
+                elif self._screen == "DREAM_FADE":
+                    self._handle_dream_fade()
+                elif self._screen == "DREAM":
+                    self._handle_dream(events)
 
                 # ── Render ──────────────────────────────────────────────────
                 GL.glClearColor(0.02, 0.01, 0.05, 1.0)
@@ -650,19 +949,25 @@ class GLApp:
                 elif self._screen == "WORLD_PLAY" and self._gl_world_play is not None:
                     self._gl_world_play.tick(dt)
                     self._gl_world_play.draw()
+                elif self._screen == "DREAM_FADE" and self._gl_world_play is not None:
+                    # Freeze the world (no tick), draw it, then overlay gray
+                    self._gl_world_play.draw()
+                    self._render_dream_fade_overlay(ui)
                 else:
                     self._render_pil_screen(ui)
 
                 win.end_frame()
 
         finally:
-            self._session.save()
+            self._session.save()   # profile metadata only — game state saves on sleep
             if self._fate_gl:
                 self._fate_gl.delete()
             if self._gl_world_play:
                 self._gl_world_play.delete()
             if self._screen_tex:
                 self._screen_tex.delete()
+            if self._gray_tex:
+                self._gray_tex.delete()
             ui.delete()
             win.destroy()
 

@@ -1,0 +1,105 @@
+{
+  "quest_id":       "0009_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "Demons and Diamonds",
+  "completion_key": "imp_departed",
+  "scenes": [
+    {
+      "id":           "0009_KLST.imp_arrives",
+      "zone":         "player_home_ground",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["goods_smuggled_sulphera"], "excludes": ["imp_arrived"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "Past midnight. A knock — not at the door but on the wall beside it, low. The imp from before is in the doorway. Not the disguise. What he actually is.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "ENV",
+          "text":      "He holds out one hand. In it, an Asmodean Crystal. In his other hand, nothing — but he is looking at the dagger on the wall.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["imp_arrived"],
+      "repeatable": false
+    }
+  ],
+  "topics": [
+    {
+      "id":       "0009_KLST.imp_trade_dagger",
+      "char_id":  "ENV",
+      "prompt":   "Trade the dagger for the crystal",
+      "lock":     {"requires": ["imp_arrived", "dagger_received"], "excludes": ["imp_departed"]},
+      "opening_beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "The imp waits. He knows what he wants. He knows you know what you want. The only question is whether what Hypatia left you is worth trading away.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "Take the dagger.",
+          "beats": [
+            {
+              "speaker":   "ENV",
+              "text":      "He takes it without ceremony. Places the crystal on the workbench. Nods once. Gone.",
+              "addressee": "PLAYER"
+            }
+          ],
+          "grants": ["dagger_surrendered", "crystal_received", "imp_departed", "sulphera_access_imminent"]
+        },
+        {
+          "text":  "Give him the absinthe instead.",
+          "beats": [
+            {
+              "speaker":   "ENV",
+              "text":      "He looks at the bottle. Considers it. The crystal goes back in his coat. He takes the absinthe, shrugs with a kind of philosophical resignation, and leaves.",
+              "addressee": "PLAYER"
+            }
+          ],
+          "grants": ["absinthe_given", "crystal_route_closed", "imp_departed"]
+        },
+        {
+          "text":  "Attack him.",
+          "beats": [
+            {
+              "speaker":   "ENV",
+              "text":      "The crystal hits the floor and shatters. He is gone before the pieces stop moving. The dust is everywhere and it is not like the dream's dust — this is just glass. Ruined.",
+              "addressee": "PLAYER"
+            }
+          ],
+          "grants": ["imp_killed", "crystal_stolen_broken", "imp_departed"]
+        }
+      ],
+      "grants": []
+    },
+    {
+      "id":       "0009_KLST.infernal_salve_path",
+      "char_id":  "0006_WTCH",
+      "prompt":   "Ask about the crystal dust",
+      "lock":     {"requires": ["crystal_received", "crystal_dust_saved"], "excludes": ["infernal_salve_path_open"]},
+      "opening_beats": [
+        {
+          "speaker":   "0006_WTCH",
+          "text":      "You have both. The dreamed crystal's dust and the traded one. I wondered if you would put them together. You should — they are not the same material but they bind. The dust from the dream is a sensitiser. The crystal is the active agent. Together they make Infernal Salve.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "What does Infernal Salve do?",
+          "beats": [
+            {
+              "speaker":   "0006_WTCH",
+              "text":      "It does not open a door. There is no door. It makes you legible to the space you are entering — the rings of Sulphera have their own logic and they need to read something in you before they let you in. The Salve is a translation.",
+              "addressee": "PLAYER"
+            }
+          ]
+        }
+      ],
+      "grants": ["infernal_salve_path_open"]
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "quest_id":       "0013_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "War Never Changes",
+  "completion_key": "nexiott_war_mission_received",
+  "scenes": [
+    {
+      "id":           "0013_KLST.nexiott_summons",
+      "zone":         "player_home_ground",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["contracts_underway"], "excludes": ["nexiott_summons_received"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "A note arrives at the shop. No signature. The paper is expensive — the kind that does not come from the market stalls. The handwriting is even and unhurried. It gives an address on Coronet Row and a time: two days hence, mid-morning.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["nexiott_summons_received"],
+      "repeatable": false
+    },
+    {
+      "id":           "0013_KLST.nexiott_office_seen",
+      "zone":         "lapidus_youthspring_road",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["nexiott_summons_received"], "excludes": ["nexiott_office_entered"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "Coronet Row is not the castle and it is not the market. It is the part of the city that does not need to announce what it is. The address is a townhouse with iron fixtures and windows that do not face the street.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["nexiott_office_entered"],
+      "repeatable": false
+    }
+  ],
+  "topics": [
+    {
+      "id":       "0013_KLST.nexiott_mission",
+      "char_id":  "0017_ROYL",
+      "prompt":   "Ask why you were called",
+      "lock":     {"requires": ["nexiott_office_entered"], "excludes": ["nexiott_war_mission_received"]},
+      "opening_beats": [
+        {
+          "speaker":   "0017_ROYL",
+          "text":      "You have been building a reputation. That is not a compliment — reputations are tools, and I am interested in whether yours is useful to me. Sit down.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "0017_ROYL",
+          "text":      "There is a Fae Queen operating in the Hieronymus Faewilds. Her name is Amelia. She is the reason the Fae have not been contained. She coordinates. She protects. She gives them a political coherence they would not otherwise have.",
+          "addressee": "PLAYER",
+          "grants":    ["amelia_nexiott_briefed"]
+        },
+        {
+          "speaker":   "0017_ROYL",
+          "text":      "I want her removed. Not displaced — removed. The Fae problem does not end with territory disputes. It ends when the thing organizing them is no longer capable of organizing.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "Why me?",
+          "beats": [
+            {
+              "speaker":   "0017_ROYL",
+              "text":      "Because you are not connected to any of the factions that would make your involvement politically expensive. You are useful precisely because you are not yet anything in particular.",
+              "addressee": "PLAYER"
+            },
+            {
+              "speaker":   "0017_ROYL",
+              "text":      "The mine's third gallery has a passage. It goes further than the Gnomes log. You can reach the Faewilds from there if you know what you are walking into.",
+              "addressee": "PLAYER",
+              "grants":    ["faewilds_mine_passage_known"]
+            }
+          ],
+          "grants": ["nexiott_war_mission_received"]
+        },
+        {
+          "text":  "I need to know more about her before I answer.",
+          "beats": [
+            {
+              "speaker":   "0017_ROYL",
+              "text":      "That is reasonable caution. I will give you what I have. What I have is this — she is the reason the war has not resolved in twenty years. Draw your own conclusions.",
+              "addressee": "PLAYER",
+              "grants":    ["nexiott_war_twenty_years_known"]
+            }
+          ],
+          "grants": ["nexiott_war_mission_received"]
+        },
+        {
+          "text":  "I won't do this.",
+          "beats": [
+            {
+              "speaker":   "0017_ROYL",
+              "text":      "Are you refusing, or are you negotiating? I find it useful to distinguish between the two.",
+              "addressee": "PLAYER"
+            },
+            {
+              "speaker":   "0017_ROYL",
+              "text":      "Take some time. The offer does not expire. Neither does the war.",
+              "addressee": "PLAYER"
+            }
+          ],
+          "grants": ["nexiott_war_mission_received", "nexiott_mission_refused_initially"]
+        }
+      ],
+      "grants": ["nexiott_met", "nexiott_player_tool"]
+    }
+  ]
+}

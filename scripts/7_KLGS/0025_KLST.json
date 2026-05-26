@@ -1,0 +1,115 @@
+{
+  "quest_id":       "0025_KLST",
+  "game_slug":      "7_KLGS",
+  "title":          "Death Hallows",
+  "completion_key": "witch_bounties_announced",
+  "scenes": [
+    {
+      "id":           "0025_KLST.bounty_posting",
+      "zone":         "lapidus_azonithia_avenue",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["nexiott_met", "hue_met"], "excludes": ["witch_bounties_seen"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "The notices appear on a Thursday morning, pinned to the market posts and the castle gate and the temple board simultaneously. They are not wanted posters — they are framed as public safety announcements. They name three types: practitioners of Fae-aligned craft, unlicensed alchemists, and those known to trade in infernal materials.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "ENV",
+          "text":      "The categories are written to be broad enough that almost anyone could qualify, and specific enough that certain people will recognize themselves immediately.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["witch_bounties_seen"],
+      "repeatable": false
+    },
+    {
+      "id":           "0025_KLST.kore_warning",
+      "zone":         "lapidus_witch_forest",
+      "participants": ["ENV"],
+      "lock":         {"requires": ["witch_bounties_seen"], "excludes": ["kore_warned"]},
+      "beats": [
+        {
+          "speaker":   "ENV",
+          "text":      "Kore is already aware. She is standing at the edge of the commune with the expression of someone who has been expecting this and is still angry that it arrived.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "grants":     ["kore_warned", "witch_bounties_announced"],
+      "repeatable": false
+    }
+  ],
+  "topics": [
+    {
+      "id":       "0025_KLST.kore_response",
+      "char_id":  "0005_WTCH",
+      "prompt":   "Ask what she plans to do",
+      "lock":     {"requires": ["kore_warned"], "excludes": ["kore_witch_response_known"]},
+      "opening_beats": [
+        {
+          "speaker":   "0005_WTCH",
+          "text":      "Forest has already moved the commune deeper. Alfir is at the castle — he has enough standing there that the announcement does not immediately touch him, but that will change. Hue has his own arrangements.",
+          "addressee": "PLAYER"
+        },
+        {
+          "speaker":   "0005_WTCH",
+          "text":      "What I am planning is to not run. I have been here longer than the announcement. The announcement is new. I am not.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "Is there anything I can do?",
+          "beats": [
+            {
+              "speaker":   "0005_WTCH",
+              "text":      "You can keep your alchemical work out of sight for now. You qualified for two of the three categories in that announcement and I do not think you noticed.",
+              "addressee": "PLAYER",
+              "grants":    ["player_bounty_eligible"]
+            }
+          ]
+        },
+        {
+          "text":  "Where did the order come from?",
+          "beats": [
+            {
+              "speaker":   "0005_WTCH",
+              "text":      "Saffron wrote it. Nexiott funded the distribution. Bombastus did not sign it, which means he either does not know or he cannot afford the political cost of stopping it. Hue thinks the former. I think the latter.",
+              "addressee": "PLAYER",
+              "grants":    ["bounty_origin_known", "bombastus_bounty_stance_unclear"]
+            }
+          ]
+        }
+      ],
+      "grants": ["kore_witch_response_known"]
+    },
+    {
+      "id":       "0025_KLST.hue_crosspoint",
+      "char_id":  "0011_ASSN",
+      "prompt":   "Ask what the enclave does about this",
+      "lock":     {"requires": ["witch_bounties_announced", "assassin_inducted"], "excludes": ["hue_crosspoint_spoken"]},
+      "opening_beats": [
+        {
+          "speaker":   "0011_ASSN",
+          "text":      "The bounties change the nature of available contracts. Sophia has been discussing it with Lectura since this morning. The people who would collect these bounties are now, in the language of our order, eligible.",
+          "addressee": "PLAYER"
+        }
+      ],
+      "responses": [
+        {
+          "text":  "Eligible for what?",
+          "beats": [
+            {
+              "speaker":   "0011_ASSN",
+              "text":      "For being ended. The order does not require someone to have drawn blood. It requires them to have moved against people who cannot protect themselves. The bounty hunters qualify the moment they accept a posting.",
+              "addressee": "PLAYER",
+              "grants":    ["bounty_hunters_eligible_confirmed"]
+            }
+          ]
+        }
+      ],
+      "grants": ["hue_crosspoint_spoken"]
+    }
+  ]
+}
