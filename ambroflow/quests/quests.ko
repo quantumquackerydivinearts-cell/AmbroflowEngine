@@ -1,0 +1,224 @@
+# quests.ko — Quest Key-Lock System and Scene Structure
+# =======================================================
+# Kobra-native specification for the Ko's Labyrinth quest engine.
+# Source: ambroflow/quests/schema.py · keyring.py · scene_runner.py
+# Python shim: loaded by KeyRing.__init__() into get_runtime().
+#
+# Mood convention: DECLARATIVE throughout.
+#
+# Layer routing summary:
+#   L3  BOOLEAN   — Lock evaluation (Ha=requires met, Ga=excludes absent)
+#   L4  COORDINATE — Time-window gate (Sakura directionals)
+#   L10 NAMES     — Yeigo keys (Akinenwun) — the KeyRing IS a Names-layer buffer
+#   L11 SCENE     — Scenes, Beats, QuestScript (the quest IS a scene cluster)
+#   L12 FUNCTION  — KeyRing operations, completion/failure dispatch (Wu-gated)
+#
+# Yeigo (Akinenwun) — "the word earned by witness."
+# Each key is a named event the player has experienced.
+# The KeyRing is the runtime accumulation of witnessed Akinenwun.
+
+# ── SECTION 0: Quest System Identity ─────────────────────────────────────────
+# Samos (T7 / Grapevine / L11 SCENE) → Lo (T4 / Daisy): descending. Declarative.
+# The quest system is a scene-cluster observer: it watches the Orrery
+# and fires completion/failure when the right yeigo key is granted.
+
+LoQuest : Samos Lo {
+  [Mavo Lo Quest 7_KLGS]
+  [Mavo Sao ambroflow quests]
+  [Samos Wu Yl QuestSystem]
+  [TaShyMa Soa]
+}
+
+# ── SECTION 1: Lock — Condition Gate ─────────────────────────────────────────
+# A Lock is a Boolean condition on the player's KeyRing.
+# Ha (byte 43 / accusative / Absolute Positive) = requires gate: all must be held.
+# Ga (byte 44 / ablative / Absolute Negative) = excludes gate: none may be held.
+#
+# satisfies(lock, keyring):
+#   all(keyring.has(k) for k in lock.requires)
+#   and not any(keyring.has(k) for k in lock.excludes)
+#
+# Time-window: optional (start_hour, end_hour); wrap-around midnight supported.
+#   Normal:   start_hour <= current_hour <= end_hour
+#   Midnight: current_hour >= start_hour  OR  current_hour <= end_hour
+#
+# Archaea (T15 / L3 BOOLEAN boundary) → Rose (T2): descending. Declarative.
+
+LoLock : Archaea Rose {
+
+  # REQUIRES gate — all keys must be in KeyRing
+  [Ha Ha requires_keys Wu]   # accusative: all required keys present
+  [Ep requires_satisfied 1]
+
+  [Ro Ga requires_keys Wu]   # one or more required keys missing
+  [Ep requires_satisfied 0]
+
+  # EXCLUDES gate — none of these keys may be in KeyRing
+  [Ga Ha excludes_keys Wu]   # ablative: none of excluded keys present → pass
+  [Ep excludes_satisfied 1]
+
+  [Ro Ha excludes_keys Wu]   # at least one excluded key present → block
+  [Ep excludes_satisfied 0]
+
+  # TIME WINDOW — evaluated by SceneRunner (hour from WorldClock)
+  # Wrap-around midnight: (start=22, end=4) → hour >= 22 OR hour <= 4
+  [Ro Ha time_window Wu]
+  [Ro Ha time_window_start time_window_end Wu]       # normal: start <= hour <= end
+  [Ep time_satisfied 1]
+  [Ro Ga time_window_start time_window_end Wu]       # midnight wrap: OR condition
+  [Ep time_satisfied 1]
+  [Ep time_satisfied 0]
+
+  # COMPOSED — all three gates must pass
+  [Wu Ifa requires_satisfied excludes_satisfied time_satisfied]
+  [Ep lock_satisfied]
+
+  [Mek Oy Ui lock_satisfied]   # L3 BOOLEAN result
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 2: Beat — Narrative Milestone ────────────────────────────────────
+# A Beat is one line or action within a scene or dialogue response.
+# Beats are witnessed sequentially. When a beat fires, its grants are delivered.
+#
+# speaker:   char_id | "ENV" | "PLAYER"
+# addressee: char_id | "AMBIENT" | "PLAYER"
+#   AMBIENT = between NPCs; player is an optional witness
+# action:    optional stage direction / animation cue
+# grants:    yeigo keys granted when this beat is witnessed
+#
+# Samos (L11 SCENE) routes beat witnessing to the scene layer.
+# Seth (T7 / Grapevine / L10 NAMES) routes granted keys to Names layer.
+# Descending: Samos (T7) → Seth (T7) → Rose (T2). Declarative.
+
+LoBeat : Samos Seth {
+  [Samos Wu speaker text addressee]   # beat structure: who says what to whom
+  [Seth Wu grants]                    # keys granted on witness
+  [Ro Ha action Wu]
+  [Samos Ne action]                   # stage direction / animation cue if present
+  [Mek Oy Aonkiel beat_witnessed]     # L11 SCENE — witnessing event recorded
+  [Mek Oy Kokiel grants]              # L10 NAMES — granted keys enter Names buffer
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 3: Scene — Zone-Owned Event ──────────────────────────────────────
+# A Scene is the unit of narrative the player witnesses.
+# It is owned by a zone and participants — not by a quest.
+# The quest observes: when a scene's grants include the quest's completion_key,
+# QuestTracker.complete() is called automatically.
+#
+# repeatable: if False (default), fires once then is marked fired.
+# A scene that has fired is checked via the "fired" yeigo key pattern.
+#
+# Samos (L11) → Lo (T4): scene IS a Lo-cluster of beats. Descending.
+
+LoScene : Samos Lo {
+  [Samos Wu scene_id zone_id participants]
+  [Ro Ha lock Wu]
+  [Wu Ifa lock LoLock]                # evaluate lock before firing
+  [Ep lock_satisfied]
+
+  [Ro Ha lock_satisfied Wu]
+  [Ier beats LoBeat]                  # iterate beats; grant keys on each witness
+  [Seth Wu scene_grants]              # grant scene-level keys after all beats
+  [Mek Oy Aonkiel scene_fired]        # L11 SCENE — scene completion recorded
+
+  [Ro Ga repeatable Wu]               # non-repeatable: mark as fired
+  [Seth Wu Ha scene_id fired Wu]      # write fired flag to Names layer
+
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 4: Quest Script ───────────────────────────────────────────────────
+# A QuestScript is all scenes and dialogue topics for one quest.
+# Completion: when completion_key is granted (by any scene or beat).
+# Failure:    when failure_key is granted (optional).
+#
+# QuestScript is a Samos-cluster: one Orrery scene cluster per quest.
+# Descending: Samos (T7) → Wu (T2). Declarative.
+
+LoQuestScript : Samos Wu {
+  [Samos Wu quest_id game_slug title]
+  [Mek Oy Aonkiel quest_active]        # L11 — quest entered scene layer
+
+  # Observe completion: when completion_key arrives → complete()
+  [Ro Ha completion_key keyring Wu]
+  [Wu Kysael Samos quest_complete quest_id]
+
+  # Observe failure (if failure_key declared): when it arrives → fail()
+  [Ro Ha failure_key Wu]
+  [Ro Ha failure_key keyring Wu]
+  [Wu Kysael Samos quest_fail quest_id]
+
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 5: KeyRing — Player's Yeigo Set ──────────────────────────────────
+# The KeyRing is the runtime accumulation of witnessed Akinenwun.
+# It is the L10 NAMES buffer at the player level — everything they have
+# experienced, done, or earned lives here as a named key.
+#
+# grant(key)   → adds to set; returns True if new, False if already held
+# revoke(key)  → removes from set (Va() restoration logic)
+# has(key)     → membership test
+# satisfies(lock) → LoLock evaluation; time-window is SceneRunner's responsibility
+#
+# Seth (T7 / Grapevine / L10 NAMES) → Wu (T2 / Rose): descending. Declarative.
+# Seth IS the language-mode-buffer token: the KeyRing IS a Seth buffer.
+
+LoKeyRing : Seth Wu {
+
+  # GRANT — add key to ring if not already held
+  [Ro Ga Ha key keyring Wu]           # key not in ring → grant
+  [Seth Wu key Oy Kokiel]             # write to L10 NAMES
+  [Ep granted 1]
+
+  [Ep granted 0]                      # already held → no-op
+
+  # GRANT_MANY — iterate key list; collect newly granted
+  [Ier keys LoKeyRing]
+  [Ep newly_granted]
+
+  # HAS — membership test
+  [Ro Ha key keyring Wu]
+  [Ep held 1]
+  [Ep held 0]
+
+  # REVOKE — remove key (Va/Vo restoration gate logic)
+  [Ro Ha key keyring Wu]
+  [Ga Ha key keyring Wu]              # ablative: remove from set
+  [Ep revoked 1]
+  [Ep revoked 0]
+
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 6: Lock Satisfaction (KeyRing view) ───────────────────────────────
+# KeyRing.satisfies(lock) — evaluated entirely from the player's key set.
+# Time-window is handled by SceneRunner before calling satisfies().
+#
+# The Boolean evaluation maps precisely to L3 BOOLEAN layer (Archaea / Ha / Ga).
+# Protist (T16 / L3 type-edge) closes the categorical test.
+# Descending: Protist (T16) → Archaea (T15) → Rose (T2). Declarative.
+
+LoSatisfies : Protist Archaea Rose {
+
+  # ALL requires present — Ha-gate over requires list
+  [Ha Ha Ha requires keyring Wu]     # all(keyring.has(k) for k in requires)
+  [Ep requires_ok 1]
+  [Ro Ga Ha requires keyring Wu]
+  [Ep requires_ok 0]
+
+  # NONE of excludes present — Ga-gate over excludes list
+  [Ga Ga Ha excludes keyring Wu]     # not any(keyring.has(k) for k in excludes)
+  [Ep excludes_ok 1]
+  [Ro Ha Ha excludes keyring Wu]
+  [Ep excludes_ok 0]
+
+  # COMPOSE — both gates must pass
+  [Wu Ifa requires_ok excludes_ok]
+  [Ep satisfied]
+
+  [Mek Oy Ui satisfied]              # L3 BOOLEAN result
+  [TaShyMa Gwev]
+}

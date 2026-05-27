@@ -26,6 +26,17 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional
 
+try:
+    from pathlib import Path as _Path
+    from ..kobra import get_runtime as _kobra_get_rt
+    _world_graph_ko = _Path(__file__).parent / "world_graph.ko"
+    if _world_graph_ko.exists():
+        _rt = _kobra_get_rt()
+        if "WorldGraph" not in _rt.units():
+            _rt.load(_world_graph_ko)
+except ImportError:
+    pass
+
 # ── Data model ────────────────────────────────────────────────────────────────
 
 @dataclass

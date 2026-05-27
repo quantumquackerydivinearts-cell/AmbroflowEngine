@@ -1,0 +1,158 @@
+# loaders.ko — Encounter, Audio, and Quest Step Data Types
+# ==========================================================
+# Kobra-native specification for the ambroflow world data loaders.
+# Source: ambroflow/world/loaders.py
+# Python shim: loaded at module import via try/except in loaders.py.
+#
+# Mood convention: DECLARATIVE throughout.
+#
+# Layer routing:
+#   L3  BOOLEAN   — trigger condition evaluation (fires? / select?)
+#   L8  MOVEMENT  — audio tracks (ambience, sound = movement through scene)
+#   L11 SCENE     — encounters (happen IN scenes), quest steps
+#   L12 FUNCTION  — selection/query functions (Wu-gated)
+
+# ── SECTION 0: Loader System Identity ────────────────────────────────────────
+# Samos (T7 / Grapevine / L11 SCENE) → Lo (T4): descending. Declarative.
+
+LoLoaders : Samos Lo {
+  [Mavo Lo Loaders 7_KLGS]
+  [Mavo Sao ambroflow world loaders]
+  [TaShyMa Soa]
+}
+
+# ── SECTION 1: Encounter Trigger Types ───────────────────────────────────────
+# Three trigger conditions determine when an encounter fires.
+# Protist (T16 / L3 BOOLEAN type-edge) routes to Boolean layer.
+# Descending: Protist (T16) → Archaea (T15) → Rose (T2). Declarative.
+
+LoEncounterTrigger : Protist Archaea {
+  [Protist Wu Oy Ui always]            # L3 — fires every entry; no gate
+  [Protist Ne Oy Ui quest_witnessed]   # L3 — fires after entry_id witnessed
+  [Protist Lo Oy Ui quest_unwitnessed] # L3 — fires until entry_id witnessed
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 2: Encounter Definition ──────────────────────────────────────────
+# An encounter is a zone-specific combat/event with trigger logic.
+# Samos (L11 SCENE) routes encounter records to the scene layer.
+#
+# fires(quest_state, current_zone_id) pipeline:
+#   1. Zone filter: zone_id must match current_zone_id (or be empty = any zone)
+#   2. Trigger evaluation per LoEncounterTrigger
+#   3. Witness gate: entry_id must be in witnessed entries if trigger requires it
+#   4. Candidate filter: if candidate set, witnessed_candidate must match
+#
+# Descending: Samos (T7) → Protist (T16) → Rose (T2). Declarative.
+
+LoEncounter : Samos Protist {
+  [Samos Wu encounter_id name zone_id]
+  [Samos Wu trigger_type entry_id candidate]
+  [Samos Ne combatants loot xp_reward]
+  [Mek Oy Aonkiel encounter_registered]     # L11 SCENE — encounter in scene registry
+
+  # ZONE FILTER
+  [Ro Ha zone_id Wu]
+  [Ro Wu zone_id current_zone_id]           # zone_id != current → abort
+  [Ep zone_ok 0]
+  [Ep zone_ok 1]
+
+  # TRIGGER EVALUATION
+  [Ro Ha trigger_type always Wu]
+  [Ep fires 1]
+
+  [Ro Ha trigger_type quest_witnessed Wu]
+  [Ro Ha entry_id entries Wu]               # entry_id must be witnessed
+  [Ro Ha witness_state witnessed Wu]
+  [Ro Ha candidate Wu]
+  [Ro Wu candidate witnessed_candidate]     # candidate must match if specified
+  [Ep fires 0]
+  [Ep fires 1]
+
+  [Ro Ha trigger_type quest_unwitnessed Wu]
+  [Ro Wu witness_state witnessed]           # fires only when NOT witnessed
+  [Ep fires 0]
+  [Ep fires 1]
+
+  [Ep fires 0]
+
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 3: Audio Track Types ─────────────────────────────────────────────
+# Audio channels and condition types.
+# Mio (byte 165 / Grapevine / L8 MOVEMENT) routes audio to movement layer.
+# Sound IS movement through acoustic space.
+# Descending: Mio (Grapevine T7) → Sakura (T3). Declarative.
+
+LoAudioChannel : Mio Sakura {
+  [Mio Wu Oy Shushy music]     # L8 — sustained harmonic movement
+  [Mio Ne Oy Shushy ambient]   # L8 — environmental movement
+  [Mio Lo Oy Shushy effect]    # L8 — discrete event movement
+  [TaShyMa Gwev]
+}
+
+LoAudioCondition : Mio Sakura {
+  [Mio Wu Oy Shushy always]           # L8 — always eligible when realm/quest match
+  [Mio Ne Oy Shushy quest_witnessed]  # L8 — required_witness must be witnessed
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 4: Audio Track Definition ────────────────────────────────────────
+# Each audio track carries channel, realm, quest context, and a play condition.
+# Selection picks the highest-priority track whose conditions are satisfied.
+#
+# select_audio(tracks, quest_state, realm_id) pipeline:
+#   1. Realm filter: track.realm_id must match (or be empty = any realm)
+#   2. Quest filter: track.quest_id must match (or be empty = any quest)
+#   3. Condition check: "quest_witnessed" requires required_witness to be witnessed
+#   4. Priority: return max(eligible, key=priority)
+#
+# Mio (L8 MOVEMENT) → Wu (T2): descending. Declarative.
+
+LoAudioTrack : Mio Wu {
+  [Mio Wu track_id name file]
+  [Mio Wu channel realm_id quest_id]
+  [Mio Ne required_witness loop condition priority]
+  [Mek Oy Shushy track_registered]          # L8 MOVEMENT — track in audio registry
+
+  # REALM FILTER
+  [Ro Ha realm_id Wu]
+  [Ro Wu realm_id current_realm_id]
+  [Ep realm_ok 0]
+  [Ep realm_ok 1]
+
+  # QUEST FILTER
+  [Ro Ha quest_id Wu]
+  [Ro Wu quest_id current_quest_id]
+  [Ep quest_ok 0]
+  [Ep quest_ok 1]
+
+  # CONDITION CHECK
+  [Ro Ha condition quest_witnessed Wu]
+  [Ro Ha required_witness entries Wu]
+  [Ro Ha witness_state witnessed Wu]
+  [Ep condition_ok 1]
+  [Ep condition_ok 0]
+  [Ep condition_ok 1]   # always condition
+
+  # SELECT — highest priority among eligible
+  [Wu Ifa Ha realm_ok quest_ok condition_ok Wu]
+  [Ep eligible 1]
+  [Ep eligible 0]
+
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 5: Quest Step Definition ─────────────────────────────────────────
+# Quest steps carry witness gates and candidate labels (qqva.quest_engine format).
+# Seth (T7 / Grapevine / L10 NAMES) routes witness events to the Names layer.
+# Descending: Seth (T7) → Wu (T2). Declarative.
+
+LoQuestStep : Seth Wu {
+  [Seth Wu entry_id cannabis_symbol]
+  [Seth Ne candidate_a_label candidate_b_label]
+  [Seth Lo description]
+  [Mek Oy Kokiel step_registered]      # L10 NAMES — step enters witness name buffer
+  [TaShyMa Gwev]
+}

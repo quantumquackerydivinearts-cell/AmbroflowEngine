@@ -43,6 +43,13 @@ class Inventory:
     ) -> None:
         self._items: dict[str, int] = dict(initial or {})
         self._stackable = set(stackable_items or [])
+        from ..kobra import get_runtime as _get_rt
+        from pathlib import Path as _P
+        _ko = _P(__file__).parent / "inventory.ko"
+        if _ko.exists():
+            _rt = _get_rt()
+            if "Inventory" not in _rt.units():
+                _rt.load(_ko)
 
     def is_stackable(self, item_id: str) -> bool:
         return item_id in self._stackable

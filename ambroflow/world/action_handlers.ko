@@ -1,0 +1,189 @@
+# action_handlers.ko — Scene Interaction Action Dispatch
+# ========================================================
+# Kobra-native specification for the action handler system.
+# Source: ambroflow/world/action_handlers.py
+# Python shim: loaded at module import in action_handlers.py.
+#
+# Mood convention: DECLARATIVE throughout.
+#
+# Every named entity in a .ko scene with tag="interaction" carries an
+# action_id derived from its MavoExitXxx / MavoOpenXxx token. When the
+# player presses E at that entity's position, dispatch(action_id, context)
+# returns an ActionResult that WorldPlay acts on.
+#
+# Handlers are pure functions — all state access through ActionContext.
+#
+# Layer routing:
+#   L3  BOOLEAN   — gate checks (has_perk, sulphera guard)
+#   L8  MOVEMENT  — zone/scene transitions (ActionResult.transition)
+#   L10 NAMES     — action_id vocabulary (Mavo tokens)
+#   L11 SCENE     — ActionResult.scene_id, UI target names
+#   L12 FUNCTION  — dispatch, handler registry
+
+# ── SECTION 0: Action Handler System Identity ─────────────────────────────────
+# Wu (T2 / L12 FUNCTION) → Samos (T7 / L11 SCENE). Declarative.
+
+LoActionHandlers : Wu Samos {
+  [Mavo Lo ActionHandlers 7_KLGS]
+  [Mavo Sao ambroflow world action_handlers]
+  [TaShyMa Soa]
+}
+
+# ── SECTION 1: ActionResult Types ────────────────────────────────────────────
+# Five result constructors. All carry ok=bool, kind=str, and optional fields.
+# kind: none | scene_transition | ui_open | save
+#
+# Wu (T2 / L12 FUNCTION) → Samos (T7 / L11 SCENE). Declarative.
+
+LoActionResult : Wu Samos {
+  # noop — no effect
+  [Ep ok 1]
+  [Ep kind none]
+
+  # transition — move to another scene
+  [Ep ok 1]
+  [Ep kind scene_transition]
+  [Samos Wu scene_id spawn_id Oy Aonkiel]   # L11 SCENE — destination
+
+  # open_ui — open a UI panel
+  [Ep ok 1]
+  [Ep kind ui_open]
+  [Seth Wu ui Oy Kokiel]                    # L10 NAMES — ui panel name
+
+  # save_and_heal — persist state and restore player
+  [Ep ok 1]
+  [Ep kind save]
+
+  # unknown — unhandled action_id
+  [Ep ok 0]
+  [Ep kind none]
+  [Seth Wu message Oy Kokiel]               # L10 NAMES — error message
+
+  [Mek Oy Gaoh action_result]               # L12 FUNCTION — result record
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 2: ActionContext ──────────────────────────────────────────────────
+# Everything a handler needs to resolve an action.
+# Wu (T2 / L12 FUNCTION) → Sakura (T3 / L4 COORDINATE). Declarative.
+
+LoActionContext : Wu Sakura {
+  [Seth Wu action_id entity_id Oy Kokiel]   # L10 NAMES
+  [Sakura Wu player_x player_y player_z Oy Shu]  # L4 COORDINATE — player position
+  [Samos Wu scene_id realm_id Oy Aonkiel]   # L11 SCENE — current scene + realm
+  [Lo Wu world_graph game_state systems]    # bound subsystems
+  [Mek Oy Gaoh action_context]              # L12 FUNCTION — context record
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 3: Handler Registry Dispatch ─────────────────────────────────────
+# _HANDLERS: dict[action_id → handler_fn].
+# dispatch(action_id, ctx): lookup → call → return ActionResult.
+# Prefix fallback: exit_to_* / enter_* / exit_* → _resolve_exit via WorldGraph.
+# Wu (T2 / L12 FUNCTION) → Wu (T2). Same tongue. Declarative.
+
+LoDispatch : Wu Wu {
+  # DIRECT LOOKUP
+  [Ro Ha action_id _HANDLERS Wu]
+  [Wu Ifa action_id ctx handler_fn]
+  [Ep result Ha]                             # result = handler_fn(ctx)
+
+  # EXIT PREFIX FALLBACK
+  [Ro Ha action_id exit_prefix Wu]           # exit_to_* | enter_* | exit_*
+  [Wu Ifa action_id ctx _resolve_exit]
+  [Ep result Ha]
+
+  # UNKNOWN
+  [Ep result unknown action_id]
+
+  [Mek Oy Gaoh dispatch_result]             # L12 FUNCTION — dispatched result
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 4: Action ID Vocabulary ──────────────────────────────────────────
+# All registered action_id strings. Mavo (L10 NAMES) tokens in scene specs
+# derive these IDs via MavoExitXxx / MavoOpenXxx conventions.
+# Seth (T7 / L10 NAMES) → Mavo (T7 / L10 NAMES). Same tongue. Declarative.
+
+LoActionIds : Seth Mavo {
+
+  # UI OPENERS
+  [Mavo Wu open_alchemy_ui   alchemy]         # opens alchemy panel
+  [Mavo Wu open_smelt_ui     smelt]           # opens smelt panel
+  [Mavo Wu open_shop_ui      shop]            # opens shop management
+  [Mavo Wu manage_shop       shop]
+  [Mavo Wu shop_counter      shop]
+  [Mavo Wu open_chest        inventory]       # opens inventory
+  [Mavo Wu lore_books        lore_books]      # opens lore panel
+  [Mavo Wu read              lore_books]
+  [Mavo Wu read_journal      journal]         # opens journal
+  [Mavo Wu meditation_tutorial meditation]    # meditation tutorial
+  [Mavo Wu meditate          divine_encounter] # voluntary altar encounter
+
+  # SAVE AND REST
+  [Mavo Wu save_and_heal     save]
+  [Mavo Wu rest              save]
+
+  # VERTICAL TRANSITIONS
+  [Mavo Wu stairs_up         player_home_upper]
+  [Mavo Wu stairs_down       player_home_ground]
+
+  # GATED TRANSITIONS
+  [Mavo Wu enter_sulphera    sulphera_entry]  # requires infernal_meditation perk
+  [Mavo Wu open_sulphera_gate sulphera_entry]
+  [Mavo Wu enter_fae_dungeon fae_dungeon]
+
+  # GENERIC ZONE EXITS — all resolved via WorldGraph
+  [Mavo Wu exit_to_lapidus_town    lapidus_town]
+  [Mavo Wu exit_to_home_morning    player_home_ground]
+  [Mavo Wu exit_to_home_apothecary apothecary]
+  [Mavo Wu enter_home              player_home_ground]
+  [Mavo Wu enter_apothecary        apothecary]
+  [Mavo Wu enter_azonithia         azonithia_main]
+  [Mavo Wu exit_wiltoll            wiltoll_lane]
+  [Mavo Wu exit_azonithia          azonithia_main]
+  [Mavo Wu exit_west               lapidus_west]
+  [Mavo Wu exit_east               lapidus_east]
+  [Mavo Wu exit_hope               hopefare_st]
+  [Mavo Wu exit_serpent            serpents_pass]
+  [Mavo Wu exit_azon_west          azonithia_west]
+  [Mavo Wu exit_azon_east          azonithia_east]
+  [Mavo Wu enter_mines             mines_entrance]
+  [Mavo Wu exit_mines_surface      lapidus_surface]
+  [Mavo Wu exit_sulphera_entry     sulphera_ring_1]
+  [Mavo Wu exit_entry              sulphera_entry]
+  [Mavo Wu exit_pride              sulphera_ring_pride]
+  [Mavo Wu exit_greed              sulphera_ring_greed]
+  [Mavo Wu exit_envy               sulphera_ring_envy]
+  [Mavo Wu exit_gluttony           sulphera_ring_gluttony]
+  [Mavo Wu exit_sloth              sulphera_ring_sloth]
+  [Mavo Wu exit_wrath              sulphera_ring_wrath]
+  [Mavo Wu exit_lust               sulphera_ring_lust]
+  [Mavo Wu exit_royal              castle_azoth_royal]
+  [Mavo Wu exit_dryad              mercurie_dryad]
+  [Mavo Wu exit_undine             mercurie_undine]
+  [Mavo Wu exit_salamander         sulphera_salamander]
+  [Mavo Wu exit_gnome              lapidus_gnome]
+  [Mavo Wu exit_faerie             mercurie_faerie]
+
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 5: Sulphera Gate Guard ───────────────────────────────────────────
+# enter_sulphera / open_sulphera_gate require the Infernal Meditation perk.
+# The perk IS the gate — no perk → ActionResult(ok=False).
+# Gates quest 0009_KLST "Demons and Diamonds" Sulphera inciting token.
+# Protist (T16 / L3 BOOLEAN) → Archaea (T15). Declarative.
+
+LoSulpheraGate : Protist Archaea {
+  [Ro Ha game_state Wu]
+  [Ro Ha game_state has_perk infernal_meditation Wu]
+  [Ep sulphera_ok 1]
+  [Ep sulphera_ok 0]
+  [Ro Ga sulphera_ok Wu]
+  [Ep result ActionResult ok 0 message infernal_meditation_required]
+  [Wu Ifa action_id ctx _resolve_exit]
+  [Ep result Ha]
+  [Mek Oy Ui sulphera_gate]            # L3 BOOLEAN — gate result
+  [TaShyMa Gwev]
+}

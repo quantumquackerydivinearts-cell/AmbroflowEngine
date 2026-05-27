@@ -1,0 +1,259 @@
+# play.ko — WorldPlay Waking Play Controller
+# ===========================================
+# Kobra-native specification for the WorldPlay state machine.
+# Source: ambroflow/world/play.py
+# Python shim: loaded at module import in play.py.
+#
+# Mood convention: DECLARATIVE throughout.
+#
+# WorldPlay is the top-level controller for all waking play after GameFlow.
+# It accepts pygame events via tick(), renders to a pygame Surface via render().
+# No PIL intermediate for tile rendering (unlike GameFlow).
+#
+# Modes:
+#   WORLD    — free tile-grid navigation
+#   DIALOGUE — NPC conversation; world frozen, PIL dialogue panel overlaid
+#   DUNGEON  — DungeonRuntime session (future)
+#   DONE     — session complete; app returns to GAME_SELECT
+#
+# Frozen background: on first DIALOGUE render(), snapshot() into _frozen_bg.
+# Every dialogue frame blits frozen copy + PIL dialogue bytes.
+# Dialogue ends: Space / Enter / Escape — frozen copy discarded.
+#
+# Layer routing:
+#   L2  DECIMAL    — game time (ticks, hours), NPC A* path indices
+#   L4  COORDINATE — player position (x, y), NPC positions, spawn points
+#   L6  ENTITY     — NPC state records (_MobileNPCState), encounter defs
+#   L7  COLOR      — tile renderer palette
+#   L8  MOVEMENT   — player movement, NPC patrol/schedule, zone transitions
+#   L10 NAMES      — character IDs, dialogue topic IDs, action IDs
+#   L11 SCENE      — WorldPlay mode, zone changes, encounter firing
+#   L12 FUNCTION   — tick(), render(), _handle_interact()
+
+# ── SECTION 0: WorldPlay System Identity ─────────────────────────────────────
+# Samos (T7 / L11 SCENE) → Lo (T4). Declarative.
+
+LoWorldPlay : Samos Lo {
+  [Mavo Lo WorldPlay 7_KLGS]
+  [Mavo Sao ambroflow world play]
+  [TaShyMa Soa]
+}
+
+# ── SECTION 1: Play Mode Enum ─────────────────────────────────────────────────
+# Four modes as Samos cluster identifiers.
+# Samos (T7 / L11 SCENE) → Seth (T7 / L10 NAMES). Same tongue. Declarative.
+
+LoPlayMode : Samos Seth {
+  [Samos Wu world    Oy Aonkiel]   # L11 — free tile navigation
+  [Samos Wu dialogue Oy Aonkiel]   # L11 — NPC conversation; world frozen
+  [Samos Wu dungeon  Oy Aonkiel]   # L11 — DungeonRuntime session
+  [Samos Wu done     Oy Aonkiel]   # L11 — session complete
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 2: World Clock ────────────────────────────────────────────────────
+# Game time: 3750 ticks per hour (~62.5 real-seconds/hour at 60fps = 25 min/day).
+# Hour range: 0–23. TimeOfDay string mirrors calendar.py logic.
+# Time gates are re-evaluated by SceneRunner on hour change.
+#
+# Sakura (T3 / L4 COORDINATE) → Rose (T2 / L2 DECIMAL). Declarative.
+# Time IS a coordinate — hour places the player on the temporal axis.
+
+LoWorldClock : Sakura Rose {
+  [Rose Wu ticks_per_hour 3750 Oy Ye]  # L2 DECIMAL
+  [Rose Wu hour 12 Oy Ye]              # L2 DECIMAL — starting hour
+  [Rose Wu tick_acc 0 Oy Ye]           # accumulator; wraps at ticks_per_hour
+
+  # HOUR ADVANCE — when tick_acc >= ticks_per_hour
+  [Ifa hour hour plus1 mod24]          # hour = (hour + 1) % 24
+  [Ep tick_acc 0]
+  [Wu scene_runner set_hour hour]      # notify SceneRunner of new hour
+
+  # TIME OF DAY — canonical string for NPC schedules and audio
+  [Ro Wu hour 5 Wu]   [Ro Wu hour 6 Wu]   [Ep tod dawn]
+  [Ro Wu hour 7 Wu]   [Ro Wu hour 11 Wu]  [Ep tod morning]
+  [Ro Wu hour 12 Wu]  [Ro Wu hour 16 Wu]  [Ep tod afternoon]
+  [Ro Wu hour 17 Wu]  [Ro Wu hour 18 Wu]  [Ep tod late_afternoon]
+  [Ro Wu hour 19 Wu]  [Ro Wu hour 20 Wu]  [Ep tod dusk]
+  [Ep tod night]
+
+  [Mek Oy Shu world_clock]             # L4 COORDINATE — temporal position
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 3: Mobile NPC State ───────────────────────────────────────────────
+# Per-NPC live state: position, waypoint index, schedule target, A* path.
+# Route fallback: pingpong (A→B→C→B→A) or cycle (A→B→C→A).
+# Schedule: A*-path to (sched_tx, sched_ty) each hour; follow path step-by-step.
+# Step rate: 45 ticks between steps (slightly faster than patrol).
+#
+# Ne (T4 / L6 ENTITY) → Sakura (T3 / L4 COORDINATE). Declarative.
+
+LoMobileNPC : Ne Sakura {
+  [Sakura Wu x y Oy Shu]              # L4 COORDINATE — live position
+  [Rose Wu wp_idx tick_acc Oy Ye]     # L2 DECIMAL — waypoint index, tick accumulator
+  [Rose Wu wp_dir 1 Oy Ye]            # L2 DECIMAL — +1 forward / -1 reverse (pingpong)
+
+  # SCHEDULE FIELDS — set on hour change
+  [Sakura Ne sched_tx sched_ty Oy Shu]  # A* target; -1,-1 = no active target
+  [Seth Wu activity idle Oy Kokiel]     # L10 NAMES — idle/work/patrol/merchant/ritual
+  [Rose Wu path_idx 0 Oy Ye]           # index in sched_path list
+
+  # ROUTE FALLBACK — when no schedule target
+  [Mio Wu route character_id zone]    # fetch NPCRoute for this character
+  [Ro Ha route Wu]
+  [Ep ticks_per_step route ticks_per_step]
+  [Ro Ha tick_acc ticks_per_step Wu]  # step when accumulator reaches threshold
+  [Ep tick_acc 0]
+  [Wu Ifa wp_idx route waypoints pingpong_or_cycle]  # advance waypoint
+
+  [Mek Oy Yeshu npc_state]            # L6 ENTITY — NPC live state
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 4: Player Movement ────────────────────────────────────────────────
+# Direction: NORTH/SOUTH/EAST/WEST.
+# Move attempt: check is_passable(tile_at(tx, ty)) and no NPC collision.
+# On DOOR/STAIRS/PORTAL tile: trigger zone transition via action_handlers.
+# On DUNGEON_ENTRANCE tile: begin DungeonRuntime session.
+# TileTracer deposit: deposit Lotus byte(s) for current tile on each step.
+# Wraith routing fires automatically for the 6 routed bytes.
+#
+# Mio (T7 / L8 MOVEMENT) → Sakura (T3 / L4 COORDINATE). Declarative.
+# Movement IS the traversal — Mio routes player and NPC motion. L8 covers
+# both zone transitions AND within-zone traversal.
+
+LoPlayerMove : Mio Sakura {
+  [Mio Wu direction Oy Shushy]         # L8 MOVEMENT — intended direction
+  [Sakura Wu tx ty Oy Shu]             # L4 COORDINATE — target (x, y)
+
+  # PASSABILITY CHECK
+  [Ro Ha tx ty zone is_passable Wu]    # zone.tile_at(tx, ty) must be passable
+  [Ro Ga npc_at tx ty Wu]             # no NPC blocking target position
+
+  # TILE EVENT — transition tiles trigger actions
+  [Ro Ha tile DOOR Wu]       [Wu dispatch exit_action ctx]
+  [Ro Ha tile STAIRS_UP Wu]  [Wu dispatch stairs_up ctx]
+  [Ro Ha tile STAIRS_DOWN Wu][Wu dispatch stairs_down ctx]
+  [Ro Ha tile PORTAL Wu]     [Wu dispatch portal_action ctx]
+  [Ro Ha tile DUNGEON_ENTRANCE Wu] [Wu begin_dungeon_session dungeon_id]
+
+  # POSITION UPDATE — commit move
+  [Sakura Wu player_x tx player_y ty]
+
+  # TILE TRACER DEPOSIT — Lotus bytes for this tile
+  [Wu tile_tracer deposit zone_id tx ty lotus_bytes]
+
+  [Mek Oy Shushy player_moved]         # L8 MOVEMENT — movement recorded
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 5: Interaction Dispatch ──────────────────────────────────────────
+# On E / INTERACT key: facing tile + adjacent entities → dispatch action_id.
+# NPC adjacent to player → open dialogue if available topics exist.
+# Item at player position → pickup prompt.
+# action_handlers.dispatch(action_id, ctx) → ActionResult → handle result.
+# Wu (T2 / L12 FUNCTION) → Samos (T7 / L11 SCENE). Declarative.
+
+LoInteract : Wu Samos {
+  # FACING POSITION — one tile in player direction
+  [Sakura Wu face_x face_y Oy Shu]
+
+  # NPC CHECK — dialogue if character adjacent
+  [Ro Ha npc face_x face_y Wu]
+  [Seth Wu char_id npc character_id Oy Kokiel]   # L10 NAMES
+  [Wu scene_runner available_topics char_id]
+  [Ro Ha topics Wu]
+  [Ep mode dialogue]
+  [Wu dialogue_select char_id topics lotus_context]
+
+  # ITEM PICKUP
+  [Ro Ha items face_x face_y Wu]
+  [Ier items]
+  [Ha Wu inventory add item_id qty]
+  [Seth Wu event item_collected item_id Oy Kokiel]
+
+  # GENERIC ACTION DISPATCH
+  [Wu action_handlers dispatch action_id ctx]
+  [Ro Ha result transition Wu]   [Wu zone_change result scene_id spawn_id]
+  [Ro Ha result ui_open Wu]      [Ep ui_mode result ui]
+  [Ro Ha result save Wu]         [Wu game_state save]
+
+  [Mek Oy Aonkiel interaction_result]  # L11 SCENE — interaction outcome
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 6: Encounter System ──────────────────────────────────────────────
+# On zone entry: check encounter_defs[zone_id] → fires() → fire matching encounters.
+# Encounter firing grants keys via WitnessTracker, propagated by SceneRunner.
+# SceneRunner.available_scenes(zone) re-evaluated after each key grant.
+#
+# Cannabis (T8 / L8 metacognitive witness) → Samos (T7 / L11 SCENE). Declarative.
+
+LoEncounterCheck : Cannabis Samos {
+  [Ier encounter_defs]
+  [Ro Ha encounter zone_id current_zone_id Wu]  # zone filter
+  [Wu Ifa encounter quest_state current_zone_id fires]  # EncounterDef.fires()
+  [Ro Ha fires Wu]
+  [Wu combat_screen begin encounter]    # fires → begin combat/event
+  [Mek Oy Shushy encounter_fired]       # L8 MOVEMENT — encounter is movement into conflict
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 7: Frozen Background (Dialogue Mode) ─────────────────────────────
+# On first render() in DIALOGUE mode: snapshot() current screen → _frozen_bg.
+# Every dialogue frame: blit frozen copy + PIL dialogue bytes.
+# Dialogue end (space/enter/escape): discard frozen copy → WORLD mode.
+# Protist (T16 / L3 BOOLEAN) → Samos (T7 / L11 SCENE). Declarative.
+# Entering dialogue IS a boolean gate on world rendering.
+
+LoDialogueMode : Protist Samos {
+  [Ro Ha mode dialogue Wu]
+  [Ro Ga frozen_bg Wu]           # first render: take snapshot
+  [Wu pygame_surface snapshot frozen_bg]
+
+  [Ro Ha frozen_bg Wu]           # every dialogue frame: blit frozen + dialogue
+  [Wu surface blit frozen_bg]
+  [Wu surface blit dialogue_bytes]
+
+  # EXIT — space/enter/escape
+  [Ro Ha key K_SPACE Wu]
+  [Ro Ha key K_RETURN Wu]
+  [Ro Ha key K_ESCAPE Wu]
+  [Ep frozen_bg none]
+  [Ep mode world]
+
+  [Mek Oy Ui dialogue_gate]      # L3 BOOLEAN — dialogue active flag
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 8: Audio Selection ────────────────────────────────────────────────
+# select_audio(tracks, quest_state, realm_id) → highest-priority eligible track.
+# Re-evaluated on zone change and hour change.
+# Mio (T7 / L8 MOVEMENT) → Wu (T2 / L12 FUNCTION). Declarative.
+
+LoWorldAudio : Mio Wu {
+  [Wu Ifa audio_tracks quest_state realm_id select_audio]
+  [Ro Ha track Wu]
+  [Ro Wu track current_track Wu]   # skip if same track already playing
+  [Wu audio_player play track]
+  [Mek Oy Shushy audio_selected]   # L8 MOVEMENT — audio as acoustic movement
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 9: Zone Transition ────────────────────────────────────────────────
+# On ActionResult(kind="scene_transition"): load target Zone, move player,
+# re-evaluate SceneRunner for new zone, re-select audio, run encounter check.
+# Samos (T7 / L11 SCENE) → Mio (T7 / L8 MOVEMENT). Same tongue. Declarative.
+
+LoZoneChange : Samos Mio {
+  [Mio Wu target_scene_id spawn_id Oy Shushy]    # L8 MOVEMENT — destination
+  [Samos Wu zone world_map target_scene_id]       # look up Zone
+  [Sakura Wu player_x player_y spawn_id Oy Shu]  # L4 COORDINATE — spawn position
+  [Ep current_zone zone]
+  [Wu scene_runner available_scenes target_scene_id]   # re-evaluate
+  [Wu Ifa audio_tracks quest_state realm_id LoWorldAudio]
+  [Wu Ifa encounter_defs LoEncounterCheck]
+  [Mek Oy Aonkiel zone_changed]   # L11 SCENE — new zone recorded
+  [TaShyMa Gwev]
+}

@@ -1,0 +1,374 @@
+# alchemy.ko — Alchemical Resonance System, Ko's Labyrinth
+# ==========================================================
+# Kobra-native specification for the alchemy engine pure transforms.
+# Source: ambroflow/alchemy/system.py · ambroflow/alchemy/laboratory.py
+# Python shim: loaded by AlchemySystem.__init__() into get_runtime().
+#
+# Mood convention: DECLARATIVE throughout.
+# All type compounds descend (higher tongue-index → lower tongue-index).
+# Phase (T27 / YeYe) is the root tongue: alchemy IS the phase transition system.
+#
+# Layer routing summary for this module:
+#   L5  OBJECT    — subjects, recipes, operations (Daisy.Lo / Oy Kiel)
+#   L9  PATTERN   — resonance, transition quality, constraints (Grapevine.Dyf / Oy Uinshu)
+#   L10 NAMES     — provenance registry, source records (Grapevine.Seth / Oy Kokiel)
+#   L11 SCENE     — session conclusion, Orrery boundary (Grapevine.Samos / Oy Aonkiel)
+#   L12 FUNCTION  — computation entry points (Rose.Wu / Oy Gaoh)
+
+# ── SECTION 0: Alchemy System Identity ───────────────────────────────────────
+# Phase (T27 / YeYe) → Lo (T4 / Daisy): descending. Declarative.
+# Phase is the quality-of-transition tongue.
+# Alchemy IS the phase transition system — not formula application.
+
+LoAlchemy : Phase Lo {
+  [Mavo Lo Alchemy 7_KLGS]
+  [Mavo Sao ambroflow alchemy system]
+  [Mavo Ne AlchemySystem KosLabyrinth]
+  [Phase Wu Yl AlchemySystem]
+  [TaShyMa Soa]
+}
+
+# ── SECTION 1: Engagement Mode Weights ───────────────────────────────────────
+# Four modes of practitioner engagement. These weight the resonance calculation.
+# Weights are authored; they sum to 1.00.
+# Ontological anchors the practitioner to the subject's actual nature
+# — highest weight because alchemy is an ontological practice first.
+#
+# Mode → Sanity dimension mapping:
+#   ontological  → alchemical sanity
+#   cosmological → cosmic sanity
+#   narrative    → narrative sanity
+#   somatic      → terrestrial sanity
+#
+# Gradient (T28 / YeYe) → Fn (T4 / Daisy): descending. Declarative.
+
+LoEngagement : Gradient Fn {
+  [Gradient Wu ontological    Oy Uinshu  0.40]   # L9 — perceiving actual nature
+  [Gradient Wu cosmological   Oy Kokiel  0.25]   # L10 — Dragon Tongue consultation
+  [Gradient Wu narrative      Oy Aonkiel 0.20]   # L11 — lore/story resonance
+  [Gradient Wu somatic        Oy Shushy  0.15]   # L8  — embodied sensory labour
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 2: Approach Mode Modifiers ───────────────────────────────────────
+# The practitioner's average operation quality across the session determines
+# approach mode. Approach multiplies resonance after mode weighting.
+# Laboratory thresholds (from LoConclude): 0.75 / 0.45.
+#
+#   presence   1.00x — avg_quality >= 0.75  (full perceptual contact)
+#   intuition  0.75x — avg_quality >= 0.45  (partial contact)
+#   formula    0.40x — avg_quality <  0.45  (procedural only)
+#
+# Formula always undershoots the field.
+# Phase (T27) → Fn (T4): descending. Declarative.
+
+LoApproach : Phase Fn {
+  [Phase Wu Oy Gaoh  presence   1.00]   # L12 — full contact; avg_quality >= 0.75
+  [Phase Ne Oy Gaoh  intuition  0.75]   # L12 — partial; avg_quality >= 0.45
+  [Phase Lo Oy Shushy formula   0.40]   # L8  — procedural; avg_quality < 0.45
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 3: Source Provenance Modifiers ───────────────────────────────────
+# Items carry the resonance of their origin. Source type modifies each
+# material's contribution to the aggregate provenance multiplier.
+# Realm alignment with the field axis adds 0.15 (realm bonus):
+#   lapidus→spatial   mercurie→mental   sulphera→temporal
+# Aggregate clamped to [0.70, 1.30] before applying to resonance.
+#
+# Ledger (T38 / YeYe) → Phase (T27) → Fn (T4): descending. Declarative.
+
+LoProvenance : Ledger Phase Fn {
+  [Ledger Wu foraged    Oy Gaoh  1.30]   # L12 — found in the living world; highest
+  [Ledger Wu inherited  Oy Gaoh  1.15]   # L12 — received across generations
+  [Ledger Wu gifted     Oy Gaoh  1.10]   # L12 — given interpersonally
+  [Ledger Wu sanctified Oy Gaoh  1.05]   # L12 — consecrated by ritual
+  [Ledger Wu crafted    Oy Gaoh  1.00]   # L12 — made by the practitioner (neutral)
+  [Ledger Lo purchased  Oy Shushy 0.85]  # L8  — commercial origin; lowest
+  [Rope Oy Ye provenance_mod 0.70 1.30]  # L2  — aggregate clamped to [0.70, 1.30]
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 4: Resonance Calculation Pipeline ────────────────────────────────
+# The core alchemical transform. Five factors compose to produce resonance (0–1).
+#
+#   resonance = axis_accuracy × mode_score × permeability_mult
+#               × approach_mod × provenance_mod
+#
+#   Caps and bonuses:
+#     required materials absent      → cap at 0.40
+#     wrong axis identified          → −0.15 per wrongly-identified axis
+#     subject full permeability      → +0.25 additive bonus
+#     epiphanic_charge >= 0.70 req   → for epiphanic outcome to fire
+#
+# Phase (T27) → Wu (T2 / Rose.Function): descending. Declarative.
+
+LoResonance : Phase Wu {
+
+  # 1. AXIS ACCURACY — identified axes vs subject's actual field axes
+  #    exact_match → 1.0;  secondary_present → 0.5;  wrong_axis → 0.0
+  [Ro Ha identified_axes subject_field_axes Wu]
+  [Ifa axis_accuracy]
+  [Rope Ha axis_accuracy false_axis_penalty]    # −0.15 per wrongly-named axis
+
+  # 2. MODE SCORE — weighted sum across all four engagement modes
+  #    mode_score = Σ (mode_engagement[m] × LoEngagement.weight[m])
+  [Wu Ifa mode_engagement LoEngagement]
+  [Ep mode_score]
+
+  # 3. PERMEABILITY — subject field permeability × seasonal alchemy boost
+  #    base permeability from subject's InformationField; season adds additively
+  [Wu Ifa Ha subject_field permeability Wu]
+  [Wu Ifa season_alchemy_boost]
+  [Rope Ha season_alchemy_boost 0.10 Wu]        # seasonal contribution capped at 0.10
+  [Ep permeability_mult]
+
+  # 4. APPROACH MODIFIER — from session average quality via LoApproach
+  [Wu Ifa approach_mode LoApproach]
+  [Ep approach_mod]
+
+  # 5. PROVENANCE MODIFIER — geometric mean over all required materials
+  [Wu Ifa Ha materials LoProvenance Wu]
+  [Ep provenance_mod]
+
+  # COMPOSE — multiply all five factors
+  [Wu Ifa axis_accuracy mode_score permeability_mult approach_mod provenance_mod]
+  [Ep resonance_raw]
+
+  # CAPS AND BONUSES
+  [Ro Ga required_materials_absent Wu]
+  [Rope Ha resonance_raw 0.40 Wu]               # cap at 0.40 when materials missing
+  [Ro Ha subject_permeability 1.00 Wu]
+  [Ifa resonance_raw Uinshu 0.25]               # +0.25 bonus at full permeability
+  [Ep resonance]
+
+  [Mek Oy Uinshu resonance]                     # write final resonance to L9 PATTERN
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 5: Output Resolution ─────────────────────────────────────────────
+# Resonance score maps to one of four output tiers.
+# Tier determines which items the system yields.
+# Dyf (Grapevine T7 / L9 PATTERN) routes output classification.
+#
+#   epiphanic  resonance >= 0.85 → enhanced_outputs  (requires epiphanic_charge >= 0.70)
+#   base       resonance >= 0.55 → base_outputs
+#   partial    resonance >= 0.15 → partial_outputs (random subset of base)
+#   none       resonance <  0.15 → no material output
+#
+# Recipe discovery fires at resonance >= 0.55 (same as base tier).
+
+LoOutputs : Dyf Wu {
+
+  [Ro Ha resonance 0.85 Wu]
+  [Ro Ha epiphanic_charge 0.70 Wu]      # epiphany requires accumulated charge
+  [Ep output_tier epiphanic]
+  [Mek Oy Uinshu enhanced_outputs]
+
+  [Ro Ha resonance 0.55 Wu]
+  [Ep output_tier base]
+  [Mek Oy Uinshu base_outputs]
+  [Dyo recipe_discovery]                # resonance >= 0.55 → recipe discovered
+
+  [Ro Ha resonance 0.15 Wu]
+  [Ep output_tier partial]
+  [Mek Oy Uinshu partial_outputs]
+
+  [Ep output_tier none]
+  [Mek Oy Shushy Ga output_tier Wu]    # L8 — no output; movement still recorded
+
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 6: Sanity Delta ───────────────────────────────────────────────────
+# Alchemical work produces sanity effects across the four VITRIOL dimensions.
+# Base: _SANITY_BASE_PER_MODE = 0.05 × mode_engagement_score per mode.
+# Epiphanic multiplier: × 2.0 on all modes.
+# Epiphanic flat bonus: +0.02 to ALL four dimensions when epiphanic fires.
+#
+# Mode → sanity dimension routing:
+#   ontological  → alchemical sanity   (Oy Shushy — L8 movement of field-knowing)
+#   cosmological → cosmic sanity       (Oy Uinshu — L9 pattern from cosmos)
+#   narrative    → narrative sanity    (Oy Kokiel  — L10 names/story)
+#   somatic      → terrestrial sanity  (Oy Shu     — L4 body/ground)
+#
+# Gradient (T28 / YeYe) → Wu (T2 / Rose): descending. Declarative.
+
+LoSanity : Gradient Wu {
+
+  [Gradient Wu ontological  Oy Shushy  0.05]   # alchemical  += 0.05 × engagement
+  [Gradient Wu cosmological Oy Uinshu  0.05]   # cosmic      += 0.05 × engagement
+  [Gradient Wu narrative    Oy Kokiel  0.05]   # narrative   += 0.05 × engagement
+  [Gradient Wu somatic      Oy Shu     0.05]   # terrestrial += 0.05 × engagement
+
+  # Epiphanic multiplier (× 2.0) and flat bonus (+0.02) across all four
+  [Ro output_tier epiphanic]
+  [Gradient Ne Oy Gaoh epiphanic_mult 2.0]     # multiply all four dims by 2.0
+  [Gradient Lo Oy Gaoh epiphanic_all  0.02]    # +0.02 flat bonus to all four dims
+
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 7: Presence Delta ─────────────────────────────────────────────────
+# The practitioner's PresenceState evolves with each alchemical treatment.
+# Gaia (T41 / YeYe) → L11 SCENE: emergent self-sustaining system.
+#
+#   epiphanic_charge += resonance      (accumulated; cap at 1.0)
+#   permeability      = max(old, resonance)  (high-water mark only)
+#   mania_level      += resonance × mania_scale  (only on epiphanic result)
+#   field_transformed when resonance >= 0.65
+#
+# Contagion radius when epiphanic: scales with mania_level × resonance.
+
+LoPresence : Gaia Wu {
+
+  [Gaia Wu Oy Gaoh  epiphanic_charge resonance]    # charge += resonance; cap 1.0
+  [Gaia Ne Oy Aonkiel permeability  resonance]     # permeability = max(old, resonance)
+
+  [Ro Ha resonance 0.65 Wu]
+  [Gaia Lo Oy Aonkiel field_transform]             # field transformed at res >= 0.65
+
+  [Ro output_tier epiphanic]
+  [Gaia Lo Oy Gaoh mania resonance mania_scale]    # mania += resonance × scale
+
+  [Ro output_tier epiphanic]
+  [Gaia Lo Oy Aonkiel contagion resonance mania_level]   # contagion_radius = mania × res
+
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 8: Numeric Thresholds ────────────────────────────────────────────
+# All boundary constants for the alchemy system in one Lo block.
+# Source of truth: system.py constants; this block documents the same values.
+# Rope (T34 / YeYe) → Fn (T4 / Daisy): descending. Declarative.
+
+LoThreshold : Rope Fn {
+
+  # system.py authored thresholds
+  [Rope Wu Oy Uinshu epiphany          0.85]   # resonance → epiphanic output
+  [Rope Wu Oy Uinshu epiphanic_charge  0.70]   # accumulated charge req for epiphany
+  [Rope Wu Oy Uinshu field_transform   0.65]   # resonance → field transformed
+  [Rope Wu Oy Uinshu recipe_discovery  0.55]   # resonance → recipe discovered
+  [Rope Wu Oy Shushy partial_output    0.15]   # resonance → partial output (else none)
+  [Rope Ne Oy Shushy materials_absent_cap 0.40]   # cap when required materials missing
+  [Rope Ne Oy Shushy false_axis_penalty   0.15]   # subtracted per wrong axis named
+  [Rope Ne Oy Kiel  provenance_mod_min    0.70]   # floor for aggregate provenance
+  [Rope Ne Oy Kiel  provenance_mod_max    1.30]   # ceiling for aggregate provenance
+  [Rope Ne Oy Lao   realm_alignment_bonus 0.15]   # realm aligns with field axis
+  [Rope Lo Oy Gaoh  sanity_base_per_mode  0.05]   # base sanity delta per mode
+  [Rope Lo Oy Gaoh  epiphanic_sanity_mult 2.00]   # sanity multiplier when epiphanic
+  [Rope Lo Oy Gaoh  epiphanic_all_bonus   0.02]   # flat bonus all dims on epiphany
+  [Rope Lo Oy Shushy seasonal_max_boost   0.10]   # max seasonal alchemy contribution
+
+  # laboratory.py thresholds
+  [Rope Lo Oy Uinshu botch           0.05]   # quality below → catastrophic (UNUSABLE)
+  [Rope Lo Oy Uinshu axis_id         0.45]   # quality at/above → field axis identified
+  [Rope Lo Oy Gaoh  presence_approach 0.75]  # avg quality → approach_mode "presence"
+  [Rope Lo Oy Gaoh  intuition_approach 0.45] # avg quality → approach_mode "intuition"
+
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 9: Laboratory Skill Check ────────────────────────────────────────
+# Deterministic quality score for one laboratory operation.
+# No randomness — rank and VITRIOL affinity fully determine quality.
+#
+#   competence = (alchemy_rank / 100.0) × 0.7 + vitriol_score × 0.3
+#   quality    = max(0.0, min(1.0, competence - base_difficulty × (1.0 - competence)))
+#
+# High competence reduces difficulty cost; low competence amplifies it.
+# A rank-100 practitioner with full VITRIOL affinity always executes cleanly.
+# A rank-20 practitioner will botch distillation (base_difficulty 0.55).
+#
+# Phase (T27) → Wu (T2): descending. Declarative.
+
+LoSkillCheck : Phase Wu {
+
+  [Wu Ifa alchemy_rank 100.0 Shushy]   # rank/100.0 × 0.7
+  [Wu Ifa vitriol_score Kokiel]        # vitriol_score × 0.3
+  [Ep competence]
+
+  [Wu Ifa Uinshu competence]           # (1.0 − competence)
+  [Wu Ifa base_difficulty]
+  [Wu Ifa competence Ga difficulty_cost Wu]    # competence − base_difficulty × (1−comp)
+  [Ep quality_raw]
+
+  [Rope Ha quality_raw 0.0 Wu]         # max(0.0, ...)
+  [Rope Wu quality_raw 1.0]            # min(1.0, ...)
+  [Ep quality]
+
+  [Mek Oy Uinshu quality]              # write quality to L9 PATTERN
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 10: VITRIOL Operation Sequence ───────────────────────────────────
+# Each VITRIOL letter governs an operation family. This block declares:
+#   - which operation(s) each letter covers
+#   - the field axis identified on clean execution (quality >= 0.45)
+#   - the engagement mode contribution
+#   - the engagement weight (max contribution on perfect quality)
+#   - the base difficulty (cost subtracted from competence)
+#
+# Dyf (Grapevine.Pattern / L9) → Phase (T27 / L9): both pattern-layer. Declarative.
+
+LoVITRIOL : Dyf Phase {
+
+  # V — Visita       → dissolution   mental    ontological  weight 0.80  diff 0.25
+  [Dyf Wu dissolution   mental    ontological  0.80  0.25]
+  # I — Interiora    → filtration    mental    ontological  weight 0.60  diff 0.20
+  [Dyf Wu filtration    mental    ontological  0.60  0.20]
+  # T — Terrae       → calcination   temporal  somatic      weight 0.60  diff 0.30
+  [Dyf Ne calcination   temporal  somatic      0.60  0.30]
+  # T — Terrae       → grinding      temporal  somatic      weight 0.65  diff 0.15
+  [Dyf Ne grinding      temporal  somatic      0.65  0.15]
+  # T — Terrae       → smelting      temporal  somatic      weight 0.55  diff 0.40
+  [Dyf Ne smelting      temporal  somatic      0.55  0.40]
+  # R — Rectificando → distillation  mental    ontological  weight 1.00  diff 0.55
+  [Dyf Wu distillation  mental    ontological  1.00  0.55]
+  # I — Invenies     → conjunction   spatial   narrative    weight 0.70  diff 0.35
+  [Dyf Lo conjunction   spatial   narrative    0.70  0.35]
+  # O — Occultum     → fermentation  temporal  cosmological weight 0.80  diff 0.30
+  [Dyf Lo fermentation  temporal  cosmological 0.80  0.30]
+  # L — Lapidem      → ring_casting  spatial   ontological  weight 0.90  diff 0.35
+  [Dyf Lo ring_casting  spatial   ontological  0.90  0.35]
+  # L — Lapidem      → ingot_casting spatial   ontological  weight 0.85  diff 0.30
+  [Dyf Lo ingot_casting spatial   ontological  0.85  0.30]
+
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 11: Session Conclude ─────────────────────────────────────────────
+# Laboratory session conclusion: approach mode and presence_score
+# from accumulated quality across all operations performed.
+# A session with no operations yields formula-mode with zero engagement.
+#
+#   avg_quality    = mean(quality_history)
+#   approach_mode  = "presence"  if avg_quality >= 0.75
+#                    "intuition" if avg_quality >= 0.45
+#                    "formula"   otherwise
+#   presence_score = avg_quality × 0.65 + substance_purity × 0.35
+#
+# Samos (Grapevine T7 / L11 SCENE): conclude writes to the scene layer.
+
+LoConclude : Samos Wu {
+
+  [Wu Ifa quality_history avg]          # avg_quality = mean(quality_history)
+  [Ep avg_quality]
+
+  [Ro Ha avg_quality 0.75 Wu]
+  [Ep approach_mode presence]
+
+  [Ro Ha avg_quality 0.45 Wu]
+  [Ep approach_mode intuition]
+
+  [Ep approach_mode formula]
+
+  # presence_score: weighted blend of quality and substance purity after session
+  [Wu Ifa avg_quality 0.65]
+  [Wu Ifa substance_purity 0.35]
+  [Ep presence_score]
+
+  [Mek Oy Aonkiel approach_mode]        # L11 SCENE — approach recorded
+  [Wu Kysael Samos conclude approach_mode presence_score]
+  [TaShyMa Soa]
+}

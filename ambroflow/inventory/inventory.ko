@@ -1,0 +1,121 @@
+# inventory.ko — Item Inventory and Equipment Slots
+# ===================================================
+# Kobra-native specification for the session inventory system.
+# Source: ambroflow/inventory/manager.py · equipment.py
+# Python shim: loaded by Inventory.__init__() into get_runtime().
+#
+# Mood convention: DECLARATIVE throughout.
+# Items are Lo-objects (Daisy T4 / L5 OBJECT).
+# Quantities are Rose decimals (T2 / L2 DECIMAL).
+# Slot operations route to L12 FUNCTION (Wu-gated).
+
+# ── SECTION 0: Inventory System Identity ─────────────────────────────────────
+# Lo (T4 / Daisy) → Wu (T2 / Rose): descending. Declarative.
+# The inventory is a Lo-structure: a cluster of named item quantities.
+
+LoInventory : Lo Wu {
+  [Mavo Lo Inventory 7_KLGS]
+  [Mavo Sao ambroflow inventory]
+  [Lo Soa session_items stackable_set]
+  [TaShyMa Soa]
+}
+
+# ── SECTION 1: Item Stack Classification ─────────────────────────────────────
+# Stackable items (marked with () prefix in game7Registry.js) accumulate
+# quantity without limit.  Non-stackable: only one instance allowed.
+# Lo (T4 / L5 OBJECT) → Fn (T4 / L5): same tongue, same layer.
+#
+# Stack operations:
+#   add(item_id, qty)    — raises if non-stackable already held
+#   remove(item_id, qty) — raises if insufficient quantity
+#   has(item_id, qty)    — boolean; qty defaults to 1
+#   quantity(item_id)    — returns current count (0 if absent)
+
+LoItemStack : Lo Fn {
+
+  # STACKABLE — add accumulates; no upper bound on quantity
+  [Ro Ha item_id stackable_set Wu]
+  [Ep stackable 1]
+  [Mek Oy Ye stackable item_id]        # L2 DECIMAL — quantity is a decimal value
+
+  # NON-STACKABLE — add raises ValueError if already held (quantity > 0)
+  [Ep stackable 0]
+  [Rope Ha quantity item_id 1 Wu]      # cap at 1; raise if add would exceed
+  [Mek Oy Kiel item_id 1]              # L5 OBJECT — item held as identity, not count
+
+  # REMOVE guard — quantity must be >= requested
+  [Ro Ga quantity item_id qty Wu]      # ablative: not-enough case
+  [Wu Lo ValueError item_id qty]       # raise — not enough quantity
+
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 2: Equipment Slot Classification ──────────────────────────────────
+# Equipment slot routing by KLIT item ID.
+# Returns the base slot name (weapon / armor / ring_1 / clothes) or None.
+# Rings use LoRing to determine which ring slot to actually fill.
+#
+# Lo (T4 / L5 OBJECT) → Fn (T4): object classification function.
+
+LoSlot : Lo Fn {
+
+  # WEAPON (8 items: Dagger, Sword, Bow, Staff, Spear, Gun, Irons, H.Dagger)
+  [Ro Lo 0017_KLIT Wu]  [Ep slot weapon]   # Dagger
+  [Ro Lo 0018_KLIT Wu]  [Ep slot weapon]   # Sword
+  [Ro Lo 0020_KLIT Wu]  [Ep slot weapon]   # Bow
+  [Ro Lo 0022_KLIT Wu]  [Ep slot weapon]   # Staff
+  [Ro Lo 0024_KLIT Wu]  [Ep slot weapon]   # Angelic Spear
+  [Ro Lo 0025_KLIT Wu]  [Ep slot weapon]   # Angelic Gun
+  [Ro Lo 0026_KLIT Wu]  [Ep slot weapon]   # Demonic Irons
+  [Ro Lo 0027_KLIT Wu]  [Ep slot weapon]   # Hypatia's Dagger
+
+  # ARMOR (shield only)
+  [Ro Lo 0019_KLIT Wu]  [Ep slot armor]    # Shield
+
+  # RING / NECKLACE (fill ring_1 first — see LoRing)
+  [Ro Lo 0013_KLIT Wu]  [Ep slot ring_1]   # Necklace (fills like a ring)
+  [Ro Lo 0014_KLIT Wu]  [Ep slot ring_1]   # Ring
+
+  # NOT EQUIPPABLE
+  [Ep slot none]
+
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 3: Equipment Slot Declarations ────────────────────────────────────
+# Five named slots. Each holds one item_id string or is empty (None).
+# Slot state routes to L5 OBJECT — slots are Lo-typed containers.
+#
+# Lo (T4) → St (T4 / L5 state): same tongue. Declarative.
+
+LoEquipment : Lo St {
+  [Lo St weapon   Oy Kiel]   # weapon slot  → L5 OBJECT
+  [Lo St armor    Oy Kiel]   # armor slot   → L5 OBJECT
+  [Lo St ring_1   Oy Kiel]   # ring I slot  → L5 OBJECT (primary ring)
+  [Lo St ring_2   Oy Kiel]   # ring II slot → L5 OBJECT (overflow ring)
+  [Lo St clothes  Oy Kiel]   # clothes slot → L5 OBJECT
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 4: Ring Fill Logic ────────────────────────────────────────────────
+# Rings (0013_KLIT, 0014_KLIT) fill ring_1 first; ring_2 if ring_1 occupied;
+# displace ring_1 if both occupied (returning the displaced item).
+#
+# Ablative (Ga) marks the empty/absent condition — "movement away from" / vacancy.
+# Lo (T4) → Fn (T4): classification function, same layer.
+
+LoRing : Lo Fn {
+
+  [Ro Ga ring_1 Wu]           # ring_1 is empty → equip to ring_1
+  [Ep ring_slot ring_1]
+  [Ep displaced none]
+
+  [Ro Ga ring_2 Wu]           # ring_1 full; ring_2 is empty → equip to ring_2
+  [Ep ring_slot ring_2]
+  [Ep displaced none]
+
+  [Ep ring_slot ring_1]       # both full → equip to ring_1; displace existing
+  [Ep displaced ring_1_item]
+
+  [TaShyMa Gwev]
+}

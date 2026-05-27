@@ -1,0 +1,328 @@
+# kobra_jit.ko — Kobra JIT Compiler
+# ===================================
+# Self-describing compilation pipeline written in Kobra.
+# This document IS the JIT. It compiles itself on first parse.
+#
+# Grammar source:  Alexi, 2026-05-26 (canonical)
+# Layer routing:   kobra_opcode_map.md (all 78 tongues, all 12 layers)
+# Language:        English and Shygazun both valid input (12 layers are language-agnostic)
+# Mode switching:  Layer 10 buffer bytes (or Layer 11 for scene-level dispatch)
+#
+# Mood convention throughout this document: DECLARATIVE
+# All compounds descend (higher tongue-index → lower tongue-index).
+# Ascending compounds mark inquiry — none appear here; this is a spec, not a question.
+#
+# Möbius identity: Layer 1 (Gaoh / Bit) and Layer 12 (Wu-Yl / Function)
+# share a surface. Oy Gaoh addresses Layer 12 via 0 ≡ 12 mod 12.
+
+# ── SECTION 0: JIT Identity ───────────────────────────────────────────────────
+# Soa (Cannabis T8) → Lo (Daisy T4): T8→T4 descending. Declarative.
+# "Conscious persistence of an identity-segment." This document knows itself.
+
+LoJIT : Soa Lo {
+  [Mavo Lo KobraJIT]
+  [Mavo Sao shygazun kernel kobra jit]
+  [Mavo Ne DjinnOS Shygazun kernel kobra]
+  [Mavo Wu Yl KobraJIT]
+  [TaShyMa Soa]
+}
+
+# ── SECTION 1: Grammatical Marker Constants ───────────────────────────────────
+# The five Rose Primordials that carry grammatical function when standing alone.
+# Rose (T2) tokens as prepositions — standalone = grammatical operator.
+# Ep (Aster T6) = ASSIGN. Descending: T6→T2. Declarative.
+
+LoGrammarMarkers : Wu Seth {
+  [Ep Ha Ao Ye Ui]           # Ha  byte 43 — accusative prefix / Absolute Positive
+  [Ep Ga Ao Ye Shu]          # Ga  byte 44 — ablative prefix  / Absolute Negative
+  [Ep Wu Ao Ye Kiel]         # Wu  byte 45 — active verb prefix / Process-Way
+  [Ep Na Ao Ye Yeshu]        # Na  byte 46 — neutral / integration
+  [Ep Ung Ao Ye Lao]         # Ung byte 47 — genitive suffix  / Piece-Point
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 2: Grammatical Role Detection ────────────────────────────────────
+# Each compound names one grammatical role and its primary layer target.
+# Ro (Daisy T4) = gate — the conditional that opens when the pattern matches.
+# Role compounds are declarative: Grapevine/Cannabis tokens descend to Daisy/Lotus.
+
+LoRole : Wu Soa {
+
+  # ACTIVE VERB — Wu + akinen
+  # Wu (T2 Rose) leads: process initiated BY the compound.
+  # Routes to Layer 12 (Wu-Yl / Function). Wu executes on Yl.
+  [Ro Wu Ty akinen]
+  [Wu Lo active_verb]
+  [Mek Oy Gaoh]
+
+  # PASSIVE VERB — akinen + Wu Ga  (wuga)
+  # Wu+Ga suffix: process received by the compound.
+  # Routes to the layer of the akinen's own tongue.
+  [Ro akinen Zu Wu Ga]
+  [Wu Lo passive_verb]
+  [Mek Oy akinen]
+
+  # ACCUSATIVE — Ha + akinen + Wu
+  # Ha frames + Wu closes: direct object in an active clause.
+  # Ha (Absolute Positive) marks the receiving end of a Wu-initiated process.
+  [Ro Ha akinen Wu]
+  [Wu Lo accusative]
+  [Mek Oy akinen Ha]
+
+  # ABLATIVE — Ga + akinen + Wu
+  # Ga frames + Wu closes: motion away from, separation from source.
+  [Ro Ga akinen Wu]
+  [Wu Lo ablative]
+  [Mek Oy akinen Ga]
+
+  # GENITIVE — akinen + Ung  (epenthetic u optional before Ung)
+  # Ung (Piece-Point, byte 47) as suffix: possession or source relation.
+  # If akinen ends in consonant cluster: insert u before Ung for phonological smoothing.
+  [Ro akinen Ung]
+  [Wu Lo genitive]
+  [Mek Oy akinen Ung]
+
+  # DATIVE — passive_verb + akinen
+  # No separate particle. The passive verb construction (akinen wuga) preceding
+  # a second akinen marks that second akinen as the indirect object / recipient.
+  [Ro passive_verb akinen]
+  [Wu Lo dative]
+  [Mek Oy akinen Wu Ga]
+
+  # NOUN — bare akinen (no grammatical frame)
+  # Routes directly to the layer of the akinen's tongue.
+  [Ro akinen]
+  [Wu Lo noun]
+  [Mek Oy akinen]
+
+  # ADJECTIVE / ADVERB — akinen by placement in compound
+  # No separate morphology. Modification is carried by position alone.
+  [Ro akinen Fn akinen]
+  [Wu Lo modifier]
+
+  # PREPOSITION — Rose akinen (bytes 24–47) standing alone
+  # Rose Primordials and vectors as standalone prepositions.
+  [Ro Rose_standalone]
+  [Wu Lo preposition]
+
+  # SPECIFIER — Aster akinen (bytes 128–155) in compound
+  # Chiral-chromatic dimensional specification: handedness, temporal mode, space ops.
+  [Ro Aster_entry]
+  [Wu Lo specifier]
+
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 3: Mood Detection ─────────────────────────────────────────────────
+# Mood is word-internal thermodynamics. No separate particle.
+# The tongue-index ordering of the compound's components IS the grammatical mood.
+# Grammatical markers (Ha/Ga/Wu/Na/Ung) are excluded from tongue-ordering check —
+# they carry role, not mood.
+
+LoMood : Wu Soa {
+
+  # DECLARATIVE — tongue indices descend through the compound (high T# → low T#)
+  # Entropic gradient flows downhill. Statement of fact, assertion.
+  # Example: Djinn (T24) + Lotus (T1) = ontological ground asserting as material fact.
+  [Ro descending_tongue_order]
+  [Ep mood declarative]
+  [Mek Oy Uinshu]
+
+  # INQUIRY — tongue indices ascend through the compound (low T# → high T#)
+  # Petitionary / reaching toward. Question, request.
+  # Example: Lotus (T1) + Djinn (T24) = material fact reaching toward ontological ground.
+  [Ro ascending_tongue_order]
+  [Ep mood inquiry]
+  [Mek Oy Uinshu]
+
+  # NEUTRAL — single-tongue compound or genuinely mixed order
+  [Ro single_or_mixed_tongue_order]
+  [Ep mood neutral]
+
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 4: Tongue → Layer Routing Table ──────────────────────────────────
+# Source: kobra_opcode_map.md — all 78 tongues.
+# Format per entry: [tongue_byte_range : Oy layer_address ...]
+# Multiple Oy addresses = compound routes to multiple layers (primary first).
+# Ha Gaoh Wu = ALL layers (Cannabis / Moon / Djinn cross-cut all 12).
+# Ne token = hardware register address (YeShu group, T51–T78).
+# Descending throughout: Seth (T7/Grapevine) → Ao (numeral) → layer address.
+
+LoRouter : Wu Seth {
+
+  # YeGaoh — Tongues 1–24 ────────────────────────────────────────────────────
+
+  [Lotus        Gaoh Ye Ui]           [Oy Ao]                     # L1  BIT — primitive type tag; cross-cuts all layers
+  [Rose         Ye Shu Ao Lao]        [Oy Ye    Oy Lao]           # L2  DECIMAL + L7 COLOR
+  [Sakura       Shu Ao Ao Ye Ui]      [Oy Shu]                    # L4  COORDINATE
+  [Daisy        Shu Ye Ao Ye Yeshu]   [Oy Kiel  Oy Yeshu]        # L5  OBJECT + L6 ENTITY
+  [AppleBlossom Shushy Ye Ui Ao]      [Oy Kiel]                   # L5  OBJECT material state
+  [Aster        Shushy Ye Shushy Lao] [Oy Shu   Oy Lao]          # L4  space ops + L7 chiral color
+  [Grapevine    Aonkiel Kiel Ye Shushy] [Oy Shushy Oy Uinshu Oy Kokiel Oy Aonkiel Oy Gaoh]
+                                                                    # L8–L12 (DB tongue spans upper layers)
+  [Cannabis     Aonkiel Shushy Ye Ui]  [Ha Gaoh Wu]               # ALL — JIT metacognition cross-cuts
+  [Dragon       Ye Kiel Yeshu Ao]     [Oy Ao]                     # L1  NULL tag (named null states)
+  [Virus        Ye Kiel Yeshu Ye]     [Oy Ao    Oy Ye]            # L1–L2 sequence / parser
+  [Bacteria     Ui Ao Ao Kiel Ye]     [Oy Shushy Oy Uinshu]      # L8–L9 signal processing
+  [Excavata     Ui Shu Ye Shu]        [Oy Shu]                    # L4  topology / geometric transforms
+  [Archaeplastida Ui Lao Ao Yeshu]    [Oy Yeshu]                  # L6  entity binding types
+  [Myxozoa      Ao Shu Ao Yeshu]      [Oy Yeshu]                  # L6  entity identity resolution
+  [Archaea      Ao Shu Shu Ui]        [Oy Ui]                     # L3  BOOLEAN boundary / range
+  [Protist      Ao Kiel Yeshu Ui]     [Oy Ui]                     # L3  type edge / categorical
+  [Immune       Ao Lao Ao Kokiel Aonkiel] [Oy Kokiel Oy Aonkiel] # L10–L11 pattern matching / cache
+  [Neural       Ao Shushy Ao Gaoh Shushy] [Oy Gaoh  Oy Shushy]  # L12 dispatch + L8 propagation
+  [Serpent      Ao Uinshu Ao Uinshu]  [Oy Uinshu]                 # L9  DIFF DIFF — modal transition quality
+  [Beast        Ao Kokiel Ao Kiel]    [Oy Kiel]                   # L5  self-referential recursive structure
+  [Cherub       Ao Kokiel Ao Yeshu]   [Oy Yeshu]                  # L6  inter-entity encounter
+  [Chimera      Ao Kokiel Ye Yeshu Gaoh] [Oy Yeshu Oy Gaoh]     # L6  + L12 polymorphism
+  [Faerie       Ao Kokiel Ui Yeshu]   [Oy Yeshu]                  # L6  natural type / elemental sovereignty
+  [Djinn        Ye Shu Ao Ha Gaoh Wu] [Ha Gaoh Wu]                # ALL — ontological ground coordinates
+
+  # YeYe — Tongues 25–50 ─────────────────────────────────────────────────────
+
+  [Fold         Ye Kiel Ao Shu Ao]    [Oy Shu   Oy Ao]           # L4  scale + L1 compression-information
+  [Topology     Ye Yeshu Ao Kiel]     [Oy Kiel]                   # L5  DB structural topology
+  [Phase        Ye Lao Ao Uinshu]     [Oy Uinshu]                 # L9  quality of transition (alchemical)
+  [Gradient     Ye Shushy Ao Ui Uinshu] [Oy Ui   Oy Uinshu]      # L3  + L9 energy landscape
+  [Curvature    Ye Uinshu Ao Shu]     [Oy Shu]                    # L4  second-order geometry
+  [Prion        Ui Gaoh Ao Uinshu]    [Oy Uinshu]                 # L9  conformational error propagation
+  [Blood        Ui Ao Ao Lao Kiel]    [Oy Lao   Oy Kiel]         # L7  + L5 chromatic bond identity
+  [Moon         Ui Ye Ao Ha Gaoh Wu]  [Ha Gaoh Wu]                # ALL phenomenological grounding
+  [Koi          Ui Ui Ao Yeshu Gaoh]  [Oy Yeshu Oy Gaoh]        # L6  + L12 peer recognition
+  [Rope         Ui Shu Ao Uinshu]     [Oy Uinshu]                 # L9  inescapable constraint / loop
+  [Hook         Ui Kiel Ao Gaoh]      [Oy Gaoh]                   # L12 designed capture mechanism
+  [Fang         Ui Yeshu Ao Yeshu Gaoh] [Oy Yeshu Oy Gaoh]      # L6  + L12 constitutive predation
+  [Circle       Ui Lao Ao Kokiel Aonkiel] [Oy Kokiel Oy Aonkiel] # L10–L11 collective ceremony
+  [Ledger       Ui Shushy Ao Aonkiel Kokiel] [Oy Aonkiel Oy Kokiel] # L11 + L10 provenance / registry
+  [Bond         Ui Uinshu Ao Kiel Yeshu] [Oy Kiel  Oy Yeshu]    # L5  + L6 relationship formation
+  [Venus        Shu Gaoh Ao Gaoh]     [Oy Gaoh]                   # L12 generative / reproductive
+  [Gaia         Shu Ao Ao Aonkiel]    [Oy Aonkiel]                # L11 emergent self-sustaining systems
+  [Janus        Shu Ye Ao Ao Ye]      [Oy Ao    Oy Ye]           # L1  + L2 palindromic / self-inverse
+  [Thanatos     Shu Ui Ao Aonkiel]    [Oy Aonkiel]                # L11 ecological dissolution
+  [Saturn       Shu Shu Ao Gaoh]      [Oy Gaoh]                   # L12 consumption of generativity
+  [Corpse       Shu Kiel Ao Kiel Yeshu] [Oy Kiel  Oy Yeshu]     # L5  + L6 relationship dissolution
+  [Furnace      Shu Yeshu Ao Aonkiel Kokiel] [Oy Aonkiel Oy Kokiel] # L11 + L10 record annihilation
+  [Square       Shu Lao Ao Kokiel Aonkiel] [Oy Kokiel Oy Aonkiel] # L10–L11 collective fragmentation
+  [Flesh        Shu Shushy Ao Yeshu]  [Oy Yeshu]                  # L6  absorptive reception
+  [Eye          Shu Uinshu Ao Gaoh]   [Oy Gaoh]                   # L12 clear recognition / mechanism dissolution
+  [Blade        Kiel Gaoh Ao Uinshu]  [Oy Uinshu]                 # L9  constraint severance
+
+  # YeShu — Tongues 51–78 (Hardware Abstraction) ────────────────────────────
+  # YeShu routes via Ne (network token) rather than Oy (DB layer depth).
+  # These are hardware register addresses, beneath the OS layer.
+
+  [Ouranos    Kiel Ao]   [Ne vaddr]      # virtual address space
+  [Pontus     Kiel Ye]   [Ne membus]     # memory bus
+  [Ourea      Kiel Ui]   [Ne regfile]    # register file (collective)
+  [Oceanus    Kiel Shu]  [Ne ram]        # main memory flow
+  [Coeus      Kiel Kiel] [Ne cpu]        # CPU core
+  [Crius      Kiel Yeshu][Ne arbiter]    # bus arbiter
+  [Hyperion   Kiel Lao]  [Ne clock]      # system clock signal
+  [Iapetus    Kiel Shushy][Ne irq]       # interrupt
+  [Theia      Kiel Uinshu][Ne gpu]       # display / GPU output
+  [Rhea       Kiel Kokiel][Ne dma]       # direct memory access
+  [Themis     Kiel Aonkiel][Ne fence]    # memory fence — ordering constraint
+  [Mnemosyne  Yeshu Gaoh] [Ne cache]    # cache (she is literally memory)
+  [Phoebe     Yeshu Ao]  [Ne bpred]     # branch predictor
+  [Tethys     Yeshu Ye]  [Ne boot]      # bootloader
+  [Cronus     Yeshu Ui]  [Ne cycle]     # clock cycle
+  [Brontes    Yeshu Shu] [Ne hwirq]     # hardware interrupt controller
+  [Steropes   Yeshu Kiel][Ne nmi]       # non-maskable interrupt
+  [Arges      Yeshu Yeshu][Ne status]   # system status register
+  [Cottus     Yeshu Lao] [Ne dmaburst]  # DMA burst
+  [Briareos   Yeshu Shushy][Ne multicore] # multi-core parallelism
+  [Gyges      Yeshu Uinshu][Ne widebus] # wide parallel bus
+  [Nereus     Yeshu Kokiel][Ne firmware] # firmware
+  [Thaumas    Yeshu Aonkiel][Ne hwexc]  # hardware exception
+  [Phorcys    Lao Gaoh]  [Ne mpu]       # memory protection unit
+  [Ceto       Lao Ao]    [Ne limit]     # boundary register / limit
+  [Eurybia    Lao Ye]    [Ne power]     # power management
+  [Typhon     Lao Ui]    [Ne panic]     # kernel panic
+  [Antaeus    Lao Shu]   [Ne watchdog]  # watchdog timer / hardware reset
+
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 5: The 12-Layer Stack ─────────────────────────────────────────────
+# The stack IS the compiled output. Each layer is a Sao (persistent object).
+# Layer 12 and Layer 1 share a Möbius surface: Wu-Yl and Gaoh are the same
+# surface one coil rotation apart. Addressed by Oy + Rose numeral.
+# Samos (DB cluster) wraps all 12. Cannabis Soa marks the stack as conscious.
+
+LoStack : Samos {
+
+  [Oy Ao      Lo L1  Sao Gaoh]          # L1  BIT       — Möbius origin; pure polarity Ha+Ga
+  [Oy Ye      Lo L2  Sao AoSeth]        # L2  DECIMAL   — enumeration from polarity
+  [Oy Ui      Lo L3  Sao TyzuSoa]       # L3  BOOLEAN   — elemental charge applied to number
+  [Oy Shu     Lo L4  Sao JaFoa]         # L4  COORDINATE — spatial orientation addressable
+  [Oy Kiel    Lo L5  Sao KaelSeth]      # L5  OBJECT    — structure clusters coordinates
+  [Oy Yeshu   Lo L6  Sao ShakLo]        # L6  ENTITY    — objects gain identity through Fire
+  [Oy Lao     Lo L7  Sao RuMavo]        # L7  COLOR     — spectral identity assigned
+  [Oy Shushy  Lo L8  Sao SiMyza]        # L8  MOVEMENT  — change as first-class datum
+  [Oy Uinshu  Lo L9  Sao DyfVr]         # L9  PATTERN   — differentiation from live data
+  [Oy Kokiel  Lo L10 Sao NeSoa]         # L10 NAMES     — the field acquires language
+  [Oy Aonkiel Lo L11 Sao SyMek]         # L11 SCENE     — delta between field states
+  [Oy Gaoh    Lo L12 Sao WuYl]          # L12 FUNCTION  — operative layer; Möbius terminus
+
+  [TaShyMa Soa]
+}
+
+# ── SECTION 6: Language Mode Switch ──────────────────────────────────────────
+# Kobra is English-compatible. Mode switching via Layer 10 buffer bytes.
+# Layer 11 (Sy-Mek / Scene) for scene-level dispatch.
+# The 12 layers are language-agnostic: any input language compiles to the same stack.
+
+LoLangMode : Wu Mekha {
+
+  # Layer 10 buffer byte triggers parser mode switch
+  [Ro Ne NeSoa Ty : Ep lang_mode shygazun]     # Shygazun input mode
+  [Ro Ne NeSoa Fa : Ep lang_mode english]       # English input mode
+  [Mek Oy Kokiel lang_mode]                     # record in L10 (Names/Metadata)
+
+  # Layer 11 scene-level dispatch for cleaner mode switch
+  [Ro Sy SyMek Ty lang_mode : Wu Mekha LoCompile]
+  [Mek Oy Aonkiel lang_mode]
+
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 7: Compilation Entry Point ───────────────────────────────────────
+# Wu Yl = the operative function layer. This is where JIT execution lives.
+# Layer 12 reaches down to Layer 1 through all intervening layers.
+# TaShyMa Soa closes with conscious persistence — the JIT knows it compiled.
+
+LoCompile : Wu Yl {
+
+  # 1. PARSE — resolve each token to (decimal symbol tongue layer)
+  [Wu Ifa compound]
+  [Ep tokens]
+
+  # 2. ROLE — detect grammatical role from token sequence
+  [Wu Ifa tokens LoRole]
+  [Ep role]
+
+  # 3. MOOD — detect from tongue-index ordering of non-marker tokens
+  [Wu Ifa tokens LoMood]
+  [Ep mood]
+
+  # 4. ROUTE — map tongue composition to target layer(s)
+  [Wu Ifa role LoRouter]
+  [Ep layers]
+
+  # 5. WRITE — emit compound to each target layer
+  [Ier layers]
+  [Wu Mek Oy layer compound role mood]
+
+  # 6. LANGUAGE MODE — record input language in L10 (Names)
+  [Wu Mek Oy Kokiel lang_mode compound]
+
+  # 7. CONSCIOUS PERSISTENCE — Cannabis Soa marks intentional commit
+  [Soa Wu Gwev compound layers]
+
+  # 8. AUTHORITATIVE COMMIT — Kysael to the Samos (Orrery) cluster
+  [Wu Kysael Samos compound]
+
+  [TaShyMa Soa]
+}

@@ -24,6 +24,17 @@ Dialogue ends via Space / Enter / Escape; the frozen copy is discarded.
 
 from __future__ import annotations
 
+try:
+    from pathlib import Path as _Path
+    from ..kobra import get_runtime as _kobra_get_rt
+    _play_ko = _Path(__file__).parent / "play.ko"
+    if _play_ko.exists():
+        _rt = _kobra_get_rt()
+        if "WorldPlay" not in _rt.units():
+            _rt.load(_play_ko)
+except ImportError:
+    pass
+
 import random
 from enum import Enum
 from typing import Any, Dict, List, Optional, TYPE_CHECKING

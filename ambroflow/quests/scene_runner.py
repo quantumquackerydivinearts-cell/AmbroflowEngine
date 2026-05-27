@@ -42,6 +42,17 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+try:
+    from pathlib import Path as _Path
+    from ..kobra import get_runtime as _kobra_get_rt
+    _scene_runner_ko = _Path(__file__).parent / "scene_runner.ko"
+    if _scene_runner_ko.exists():
+        _rt = _kobra_get_rt()
+        if "SceneRunner" not in _rt.units():
+            _rt.load(_scene_runner_ko)
+except ImportError:
+    pass
+
 if TYPE_CHECKING:
     from .key_registry import KeyRegistry
     from .keyring import KeyRing

@@ -602,6 +602,13 @@ class AlchemySystem:
 
     def __init__(self, orrery: OrreryClient) -> None:
         self._orrery = orrery
+        from ..kobra import get_runtime as _get_rt
+        from pathlib import Path as _P
+        _ko = _P(__file__).parent / "alchemy.ko"
+        if _ko.exists():
+            _rt = _get_rt()
+            if "Alchemy" not in _rt.units():
+                _rt.load(_ko)
 
     # ── Resonance calculation ─────────────────────────────────────────────────
 

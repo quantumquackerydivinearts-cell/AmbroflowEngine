@@ -22,6 +22,17 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, Optional
 
+try:
+    from pathlib import Path as _Path
+    from ..kobra import get_runtime as _kobra_get_rt
+    _action_handlers_ko = _Path(__file__).parent / "action_handlers.ko"
+    if _action_handlers_ko.exists():
+        _rt = _kobra_get_rt()
+        if "ActionHandlers" not in _rt.units():
+            _rt.load(_action_handlers_ko)
+except ImportError:
+    pass
+
 # ── Result types ──────────────────────────────────────────────────────────────
 
 @dataclass

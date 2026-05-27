@@ -35,6 +35,17 @@ import time
 from dataclasses import dataclass, field
 from typing import Optional
 
+try:
+    from pathlib import Path as _Path
+    from ..kobra import get_runtime as _kobra_get_rt
+    _tile_trace_ko = _Path(__file__).parent / "tile_trace.ko"
+    if _tile_trace_ko.exists():
+        _rt = _kobra_get_rt()
+        if "TileTracer" not in _rt.units():
+            _rt.load(_tile_trace_ko)
+except ImportError:
+    pass
+
 # ── Lotus Table (bytes 0–23) ──────────────────────────────────────────────────
 
 LOTUS_TABLE: dict[int, tuple[str, str]] = {

@@ -19,6 +19,17 @@ translates key events into state changes.  The pygame app drives it.
 
 from __future__ import annotations
 
+try:
+    from pathlib import Path as _Path
+    from ..kobra import get_runtime as _kobra_get_rt
+    _game_flow_ko = _Path(__file__).parent / "game_flow.ko"
+    if _game_flow_ko.exists():
+        _rt = _kobra_get_rt()
+        if "GameFlow" not in _rt.units():
+            _rt.load(_game_flow_ko)
+except ImportError:
+    pass
+
 import threading
 from enum import Enum
 from typing import Optional

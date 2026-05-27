@@ -19,6 +19,17 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Optional
 
+try:
+    from pathlib import Path as _Path
+    from ..kobra import get_runtime as _kobra_get_rt
+    _map_ko = _Path(__file__).parent / "map.ko"
+    if _map_ko.exists():
+        _rt = _kobra_get_rt()
+        if "WorldMap" not in _rt.units():
+            _rt.load(_map_ko)
+except ImportError:
+    pass
+
 
 # ── Realms ────────────────────────────────────────────────────────────────────
 

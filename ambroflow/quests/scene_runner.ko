@@ -1,0 +1,207 @@
+# scene_runner.ko — Lock Evaluation, Scene Firing, Key Propagation
+# =================================================================
+# Kobra-native specification for the SceneRunner runtime engine.
+# Source: ambroflow/quests/scene_runner.py
+# Python shim: loaded at SceneRunner.__init__ in scene_runner.py.
+#
+# Mood convention: DECLARATIVE throughout.
+#
+# The SceneRunner is the runtime gate evaluator: it holds the player's
+# KeyRing, all loaded QuestScripts, and drives scene availability and
+# key propagation. It does NOT render — it answers "what fires now?"
+#
+# Layer routing:
+#   L3  BOOLEAN   — lock evaluation (ring.satisfies + time_window)
+#   L8  MOVEMENT  — zone entry / scene-as-movement-through-witness-space
+#   L11 SCENE     — available scenes and topics; scene firing
+#   L12 FUNCTION  — queries: available_scenes, fire_scene, _propagate
+
+# ── SECTION 0: SceneRunner System Identity ───────────────────────────────────
+# Samos (T7 / L11 SCENE) → Lo (T4): descending. Declarative.
+
+LoSceneRunner : Samos Lo {
+  [Mavo Lo SceneRunner 7_KLGS]
+  [Mavo Sao ambroflow quests scene_runner]
+  [Samos Wu Yl SceneRunner]
+  [TaShyMa Soa]
+}
+
+# ── SECTION 1: Lock Evaluation ────────────────────────────────────────────────
+# A Lock is open when:
+#   1. ring.satisfies(lock) → all requires present, no excludes present
+#   2. time_window absent OR current hour within window
+#
+# Time-window: (start, end). Wraps midnight when start > end.
+#   Normal: start ≤ hour ≤ end
+#   Wrapping (e.g. 22–04): hour ≥ start OR hour ≤ end
+#
+# Protist (T16 / L3 BOOLEAN type-edge) → Archaea (T15). Declarative.
+
+LoLockEval : Protist Archaea {
+
+  # KEYRING GATE — requires all present, excludes none present
+  [Ro Ha requires ring Wu]           # all requires ∈ ring → proceed
+  [Ro Ga excludes ring Wu]           # no excludes ∈ ring → proceed
+  [Ep keyring_ok 1]
+  [Ep keyring_ok 0]
+
+  # TIME WINDOW GATE — absent means open
+  [Ro Ga time_window Wu]             # no time_window → time_ok = 1
+  [Ep time_ok 1]
+
+  [Ro Ha time_window Wu]
+  [Ep start time_window Oy Ao]       # start = time_window[0]
+  [Ep end   time_window Oy Ye]       # end   = time_window[1]
+
+  # Normal window: start ≤ hour ≤ end
+  [Ro Wu start end Wu]               # start ≤ end → normal
+  [Ro Ha hour start Wu]
+  [Ro Ha end hour Wu]
+  [Ep time_ok 1]
+  [Ep time_ok 0]
+
+  # Wrapping window: hour ≥ start OR hour ≤ end
+  [Ro Ga start end Wu]               # start > end → wrapping
+  [Ro Ha hour start Wu]
+  [Ep time_ok 1]
+  [Ro Ha end hour Wu]
+  [Ep time_ok 1]
+  [Ep time_ok 0]
+
+  # COMBINED: lock open iff both gates pass
+  [Ro Ha keyring_ok time_ok Wu]
+  [Ep lock_open 1]
+  [Ep lock_open 0]
+
+  [Mek Oy Ui lock_open]              # L3 BOOLEAN — gate result
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 2: Scene Availability ────────────────────────────────────────────
+# available_scenes(zone): iterate all scripts × scenes, apply filters.
+# Filters (all must pass):
+#   1. Not already fired (if not repeatable)
+#   2. scene.zone == current zone
+#   3. lock_open(scene.lock)
+#
+# Samos (T7 / L11 SCENE) → Mio (T7 / L8 MOVEMENT). Declarative.
+# L8 covers both zone transitions AND traversal within witness space.
+
+LoAvailableScenes : Samos Mio {
+
+  [Ier scripts]
+  [Ier scenes]
+
+  # FIRED GUARD — skip if scene already fired and not repeatable
+  [Ro Ha scene_id fired Wu]
+  [Ro Ga scene_repeatable Wu]
+  [Ep skip 1]
+  [Ep skip 0]
+
+  # ZONE FILTER — scene.zone must match current zone
+  [Ro Wu scene_zone current_zone Wu]
+  [Ep zone_match 0]
+  [Ep zone_match 1]
+
+  # LOCK FILTER — LoLockEval
+  [Wu Ifa scene_lock LoLockEval]
+  [Ep lock_open Wu]
+
+  # COLLECT — emit scene if all filters pass
+  [Ro Ha zone_match lock_open Wu]
+  [Ro Ga skip Wu]
+  [Ep emit scene]
+
+  [Mek Oy Aonkiel available_scenes]  # L11 SCENE — collected fireable scenes
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 3: Topic Availability ────────────────────────────────────────────
+# available_topics(char_id): same pattern, filtered by topic.char_id.
+# Seth (T7 / L10 NAMES) routes character name lookup. Declarative.
+
+LoAvailableTopics : Seth Samos {
+
+  [Ier scripts]
+  [Ier topics]
+
+  # CHARACTER FILTER
+  [Ro Wu topic_char_id char_id Wu]
+  [Ep char_match 0]
+  [Ep char_match 1]
+
+  # LOCK FILTER
+  [Wu Ifa topic_lock LoLockEval]
+  [Ep lock_open Wu]
+
+  # COLLECT
+  [Ro Ha char_match lock_open Wu]
+  [Ep emit topic]
+
+  [Mek Oy Aonkiel available_topics]  # L11 SCENE — collected fireable topics
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 4: Scene / Beat / Response Firing ────────────────────────────────
+# fire_scene(scene) → new_keys:
+#   1. Mark scene.id in fired (if not repeatable)
+#   2. ring.grant_many(scene.grants) → new_keys
+#   3. _propagate(new_keys)
+#
+# fire_beat / fire_response / fire_topic: same grant+propagate, no fired set.
+#
+# Cannabis (T8 / L8 MOVEMENT) → Mio (T7). Declarative.
+# Granting a key IS metacognitive movement; Cannabis routes it.
+
+LoFire : Cannabis Mio {
+
+  # FIRED SET — mark scene if not repeatable
+  [Ro Ga scene_repeatable Wu]
+  [Seth Wu scene_id fired_set]       # add scene_id to fired set
+
+  # GRANT — ring.grant_many(grants) → new_keys
+  [Ier scene_grants]
+  [Ha Wu grant key ring]
+  [Ep new_keys Ha]
+
+  [Mek Oy Shushy new_keys]           # L8 MOVEMENT — keys granted, movement witnessed
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 5: Key Propagation ────────────────────────────────────────────────
+# _propagate(new_keys): after any grant, check completion/failure tables.
+# completion_keys[key] → quest_id → tracker.complete(quest_id)
+# failure_keys[key]    → quest_id → tracker.fail(quest_id)
+#
+# Archaea (T15 / L3 BOOLEAN) → Samos (T7 / L11 SCENE). Declarative.
+# Completion is a boolean event that transitions a scene cluster to closed.
+
+LoPropagate : Archaea Samos {
+
+  [Ier new_keys]
+
+  # COMPLETION CHECK
+  [Ro Ha key completion_keys Wu]
+  [Ep quest_id completion_keys key]
+  [Wu tracker complete quest_id]
+
+  # FAILURE CHECK
+  [Ro Ha key failure_keys Wu]
+  [Ep quest_id failure_keys key]
+  [Wu tracker fail quest_id]
+
+  [Mek Oy Ui propagation_done]       # L3 BOOLEAN — propagation recorded
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 6: Fired Scene State ─────────────────────────────────────────────
+# Serialise / restore the fired set for save state.
+# Samos (L11 SCENE) → Wu (L12 FUNCTION). Declarative.
+
+LoFiredState : Samos Wu {
+  [Seth Wu fired_scenes sort]        # sorted list of fired scene IDs → save state
+  [Ha Wu scene_id fired_set]         # mark_fired: add to set
+  [Wu Ifa fired_set scene_id Wu]     # is_fired: boolean lookup
+  [Mek Oy Aonkiel fired_state]       # L11 SCENE — serialised fired set
+  [TaShyMa Gwev]
+}

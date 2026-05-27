@@ -124,6 +124,9 @@ GROUND_FURNITURE: list[FurniturePlacement] = [
                        height=0.5, passable=False, room="bedroom", slot_id="bed_w"),
     FurniturePlacement(x=3, z=3, y=0.0, tile_id=FurnitureTile.BED,
                        height=0.5, passable=False, room="bedroom", slot_id="bed_e"),
+    # Stair step up — marks the stairs_up zone tile at (11, 2)
+    FurniturePlacement(x=11, z=2, y=0.0, tile_id=FurnitureTile.DESK,
+                       height=0.3, passable=True, room="bedroom", slot_id="stairs_up"),
     # Journal table — east side of bedroom
     FurniturePlacement(x=10, z=5, y=0.0, tile_id=FurnitureTile.TABLE,
                        height=0.8, passable=False, room="bedroom", slot_id="journal_table"),

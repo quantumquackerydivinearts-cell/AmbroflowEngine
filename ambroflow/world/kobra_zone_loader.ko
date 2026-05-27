@@ -1,0 +1,286 @@
+# kobra_zone_loader.ko — TPN Placement Notation Parser
+# ======================================================
+# Kobra-native specification for the zone geometry loader.
+# Source: ambroflow/world/kobra_zone_loader.py
+# Python shim: loaded at module import in kobra_zone_loader.py.
+#
+# Mood convention: DECLARATIVE throughout.
+#
+# The TPN (Tile Placement Network) emits zone definitions as Kobra placement
+# notation. This module parses that notation into Zone geometry.
+#
+# Input format (one entity per line):
+#   id : [presence? x_rose y_rose z_rose? color_token? traversal? daisy_type? lex*]
+#
+# id = "layer|x,y" (decimal tile key, primary coordinate source)
+# presence: Ta (present, default) | Zo (absent — skip tile)
+# x_rose/y_rose/z_rose: Rose numeral digit sequences (base-12)
+# color_token: Rose vector | Aster chiral | combined akinenwun (averaged RGB)
+# traversal: Va (walkable / Order) | Vo (visual blocker / Chaos)
+# daisy_type: Lo (NPC) | To (prop/item) | Ne (exit/portal) | Gl (membrane/door)
+#             Ro (dungeon portal) | St (spawn point)
+# lex: zero or more arbitrary tokens (character_id, item_id, direction, ...)
+#
+# Layer routing:
+#   L2  DECIMAL   — Rose numeral base-12 coordinates
+#   L4  COORDINATE — tile positions (x, y, z), color RGB triples
+#   L5  OBJECT    — tile kind classification (Daisy Lo)
+#   L6  ENTITY    — entity types by Daisy structural token
+#   L7  COLOR     — color token system (Rose vectors + Aster chirals)
+#   L8  MOVEMENT  — zone exits, traversal classification (Va/Vo)
+#   L11 SCENE     — Zone output (Samos cluster)
+
+# ── SECTION 0: Loader System Identity ────────────────────────────────────────
+# Samos (T7 / L11 SCENE) → Lo (T4). Declarative.
+
+LoKobraZoneLoader : Samos Lo {
+  [Mavo Lo KobraZoneLoader 7_KLGS]
+  [Mavo Sao ambroflow world kobra_zone_loader]
+  [TaShyMa Soa]
+}
+
+# ── SECTION 1: Rose Numeral Base-12 (Coordinate Encoding) ────────────────────
+# Same Rose numeral system as samosmyr.ko LoRoseDigit, applied to coordinates.
+# Digit sequences evaluate as: val = Σ digit × 12^(position from right).
+# Greedy longest-match; Gaoh (0) is Möbius origin (also 12).
+#
+# Rose (T2 / L2 DECIMAL) → Lotus (T1): descending. Declarative.
+
+LoRoseCoord : Rose Lotus {
+  [Gaoh  Oy Ye 0]   [Ao    Oy Ye 1]   [Ye    Oy Ye 2]
+  [Ui    Oy Ye 3]   [Shu   Oy Ye 4]   [Kiel  Oy Ye 5]
+  [Yeshu Oy Ye 6]   [Lao   Oy Ye 7]   [Shushy Oy Ye 8]
+  [Uinshu Oy Ye 9]  [Kokiel Oy Ye 10] [Aonkiel Oy Ye 11]
+  [Ifa base_12 digits]     # evaluate digit list as base-12 integer
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 2: Color Token System ────────────────────────────────────────────
+# Three color vocabularies. All resolved to RGB (r, g, b).
+# Combined akinenwun: greedy segmentation → average of component RGBs.
+#
+# Rose vectors (12 base spectral hues):
+#   Ru(198,40,40) Ot(239,108,0) El(249,168,37) Ki(46,125,50) Fu(21,101,192)
+#   Ka(40,53,147) AE(106,27,154) Ha(255,255,255) Ga(17,17,17) Na(158,158,158)
+#   Ung(78,52,46) Wu(207,216,220)
+#
+# Aster right-chiral (+28% toward white): Ry Oth Le Gi Fe Ky Alz → Rose base
+# Aster left-chiral  (+32% toward black): Ra Tho Lu Ge Fo Kw Dr  → Rose base
+#
+# Rose (T2) → Ru (T2 AE-range / L7 COLOR): descending. Declarative.
+# L7 COLOR is the spectral layer; Rose AE-range tokens are color identities.
+
+LoColorToken : Rose Ru {
+  # ROSE VECTORS — 12 hues
+  [Ru  Oy Lao 198  40  40]   # red
+  [Ot  Oy Lao 239 108   0]   # orange
+  [El  Oy Lao 249 168  37]   # yellow
+  [Ki  Oy Lao  46 125  50]   # green
+  [Fu  Oy Lao  21 101 192]   # blue
+  [Ka  Oy Lao  40  53 147]   # indigo
+  [AE  Oy Lao 106  27 154]   # violet
+  [Ha  Oy Lao 255 255 255]   # white  (accusative: full presence)
+  [Ga  Oy Lao  17  17  17]   # black  (ablative: full absence)
+  [Na  Oy Lao 158 158 158]   # grey   (neutral)
+  [Ung Oy Lao  78  52  46]   # brown  (genitive)
+  [Wu  Oy Lao 207 216 220]   # pale blue-grey (active verb / function)
+
+  # ASTER RIGHT-CHIRAL — base hue shifted +28% toward white
+  [Ry  Oy Lao Ru 0.28 white]
+  [Oth Oy Lao Ot 0.28 white]
+  [Le  Oy Lao El 0.28 white]
+  [Gi  Oy Lao Ki 0.28 white]
+  [Fe  Oy Lao Fu 0.28 white]
+  [Ky  Oy Lao Ka 0.28 white]
+  [Alz Oy Lao AE 0.28 white]
+
+  # ASTER LEFT-CHIRAL — base hue shifted +32% toward black
+  [Ra  Oy Lao Ru 0.32 black]
+  [Tho Oy Lao Ot 0.32 black]
+  [Lu  Oy Lao El 0.32 black]
+  [Ge  Oy Lao Ki 0.32 black]
+  [Fo  Oy Lao Fu 0.32 black]
+  [Kw  Oy Lao Ka 0.32 black]
+  [Dr  Oy Lao AE 0.32 black]
+
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 3: Hue → Tile Material Category ──────────────────────────────────
+# Dominant Rose base hue of a color token → coarse material category.
+# Used when traversal = walkable_surface and no lex override.
+# Sakura (T3 / L4 COORDINATE) → Ru (L7 COLOR). Declarative.
+
+LoHueCategory : Sakura Ru {
+  [Fu  Ep water]         # blue → water (impassable surface)
+  [Ki  Ep grass]         # green → grass
+  [El  Ep grass]         # yellow → grass
+  [Ru  Ep road]          # red → road (hard surface)
+  [Ot  Ep road]          # orange → road
+  [Ung Ep dirt]          # brown → dirt path
+  [Ka  Ep wall]          # indigo → wall
+  [AE  Ep portal]        # violet → portal
+  [Ha  Ep floor]         # white → floor
+  [Na  Ep floor]         # grey → floor
+  [Wu  Ep floor]         # pale blue-grey → floor
+  [Ga  Ep void]          # black → void / out-of-bounds
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 4: Token Classification ──────────────────────────────────────────
+# Presence, traversal, and Daisy structural token vocabulary.
+# These tokens appear in placement lines and determine entity routing.
+# Seth (T7 / L10 NAMES) → Mio (T7 / L8 MOVEMENT). Same tongue. Declarative.
+
+LoTokenClass : Seth Mio {
+  # PRESENCE — Ta (present) or Zo (absent/skip)
+  [Ta  Oy Shushy present]        # default; instantiate tile
+  [Zo  Oy Shushy absent]         # explicit void — skip
+
+  # TRAVERSAL — Va (walkable / Order) or Vo (visual blocker / Chaos)
+  [Va  Oy Shushy walkable_surface]
+  [Vo  Oy Shushy visual_unwalkable]
+
+  # DAISY STRUCTURAL TYPES — entity kind routing
+  [Lo  Oy Yeshu npc_spawn]       # L6 ENTITY — NPC character
+  [To  Oy Kiel  item_spawn]      # L5 OBJECT — item pickup
+  [Ne  Oy Shushy zone_exit]      # L8 MOVEMENT — zone transition
+  [Ro  Oy Shushy dungeon_portal] # L8 MOVEMENT — dungeon portal
+  [Gl  Oy Shushy door]           # L8 MOVEMENT — door/membrane
+  [St  Oy Shu   spawn_point]     # L4 COORDINATE — player spawn
+
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 5: ParsedPlacement Record ────────────────────────────────────────
+# Each parsed line becomes a ParsedPlacement with all fields resolved.
+# Coordinates: tile key "layer|x,y" takes priority; Rose runs are fallback.
+# Sakura (T3 / L4 COORDINATE) → Wu (T2 / L12 FUNCTION). Declarative.
+
+LoParsedPlacement : Sakura Wu {
+  [Seth Wu id Oy Kokiel]                   # L10 NAMES — tile key or id
+  [Sakura Wu x y z Oy Shu]                 # L4 COORDINATE — resolved position
+  [Seth Wu layer Oy Kokiel]                # L10 NAMES — "ground" | "base" | ...
+  [Mio Wu presence traversal Oy Shushy]   # L8 MOVEMENT — Ta/Zo + Va/Vo
+  [Ru Wu color_token Oy Lao]              # L7 COLOR — resolved color token
+  [Ne Wu daisy_type Oy Yeshu]             # L6 ENTITY — Lo/To/Ne/Ro/Gl/St | None
+  [Seth Ne lex Oy Kokiel]                  # L10 NAMES — lex token list
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 6: Tile Kind Resolution ──────────────────────────────────────────
+# Priority: lex override → traversal type → color hue category → WorldTileKind.
+# visual_unwalkable + grass → TREE; all other unwalkable → WALL.
+# walkable + color → material tile.
+# Lo (T4 / L5 OBJECT) → Sakura (T3 / L4 COORDINATE). Declarative.
+
+LoTileKindResolve : Lo Sakura {
+  # LEX OVERRIDE — explicit tile type name in lex list
+  [Ro Ha lex LoTileKind Wu]
+  [Ep kind lex_override]
+
+  # VISUAL UNWALKABLE
+  [Ro Ha traversal visual_unwalkable Wu]
+  [Ro Wu color_category grass Wu]
+  [Ep kind tree]
+  [Ep kind wall]
+
+  # WALKABLE — color determines material
+  [Ro Ha traversal walkable_surface Wu]
+  [Wu Ifa color_token LoHueCategory]
+  [Ep category Ha]
+  [Wu Ifa category LoTileKind]
+  [Ep kind Ha]
+
+  # FALLBACK
+  [Ep kind void]
+
+  [Mek Oy Kiel tile_kind]           # L5 OBJECT — resolved WorldTileKind
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 7: Placement Line Parser ─────────────────────────────────────────
+# Parses one line "id : [token...]" into ParsedPlacement.
+# Skips comments (#), empty lines, and lines without " : ".
+# Rose digit runs → x (run 0), y (run 1), z (run 2); tile key overrides x,y.
+# Wu (T2 / L12 FUNCTION) → Sakura (T3 / L4 COORDINATE). Declarative.
+
+LoPlacementParser : Wu Sakura {
+  # SKIP — comment, empty, or missing " : "
+  [Ro Ga line_comment Wu]
+  [Ro Ga line_empty Wu]
+  [Ro Ha line_colon_sep Wu]
+
+  # EXTRACT — id and bracketed token list
+  [Seth Wu id_part token_part Oy Kokiel]
+
+  # TOKEN WALK — classify each token
+  [Ier tokens]
+  [Ro Ha tok LoTokenClass presence Wu]   [Ep presence tok]
+  [Ro Ha tok LoRoseCoord Wu]             [Ep current_rose Ha]
+  [Ro Ha tok LoTokenClass traversal Wu]  [Ep traversal tok]
+  [Ro Ha tok LoTokenClass daisy_type Wu] [Ep daisy_type tok]
+  [Ro Ha tok LoColorToken Wu]            [Ep color_token tok]
+  [Ep lex Ha]                            # remainder → lex list
+
+  # COORDINATE RESOLUTION — tile key takes priority
+  [Ro Ha id_str tile_key_pattern Wu]
+  [Ep layer x y id_str]
+  [Ep x rose_runs Oy Ao]               # fallback x = rose_run[0]
+  [Ep y rose_runs Oy Ye]               # fallback y = rose_run[1]
+  [Ep z rose_runs Oy Ui]               # z = rose_run[2] if present
+
+  [Mek Oy Shu parsed_placement]        # L4 COORDINATE — parsed record
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 8: load_zone_from_kobra ──────────────────────────────────────────
+# Main entry: parse source text → Zone.
+# For each non-void placement, route by daisy_type:
+#   Lo → NPCSpawn + FLOOR tile
+#   To → ItemSpawn + FLOOR tile
+#   Ne → ZoneExit + DOOR tile (lex: direction target_zone target_x target_y)
+#   Ro → DungeonPortal + DUNGEON_ENTRANCE tile (lex: dungeon_id)
+#   Gl → DOOR tile
+#   St → update player_spawn + FLOOR tile
+#   (else) → tile kind by LoTileKindResolve
+# Zone bounds: width = max(x)+1, height = max(y)+1.
+# Samos (T7 / L11 SCENE) → Wu (T2). Declarative.
+
+LoZoneFromKobra : Samos Wu {
+  [Ier source_lines LoPlacementParser]     # parse all placement lines
+  [Ro Ha presence Zo Wu]                   # skip Zo (absent) tiles
+
+  # ENTITY ROUTING
+  [Ro Ha daisy_type Lo Wu]
+  [Ne Wu x y char_id npc_spawns]           # NPCSpawn; lex[0] = char_id
+  [Ep voxel x y FLOOR]
+
+  [Ro Ha daisy_type To Wu]
+  [Ne Wu x y item_id qty item_spawns]      # ItemSpawn; lex[0]=id, lex[1]=qty
+  [Ep voxel x y FLOOR]
+
+  [Ro Ha daisy_type Ne Wu]
+  [Ro Ha lex_len 4 Wu]                     # need: direction target_zone target_x target_y
+  [Mio Wu x y direction target_zone target_x target_y zone_exits]
+  [Ep voxel x y DOOR]
+
+  [Ro Ha daisy_type Ro Wu]
+  [Mio Wu x y dungeon_id portals]
+  [Ep voxel x y DUNGEON_ENTRANCE]
+
+  [Ro Ha daisy_type Gl Wu]
+  [Ep voxel x y DOOR]
+
+  [Ro Ha daisy_type St Wu]
+  [Ep player_spawn x y]                    # update spawn point
+  [Ep voxel x y FLOOR]
+
+  [Wu Ifa placement LoTileKindResolve]     # ordinary tile
+  [Ep voxel x y kind]
+
+  # ZONE ASSEMBLY
+  [Sakura Wu width height max_x_plus1 max_y_plus1]
+  [Mek Oy Aonkiel zone_loaded]             # L11 SCENE — Zone registered
+  [TaShyMa Gwev]
+}

@@ -33,6 +33,16 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
+try:
+    from ..kobra import get_runtime as _kobra_get_rt
+    _key_registry_ko = Path(__file__).parent / "key_registry.ko"
+    if _key_registry_ko.exists():
+        _rt = _kobra_get_rt()
+        if "KeyRegistry" not in _rt.units():
+            _rt.load(_key_registry_ko)
+except ImportError:
+    pass
+
 
 @dataclass(frozen=True)
 class YeigoLo:

@@ -104,7 +104,8 @@ _EV_TO_KEY: dict[str, int] = {
     "fight":      ord("f"),     # 102
     "alchemy":    ord("z"),     # 122
     "journal":    ord("j"),     # 106
-    "menu":       27,           # treat menu as cancel
+    "inventory":  ord("i"),     # 105
+    "menu":       9,            # TAB — cycles inventory tabs
 }
 
 
@@ -212,6 +213,7 @@ _HOME_KIND_ATLAS: dict = {
     _C.STAIRS_UP:   0,
     _C.STAIRS_DOWN: 0,
     _C.PORTAL:      0,
+    _C.BED:         7,
 }
 
 # Zones that use the interior atlas palette
@@ -644,6 +646,11 @@ class GLWorldPlay:
                     self._wp._handle_key(_EV_TO_KEY[ev])
             return
 
+        if ev == "menu":
+            if getattr(self._wp, "_mode", None) == WorldMode.INVENTORY:
+                self._wp._handle_inventory_key(9)   # _K_TAB — cycle tabs
+            return
+
         if ev == "interact":
             self._dispatch_interaction()
         key = _EV_TO_KEY.get(ev, 0)
@@ -886,6 +893,7 @@ class GLWorldPlay:
             WorldMode.COMBAT:        "_combat_bytes",
             WorldMode.MAP_DISCOVERY: "_map_bytes",
             WorldMode.JOURNAL:       "_journal_bytes",
+            WorldMode.INVENTORY:     "_inventory_bytes",
         }
         attr = _BYTES_ATTR.get(mode)
         if attr:

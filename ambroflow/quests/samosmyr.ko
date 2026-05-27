@@ -1,0 +1,197 @@
+# samosmyr.ko — SamosMyr Scene Grammar Specification
+# =====================================================
+# Kobra-native specification for the SamosMyr scene expression grammar.
+# Source: ambroflow/quests/samosmyr_bridge.py
+# Python shim: loaded at module import in samosmyr_bridge.py.
+#
+# SamosMyr is the witness-gate language: it describes scene availability
+# conditions in Kobra-compatible notation with Shygazun akinen.
+#
+# Grammar:
+#   scene       ::= ident ":" coherence interior? reversible? body?
+#   interior    ::= "(" symbol* ")"
+#   reversible  ::= "[" "reversible" "]"
+#   body        ::= "{" entity_spec* "}"
+#   entity_spec ::= "[" entity_item* "]"
+#   entity_item ::= closure | temporal | symbol
+#   closure     ::= ("Ga" | "Va") "(" ident ")"
+#   temporal    ::= TaShyMa "(" rose_address ")"
+#   symbol      ::= WORD
+#
+# Mood convention: DECLARATIVE throughout.
+#
+# Layer routing:
+#   L3  BOOLEAN   — closure op evaluation (Ga/Va = permanent/restorative gate)
+#   L4  COORDINATE — temporal addresses (TaShyMa base-12 Rose numerals → seconds)
+#   L8  MOVEMENT  — Cannabis entries (witness gates = movement through witness space)
+#   L10 NAMES     — scene idents, coherence words, Cannabis key names
+#   L11 SCENE     — SamosMyrScene records; the scene cluster = Samos target
+
+# ── SECTION 0: SamosMyr System Identity ──────────────────────────────────────
+# Seth (T7 / Grapevine / L10 NAMES) → Samos (T7 / L11 SCENE): same tongue.
+# SamosMyr names scenes that live in the Samos (scene) layer.
+
+LoSamosMyr : Seth Samos {
+  [Mavo Lo SamosMyr 7_KLGS]
+  [Mavo Sao ambroflow quests samosmyr_bridge]
+  [Seth Wu Yl SamosMyrParser]
+  [TaShyMa Soa]
+}
+
+# ── SECTION 1: Rose Numeral Base-12 (Temporal Addressing) ────────────────────
+# TaShyMa temporal addresses are encoded in Rose numerals, base-12.
+# Each digit = one Rose numeral from the decimal layer (bytes 31–42).
+# Value = digits interpreted as a base-12 integer → seconds.
+#
+#   Gaoh=0  Ao=1  Ye=2  Ui=3  Shu=4  Kiel=5
+#   Yeshu=6 Lao=7 Shushy=8 Uinshu=9 Kokiel=10 Aonkiel=11
+#
+# Example: [Ao Shu] = 1×12 + 4 = 16 seconds
+#
+# The SAME Rose numeral sequence encodes the Aeralune calendar months
+# (Gaohwumane=month1, Aowumane=month2, ...). Rose (T2) IS the numeral tongue —
+# decimal addressing and calendar time are the same mathematical object at
+# different scales. The temporal address system is the calendar system modulo 12.
+#
+# Rose (T2) → Lotus (T1): descending. Declarative.
+
+LoRoseDigit : Rose Lotus {
+  [Gaoh  Oy Ye 0]    # L2 DECIMAL — 0 (Möbius origin: Gaoh is both 0 and 12)
+  [Ao    Oy Ye 1]    # L2 — 1
+  [Ye    Oy Ye 2]    # L2 — 2
+  [Ui    Oy Ye 3]    # L2 — 3
+  [Shu   Oy Ye 4]    # L2 — 4
+  [Kiel  Oy Ye 5]    # L2 — 5
+  [Yeshu Oy Ye 6]    # L2 — 6 (Ye+Shu fold midpoint, mirrors calendar month 7)
+  [Lao   Oy Ye 7]    # L2 — 7
+  [Shushy  Oy Ye 8]  # L2 — 8 (Shu+Shy grid artifact)
+  [Uinshu  Oy Ye 9]  # L2 — 9 (Ui+Shu grid artifact)
+  [Kokiel  Oy Ye 10] # L2 — 10 (Ko+Kiel grid artifact)
+  [Aonkiel Oy Ye 11] # L2 — 11 (Ao+Kiel grid artifact, highest digit before wrap)
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 2: Temporal Address Evaluation ───────────────────────────────────
+# TaShyMa(address) → seconds (integer).
+# Decode: greedy longest-match against Rose numerals → base-12 integer.
+# Canonical conversion: seconds → hour = (seconds // 60) % 24.
+#
+# TaShyMa = "Ta" (Lotus Presence) + "Shy" (Lotus Pattern) + "Ma" (Daisy Web) =
+# the address operator for temporal closure.
+#
+# Sakura (T3 / L4 COORDINATE) → Rose (T2): descending. Declarative.
+
+LoTemporal : Sakura Rose {
+  [Sakura Wu TaShyMa address LoRoseDigit]   # decode address using Rose digit table
+  [Ifa seconds]                              # base-12 evaluation → integer seconds
+  [Wu Ifa seconds 60]                        # seconds ÷ 60 → minutes
+  [Ifa hour 24]                              # minutes mod 24 → hour (0–23)
+  [Ep time_window hour hour_plus_1]          # time_window = (hour, (hour+1) % 24)
+  [Mek Oy Shu time_window]                   # L4 COORDINATE — temporal gate
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 3: Closure Operators ─────────────────────────────────────────────
+# Two operators with opposite actions on scene availability.
+# Both modify the Lock.excludes of the counter-scene.
+#
+# Ga(X) — "Absolute Negative of X" — permanently closes scene X when this
+#   scene resolves. X's ident is added to Lock.excludes of X.
+#   Ga is the ablative: movement away from, permanent separation from.
+#
+# Va(X) — restoration — reopens scene X when this scene resolves.
+#   Va requires X to carry [reversible]. If X is not reversible, validate() errors.
+#   Va is the Sakura positive: selective restoration of what Ga closed.
+#
+# Archaea (T15 / L3 BOOLEAN boundary) → Rose (T2): descending. Declarative.
+
+LoClosure : Archaea Rose {
+
+  # Ga — permanent closure
+  [Ga Ha target_ident Wu]          # ablative gate: target must exist in script
+  [Ep closure_op ga]
+  [Ga Ha target_lock Wu]           # add target_ident to target's Lock.excludes
+  [Mek Oy Ui ga_applied]           # L3 BOOLEAN — closure gate recorded
+
+  # Va — restoration (reversible scenes only)
+  [Ro Ha target_reversible Wu]     # guard: target must carry [reversible]
+  [Ep closure_op va]
+  [Ha Ga target_lock Wu]           # accusative + ablative: restore / un-exclude
+  [Mek Oy Ui va_applied]
+
+  # Self-reference guard — closure ops may not target their own scene
+  [Ro Wu target_ident own_ident]
+  [Wu Lo ValueError self_reference]
+
+  # Contradiction guard — Ga(X) and Va(X) in same scene
+  [Ro Ha ga_targets Wu]
+  [Ro Ha va_targets Wu]
+  [Ro Ha ga_targets va_targets Wu]
+  [Wu Lo ValueError ga_va_contradiction]
+
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 4: Cannabis Witness Gate ─────────────────────────────────────────
+# Cannabis is Tongue 8 (bytes 184–213). Its entries are the witness-gate symbols.
+# Cannabis entries in an entity spec → required keys in Lock.requires.
+# The Cannabis tongue IS metacognition — witnessing an event means the field
+# recognises its own state change. The key IS the Cannabis symbol that marks
+# the completed witnessing event.
+#
+# Cannabis (T8) → Mio (T7 / Grapevine / L8 MOVEMENT): descending. Declarative.
+
+LoWitnessGate : Cannabis Mio {
+  [Cannabis Wu symbol Oy Shushy]    # Cannabis symbol routes to L8 MOVEMENT
+  [Seth Wu symbol required_key]     # Cannabis → Lock.requires key
+  [Mek Oy Kokiel required_key]      # L10 NAMES — key registered in names buffer
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 5: SamosMyr Scene Structure ──────────────────────────────────────
+# A parsed SamosMyrScene carries: ident, coherence, interior, reversible flag,
+# entity_specs (Cannabis entries + closure ops), temporal closure.
+#
+# to_lock(registry, excludes) converts Cannabis entries → Lock.requires.
+# The scene's cannabis property = flat deduplicated list of all Cannabis entries.
+#
+# Samos (T7 / L11 SCENE) → Seth (T7 / L10 NAMES): same tongue, adjacent layers.
+
+LoSamosMyrScene : Samos Seth {
+  [Seth Wu ident coherence interior]
+  [Ro Ha reversible Wu]
+  [Seth Ne reversible reversible_flag]
+  [Ier entity_specs LoWitnessGate]     # collect Cannabis entries → required keys
+  [Ier closure_ops LoClosure]          # process Ga/Va operators
+  [Ro Ha temporal Wu]
+  [Wu Ifa temporal LoTemporal]         # derive time_window from TaShyMa address
+  [Mek Oy Aonkiel scene_parsed]        # L11 SCENE — parsed scene recorded
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 6: Cross-Scene Validation ────────────────────────────────────────
+# A SamosMyrScript is a collection of scenes with cross-scene constraints.
+# validate() returns error strings; empty list = valid.
+#
+# Constraints:
+#   Va(X) — X must carry [reversible]
+#   Ga(X) — X must exist in the script's scene idents
+#   Va(X) — X must exist in the script's scene idents
+#
+# Protist (T16 / L3 BOOLEAN type-edge) → Archaea (T15): descending. Declarative.
+
+LoValidate : Protist Archaea {
+
+  [Ier scenes]
+  [Ier closure_ops LoClosure]          # check each closure op per scene
+
+  [Ro Ha op va Wu]
+  [Ro Ga target_scene reversible Wu]   # Va target must be [reversible]
+  [Wu Lo ValidationError va_not_reversible]
+
+  [Ro Ga target_scene by_ident Wu]     # target must exist in script
+  [Wu Lo ValidationError target_not_found]
+
+  [Mek Oy Ui validation_result]        # L3 BOOLEAN — valid or error list
+  [TaShyMa Gwev]
+}

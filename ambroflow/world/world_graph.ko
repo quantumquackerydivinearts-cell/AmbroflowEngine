@@ -1,0 +1,119 @@
+# world_graph.ko — Zone Transition Graph
+# ========================================
+# Kobra-native specification for the Ko's Labyrinth scene graph.
+# Source: ambroflow/world/world_graph.py
+# Python shim: loaded at module import in world_graph.py.
+#
+# Mood convention: DECLARATIVE throughout.
+#
+# The world graph is the Orrery's spatial index: zones as scene nodes,
+# exits as transitions. Zone akinen IS the spatial coordinate of the zone.
+#
+# Layer routing:
+#   L4  COORDINATE — spawn points, zone positions (Sakura)
+#   L8  MOVEMENT   — transitions between zones (movement IS the transition)
+#   L11 SCENE      — scene nodes (zone = scene cluster)
+#   L12 FUNCTION   — graph queries (resolve_exit, get_scene)
+
+# ── SECTION 0: World Graph Identity ──────────────────────────────────────────
+# Samos (T7 / L11 SCENE) → Lo (T4): descending. Declarative.
+# The world graph IS the Orrery's scene layer — all zones live in Samos.
+
+LoWorldGraph : Samos Lo {
+  [Mavo Lo WorldGraph 7_KLGS]
+  [Mavo Sao ambroflow world world_graph]
+  [Samos Wu Yl WorldGraph]
+  [TaShyMa Soa]
+}
+
+# ── SECTION 1: Realm Declaration ─────────────────────────────────────────────
+# Three realms. Each is a Samos cluster: a bounded set of scene nodes.
+# Descending: Samos (T7) → Ne (T4 / Daisy / L6 ENTITY). Declarative.
+# Realms are entities: self-sustaining worlds with their own scene space.
+
+LoRealm : Samos Ne {
+  [Samos Wu lapidus  Oy Aonkiel]    # L11 — Overworld; orthogonal space, traversal
+  [Samos Wu mercurie Oy Aonkiel]    # L11 — Faewilds; consciousness, presence
+  [Samos Wu sulphera Oy Aonkiel]    # L11 — Underworld; time, transformation
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 2: Transition — Scene Exit ───────────────────────────────────────
+# A Transition is a directed edge: one action_id → one target scene + spawn.
+# Mio (byte 165 / Grapevine / L8 MOVEMENT) routes transitions to movement layer.
+# Movement IS the transition: the graph edge IS the act of moving.
+# Descending: Mio (T7) → Sakura (T3). Declarative.
+
+LoTransition : Mio Sakura {
+  [Mio Wu action_id Oy Shushy]      # L8 — the movement trigger
+  [Mio Wu target_scene_id]          # L8 — destination scene
+  [Mio Wu spawn_id Oy Shu]          # L4 — spawn coordinate in target
+  [Mek Oy Shushy transition]        # L8 — transition recorded in movement layer
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 3: Scene Node ─────────────────────────────────────────────────────
+# A SceneNode is one zone: a Samos-cluster with realm membership and exits.
+# The zone's akinen IS its spatial coordinate — the Shygazun word that names
+# the phenomenological character of this place.
+#
+# Descending: Samos (T7) → Mio (T7, same tongue, different role). Declarative.
+
+LoSceneNode : Samos Mio {
+  [Samos Wu scene_id realm_id akinen]
+  [Ier exits LoTransition]            # iterate: register all exit transitions
+  [Mek Oy Aonkiel scene_registered]  # L11 SCENE — zone enters Orrery
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 4: Graph Queries ──────────────────────────────────────────────────
+# Two O(1) lookup functions on the loaded graph.
+# resolve_exit(action_id) → Transition | None
+# get_scene(scene_id)     → SceneNode | None
+# list_scenes(realm_id)   → list[scene_id]
+#
+# Wu (T2 / L12 FUNCTION): graph queries are functions. Descending.
+
+LoGraphQuery : Wu Samos {
+
+  # RESOLVE EXIT — exit_map[action_id] lookup
+  [Ro Ha action_id exit_map Wu]
+  [Ep transition exit_map action_id]
+  [Mek Oy Shushy transition]          # L8 MOVEMENT — the resolved transition
+
+  [Ep transition none]
+
+  # GET SCENE — scenes[scene_id] lookup
+  [Ro Ha scene_id scenes Wu]
+  [Ep node scenes scene_id]
+  [Mek Oy Aonkiel node]               # L11 SCENE — the resolved scene node
+
+  [Ep node none]
+
+  # LIST SCENES — filtered by realm_id (or all if None)
+  [Ro Ha realm_id Wu]
+  [Ier scenes LoSceneNode Ha realm_id Wu]    # filter by realm
+  [Ep scene_list]
+  [Ier scenes LoSceneNode]                   # all scenes if no realm filter
+  [Ep scene_list]
+
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 5: Ko Manifest Parser ────────────────────────────────────────────
+# The Ko manifest format for scene graph definitions.
+# Mavo (byte 167 / Grapevine / L10 NAMES) tokens name scene entries.
+# The parser reads Lo<Realm> blocks containing [Mavo scene_id ...] compounds.
+# MavoExitFoo target/scene spawn_id → Transition with action_id "exit_foo"
+#
+# This section documents the manifest format, not the Python parser.
+# Descending: Seth (T7) → Mavo (T7, same tongue / L10 NAMES). Declarative.
+
+LoManifestFormat : Seth Mavo {
+  [Seth Wu Mavo scene_id realm_token exit_list]    # entry format
+  [Seth Wu Mavo action_name target_scene spawn_id] # exit format
+  [Seth Ne realm_lapidus  MavoLapidus]             # realm token vocabulary
+  [Seth Ne realm_mercurie MavoMercurie]
+  [Seth Ne realm_sulphera MavoSulphera]
+  [TaShyMa Gwev]
+}

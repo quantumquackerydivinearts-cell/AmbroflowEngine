@@ -1,0 +1,248 @@
+# game_flow.ko — In-Game Entry Sequence (GameFlow State Machine)
+# ==============================================================
+# Kobra-native specification for the GameFlow pipeline.
+# Source: ambroflow/runner/game_flow.py
+# Python shim: loaded at module import in game_flow.py.
+#
+# Mood convention: DECLARATIVE throughout.
+#
+# GameFlow drives the full entry pipeline from "press enter on a game"
+# to handing control to WorldPlay. It is a pure state container;
+# pygame drives it via on_key() and polls current_frame().
+#
+# Phase sequence (linear, ordered):
+#   NAME_ENTRY → LINEAGE → KO_GENDER → DREAM → VITRIOL →
+#   SKILL_SELECT → WAKING → FATE_KNOCKS → DONE
+#
+# Layer routing:
+#   L2  DECIMAL   — VITRIOL stats (1–10), budget (31), resonance slider (0.0–1.0)
+#   L3  BOOLEAN   — phase guard conditions, chargen completion checks
+#   L8  MOVEMENT  — key events (left/right/up/down/enter/space/escape)
+#   L10 NAMES     — phase names, stat names, skill IDs
+#   L11 SCENE     — each phase IS a scene cluster; FATE_KNOCKS = 0001_KLST opening
+#   L12 FUNCTION  — current_frame() renderer dispatch, on_key() handler
+
+# ── SECTION 0: GameFlow System Identity ──────────────────────────────────────
+# Samos (T7 / L11 SCENE) → Lo (T4). Declarative.
+
+LoGameFlow : Samos Lo {
+  [Mavo Lo GameFlow 7_KLGS]
+  [Mavo Sao ambroflow runner game_flow]
+  [TaShyMa Soa]
+}
+
+# ── SECTION 1: FlowPhase Sequence ────────────────────────────────────────────
+# Eight phases as Samos cluster identifiers. Sequence is strictly linear.
+# _next_phase() increments to next in _PHASE_ORDER.
+# Samos (T7 / L11 SCENE) → Seth (T7 / L10 NAMES). Same tongue. Declarative.
+
+LoFlowPhase : Samos Seth {
+  [Samos Wu name_entry    Oy Aonkiel]  # L11 — player types character name
+  [Samos Wu lineage       Oy Aonkiel]  # L11 — select 1 of 5 lineages
+  [Samos Wu ko_gender     Oy Aonkiel]  # L11 — Ko asks about movement-shape in world
+  [Samos Wu dream         Oy Aonkiel]  # L11 — 9-prompt resonance calibration + render
+  [Samos Wu vitriol       Oy Aonkiel]  # L11 — player assigns own VITRIOL (budget=31)
+  [Samos Wu skill_select  Oy Aonkiel]  # L11 — VITRIOL-derived ranks + 2 tag picks
+  [Samos Wu waking        Oy Aonkiel]  # L11 — "The work begins." brief breath screen
+  [Samos Wu fate_knocks   Oy Aonkiel]  # L11 — 0001_KLST: bedroom→knock→foyer→letter
+  [Samos Wu done          Oy Aonkiel]  # L11 — hand control back to app
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 2: ChargenState ───────────────────────────────────────────────────
+# All player-authored identity data accumulated across phases.
+# Seth (T7 / L10 NAMES) → Samos (T7 / L11 SCENE). Same tongue. Declarative.
+
+LoChargenState : Seth Samos {
+  [Seth Wu name Oy Kokiel]                  # L10 NAMES — max 24 chars
+  [Seth Wu lineage_id Oy Kokiel]            # L10 NAMES — one of 5 lineage ids
+  [Seth Wu gender_id Oy Kokiel]             # L10 NAMES — Ko's gender question answer
+  [Seth Wu player_vitriol Oy Kokiel]        # L10 NAMES — dict[stat→rank]
+  [Seth Wu vitriol_skill_ranks Oy Kokiel]   # L10 NAMES — dict[skill_id→derived_rank]
+  [Seth Wu tag_picks Oy Kokiel]             # L10 NAMES — list of up to 2 skill_id tags
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 3: Dream Calibration Phase ───────────────────────────────────────
+# Three tongues × 3 prompts = 9 resonance inputs (0.0–1.0 slider).
+# Resonance slider: step 0.1 via left/right; confirm via space/enter.
+# After all 9 responses, background thread renders dream sequence frames.
+# During render: show waking placeholder screen.
+# After render: player advances frames with space/enter.
+#
+# Sakura (T3 / L4 COORDINATE) → Rose (T2 / L2 DECIMAL). Declarative.
+# Resonance IS a coordinate — it places the player on the Sakura axis.
+
+LoDreamPhase : Sakura Rose {
+  # TONGUE GROUPS — 3 prompts each
+  [Sakura Wu sakura_prompts Rose]     # Sakura — orientation (which direction facing)
+  [Sakura Wu rose_prompts   Rose]     # Rose   — pre-verbal landing (before words)
+  [Sakura Wu lotus_prompts  Lotus]    # Lotus  — material ground character
+
+  # RESONANCE SLIDER — float in [0.0, 1.0], step 0.1
+  [Rose Wu resonance 0.5 Oy Ye]      # L2 DECIMAL — current slider value
+  [Rose Wu responses Oy Ye]          # L2 DECIMAL — collected per-prompt values
+
+  # BACKGROUND RENDER — DreamCalibrationSession + assign_vitriol + render_dream_sequence
+  [Ro Ha dream_collecting Wu]         # wait while collecting responses
+  [Wu Ifa responses DreamCalibrationSession]
+  [Wu Ifa calibration assign_vitriol]  # → ko_profile: VITRIOLProfile
+  [Wu Ifa ko_profile render_dream_sequence]  # → frames: list[bytes]
+
+  [Mek Oy Shu dream_coordinate]       # L4 COORDINATE — resonance placed
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 4: VITRIOL Assignment Phase ──────────────────────────────────────
+# 7 stats. Budget = 31 total points. Each stat: range 1–10.
+# Ko's profile seeds the initial allocation; player adjusts freely.
+# Clamping: sum must equal exactly 31 before advancing.
+#
+# VITRIOL stat → VITRIOL letter:
+#   vitality→V  introspection→I  tactility→T  reflectivity→R
+#   ingenuity→I  ostentation→O  levity→L
+# (ingenuity shares "I" with introspection — both contribute to I-skills)
+#
+# Rose (T2 / L2 DECIMAL) → Sakura (T3 / L4 COORDINATE). Declarative.
+
+LoVITRIOLPhase : Rose Sakura {
+  [Rose Wu budget 31 Oy Ye]           # L2 DECIMAL — total allocation
+  [Rose Wu stat_min 1 stat_max 10 Oy Ye]
+
+  [Rose Ne vitality      Oy Ye V]     # V stat + letter
+  [Rose Ne introspection Oy Ye I]     # I stat
+  [Rose Ne tactility     Oy Ye T]     # T stat
+  [Rose Ne reflectivity  Oy Ye R]     # R stat
+  [Rose Ne ingenuity     Oy Ye I]     # I stat (second I — merges with introspection)
+  [Rose Ne ostentation   Oy Ye O]     # O stat
+  [Rose Ne levity        Oy Ye L]     # L stat
+
+  # CLAMP — enforce sum = 31 before advancing to SKILL_SELECT
+  [Ro Ha sum player_vitriol 31 Wu]
+  [Ep vitriol_ok 1]
+  [Ep vitriol_ok 0]
+
+  [Mek Oy Ye vitriol_allocation]      # L2 DECIMAL — validated allocation
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 5: Skill Select Phase ────────────────────────────────────────────
+# VITRIOL letter score → derived rank (1–3) → mapped to 10/18/25 on 1–100 scale.
+# Letter score = max(VITRIOL[stat]) across all stats mapping to that letter.
+# Rank 1 = score <5 → 10; Rank 2 = score ≥5 → 18; Rank 3 = score ≥8 → 25.
+# Sorted: highest base_rank first, then alphabetical.
+# Player may boost 2 skills as "tag picks" → floored at rank 30.
+#
+# Seth (T7 / L10 NAMES) → Rose (T2 / L2 DECIMAL). Declarative.
+
+LoSkillSelect : Seth Rose {
+  [Ier SKILLS]
+  [Seth Wu vitriol_letter skill_id Oy Kokiel]  # skill → its VITRIOL letter
+  [Wu Ifa letter player_vitriol letter_score]   # max score for that letter
+
+  # RANK DERIVATION
+  [Ro Wu score 8 Wu]    [Ep derived_rank 3]     # score ≥8 → rank 3 → 25
+  [Ro Wu score 5 Wu]    [Ep derived_rank 2]     # score ≥5 → rank 2 → 18
+  [Ep derived_rank 1]                           # score <5 → rank 1 → 10
+
+  # SORT — highest derived_rank first, then alpha
+  [Ier skill_opts sort neg_rank alpha]
+
+  # TAG PICKS — up to 2; floor selected skill at rank 30
+  [Ro Ha tag_picks 2 Wu]                        # guard: max 2 picks
+  [Seth Wu tag_picks skill_id]
+  [Rose Wu skill_ranks skill_id max derived 30] # floor at 30
+
+  # CONFIRM — store into chargen
+  [Seth Wu chargen vitriol_skill_ranks derived_ranks]
+  [Seth Wu chargen tag_picks tag_picks]
+
+  [Mek Oy Kokiel skill_select_done]   # L10 NAMES — skill selection committed
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 6: Key Event Dispatch ────────────────────────────────────────────
+# on_key(key, unicode) routes by phase. Key constants as raw ints (no pygame import).
+# RETURN=13 SPACE=32 ESCAPE=27 UP=1073741906 DOWN=1073741905 LEFT=1073741904 RIGHT=1073741903
+# Mio (T7 / L8 MOVEMENT) → Samos (T7 / L11 SCENE). Same tongue. Declarative.
+# Key events ARE movement between phase states — Mio routes correctly.
+
+LoFlowKeys : Mio Samos {
+
+  # NAME_ENTRY — typed chars append; RETURN confirms; BACKSPACE deletes; ESCAPE → DONE
+  [Ro Ha phase name_entry Wu]
+  [Ro Ha key K_RETURN Wu]   [Seth Wu name name_buf trim]   [Samos Wu next_phase]
+  [Ro Ha key K_BACKSPACE Wu] [Seth Wu name_buf name_buf chop]
+  [Ro Ha key K_ESCAPE Wu]   [Ep phase done]
+  [Ro Ha unicode Wu]        [Ro Ga name_len 24 Wu]  [Seth Wu name_buf Ha]
+
+  # LINEAGE — UP/DOWN scroll; RETURN selects
+  [Ro Ha phase lineage Wu]
+  [Ro Ha key K_DOWN Wu]   [Ep lineage_idx lineage_idx plus1_mod]
+  [Ro Ha key K_UP Wu]     [Ep lineage_idx lineage_idx minus1_mod]
+  [Ro Ha key K_RETURN Wu] [Seth Wu chargen lineage_id lineage_opts idx]  [Samos Wu next_phase]
+  [Ro Ha key K_ESCAPE Wu] [Ep phase done]
+
+  # KO_GENDER — UP/DOWN scroll; RETURN selects
+  [Ro Ha phase ko_gender Wu]
+  [Ro Ha key K_DOWN Wu]   [Ep gender_idx gender_idx plus1_mod]
+  [Ro Ha key K_UP Wu]     [Ep gender_idx gender_idx minus1_mod]
+  [Ro Ha key K_RETURN Wu] [Seth Wu chargen gender_id gender_opts idx]  [Samos Wu next_phase]
+  [Ro Ha key K_ESCAPE Wu] [Ep phase done]
+
+  # DREAM — collecting: LEFT/RIGHT adjusts slider; SPACE confirms each response
+  [Ro Ha phase dream Wu]
+  [Ro Ha dream_rendering Wu]          # block input during background render
+  [Ro Ha dream_collecting Wu]
+  [Ro Ha key K_LEFT Wu]  [Rose Wu resonance max 0.0 minus_0.1]
+  [Ro Ha key K_RIGHT Wu] [Rose Wu resonance min 1.0 plus_0.1]
+  [Ro Ha key K_SPACE Wu] [Rose Wu responses Ha resonance]  [Samos Wu next_prompt_or_render]
+  [Ro Ga dream_collecting Wu]          # playback: SPACE advances frames → VITRIOL
+  [Ro Ha key K_SPACE Wu] [Samos Wu next_frame_or_phase]
+
+  # VITRIOL — DOWN/UP navigates stats; RIGHT/LEFT adjusts value; RETURN confirms
+  [Ro Ha phase vitriol Wu]
+  [Ro Ha key K_DOWN Wu]  [Ep vitriol_stat_idx plus1_mod]
+  [Ro Ha key K_UP Wu]    [Ep vitriol_stat_idx minus1_mod]
+  [Ro Ha key K_RIGHT Wu] [Rose Wu stat_val min stat_max plus1]
+  [Ro Ha key K_LEFT Wu]  [Rose Wu stat_val max stat_min minus1]
+  [Ro Ha key K_RETURN Wu] [Ro Ha vitriol_ok Wu]  [Seth Wu chargen player_vitriol player_vitriol]  [Samos Wu next_phase]
+
+  # SKILL_SELECT — delegates to _skill_select_key()
+  [Ro Ha phase skill_select Wu]
+  [Wu Ifa key unicode skill_select_key]
+
+  # WAKING — SPACE/RETURN → FATE_KNOCKS; ESCAPE → DONE
+  [Ro Ha phase waking Wu]
+  [Ro Ha key K_SPACE Wu]  [Samos Wu next_phase]
+  [Ro Ha key K_ESCAPE Wu] [Ep phase done]
+
+  # FATE_KNOCKS — delegates to FateKnocksPlay.on_key()
+  [Ro Ha phase fate_knocks Wu]
+  [Wu Ifa key unicode fate_knocks_on_key]
+  [Ro Ha fate_knocks_done Wu] [Samos Wu next_phase]
+
+  [Mek Oy Shushy key_event_processed]  # L8 MOVEMENT — phase navigation recorded
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 7: Current Frame Dispatch ────────────────────────────────────────
+# current_frame() → bytes | None, routed by phase.
+# Wu (T2 / L12 FUNCTION) → Samos (T7 / L11 SCENE). Declarative.
+
+LoCurrentFrame : Wu Samos {
+  [Ro Ha phase name_entry Wu]   [Wu Ifa render_name_screen name_buf]
+  [Ro Ha phase lineage Wu]      [Wu Ifa render_lineage_screen lineage_opts lineage_idx]
+  [Ro Ha phase ko_gender Wu]    [Wu Ifa render_ko_gender_question gender_opts gender_idx]
+  [Ro Ha phase dream Wu]
+    [Ro Ha dream_collecting Wu] [Wu Ifa render_dream_prompt]
+    [Ro Ha dream_rendering Wu]  [Wu Ifa render_waking_screen]   # loading placeholder
+    [Ro Ha frames Wu]           [Ep frame frames frame_idx]
+  [Ro Ha phase vitriol Wu]      [Wu Ifa render_vitriol_assignment_sheet ko_profile player_vitriol]
+  [Ro Ha phase skill_select Wu] [Ro Ha skill_frames Wu]   [Ep frame skill_frames Oy Ao]
+  [Ro Ha phase waking Wu]       [Wu Ifa render_waking_screen]
+  [Ro Ha phase fate_knocks Wu]  [Wu Ifa fate_knocks_current_frame]
+  [Ep frame none]
+  [Mek Oy Gaoh current_frame]   # L12 FUNCTION — rendered frame
+  [TaShyMa Gwev]
+}

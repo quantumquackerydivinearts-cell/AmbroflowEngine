@@ -1,0 +1,172 @@
+# calendar.ko — Aeralune Calendar and Alchemy Season Context
+# ===========================================================
+# Kobra-native specification for the Aeralune calendar system.
+# Source: ambroflow/world/calendar.py
+# Python shim: loaded lazily by get_alchemy_calendar_context() into get_runtime().
+#
+# Mood convention: DECLARATIVE throughout.
+# Calendar structure routes to L11 SCENE (Samos/Orrery — temporal record).
+# Alchemy context routes to L12 FUNCTION (Wu-gated transforms).
+# Astronomical anchors route to L11 SCENE (Orrery-visible events).
+#
+# WuMaNe morpheme: Wu(45) + Ma(86) + Ne(87) = "the way of web-interchange
+# through network" = the fabric of counted time.  Each month = [numeral Wu Ma Ne].
+# Vr(94) = Rotor / Tensor.  Vrwumane = [Vr Wu Ma Ne] = the rotor of counted time.
+
+# ── SECTION 0: Calendar Identity ─────────────────────────────────────────────
+# Samos (T7 / Grapevine / L11 SCENE) → Lo (T4 / Daisy): descending. Declarative.
+# The calendar IS the Orrery's temporal index.
+
+LoCalendar : Samos Lo {
+  [Mavo Lo Calendar Aeralune 7_KLGS]
+  [Mavo Sao ambroflow world calendar]
+  [Samos Wu Yl CalendarSystem]
+  [Ep days_per_month   32]
+  [Ep months_per_year  12]
+  [Ep days_per_year   385]   # 12 × 32 + 1 (Vrwumane)
+  [Ep hours_per_day    24]
+  [TaShyMa Soa]
+}
+
+# ── SECTION 1: Month Names ────────────────────────────────────────────────────
+# 12 months named with Rose numeral roots + WuMaNe suffix.
+# Each month compound is [numeral Wu Ma Ne] — the fabric of that numeral's time.
+# Gaoh (Rose numeral 0/12) opens the Möbius cycle at month 1.
+# Vrwumane (day 385) is the intercalary rotor day outside all months.
+#
+# Layer: L2 DECIMAL (Rose numerals are the decimal layer anchors).
+# Descending: Rose (T2) → Lotus (T1) via numeral sequence.
+
+LoMonth : Rose Lotus {
+  [Gaoh Wu Ma Ne]    # month  1  Gaohwumane  — Rose 0/12 (Möbius origin)
+  [Ao   Wu Ma Ne]    # month  2  Aowumane    — Rose 1
+  [Ye   Wu Ma Ne]    # month  3  Yewumane    — Rose 2
+  [Ui   Wu Ma Ne]    # month  4  Uiwumane    — Rose 3  ← Spring Equinox day 97
+  [Shu  Wu Ma Ne]    # month  5  Shuwumane   — Rose 4
+  [Kiel Wu Ma Ne]    # month  6  Kielwumane  — Rose 5
+  [Yeshu Wu Ma Ne]   # month  7  Yeshuwumane — Rose 6 (Ye+Shu fold)  ← Summer Solstice day 193
+  [Lao  Wu Ma Ne]    # month  8  Laowumane   — Rose 7
+  [Shushy Wu Ma Ne]  # month  9  Shushywumane — Rose 8 (Shu+Shy grid)
+  [Uinshu Wu Ma Ne]  # month 10  Uinshuwumane — Rose 9 (Ui+Shu grid)  ← Autumn Equinox day 289
+  [Kokiel Wu Ma Ne]  # month 11  Kokielwumane — Rose 10 (Ko+Kiel grid)
+  [Aonkiel Wu Ma Ne] # month 12  Aonkielwumane — Rose 11 (Ao+Kiel grid)
+  [Vr  Wu Ma Ne]     # day  385  Vrwumane — Vr(94) = Rotor; intercalary Winter Solstice
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 2: Astronomical Anchors ──────────────────────────────────────────
+# Four anchors divide the year into equal 96-day quarters from Vrwumane.
+# On each anchor: Castle Azoth ceremonial fountain runs.
+# Samos (L11 SCENE) routes anchor events to the Orrery scene layer.
+# Descending: Samos (T7) → Wu (T2). Declarative.
+
+LoAnchor : Samos Wu {
+  [Samos Wu Oy Aonkiel spring_equinox   97]    # L11 — Uiwumane day 1
+  [Samos Wu Oy Aonkiel summer_solstice 193]    # L11 — Yeshuwumane day 1
+  [Samos Wu Oy Aonkiel autumn_equinox  289]    # L11 — Uinshuwumane day 1
+  [Samos Wu Oy Aonkiel winter_solstice 385]    # L11 — Vrwumane (fountain + Great Work)
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 3: Time of Day ────────────────────────────────────────────────────
+# Six named periods derived from the 24-hour clock.
+# Sakura (T3 / L4 COORDINATE) routes temporal address to coordinate layer.
+# Descending: Sakura (T3) → Lotus (T1). Declarative.
+
+LoTimeOfDay : Sakura Lotus {
+  [Sakura Wu Oy Shu dawn           5  6]    # L4 — hours 5–6
+  [Sakura Wu Oy Shu morning        7 11]    # L4 — hours 7–11
+  [Sakura Wu Oy Shu afternoon     12 16]    # L4 — hours 12–16
+  [Sakura Wu Oy Shu late_afternoon 17 18]   # L4 — hours 17–18
+  [Sakura Wu Oy Shu dusk          19 20]    # L4 — hours 19–20
+  [Sakura Wu Oy Shu night         21  4]    # L4 — hours 21–4 (wraps midnight)
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 4: Alchemical Great Work Seasons ─────────────────────────────────
+# The year divides into 5 alchemical seasons, each with a primary field axis.
+# Season determines base axis bonus, epiphany threshold, and charge multiplier.
+# Phase (T27 / YeYe / L9 PATTERN) routes season to the quality-of-transition layer.
+# Alzedroswune presence: months 3–9 (days 65–288). Spatial bonus + formula lift.
+#
+# Descending: Phase (T27) → Sakura (T3). Declarative.
+
+LoSeason : Phase Sakura {
+  # season_name   day_range    peak_axis   base_axis_bonus  epiphany_base
+  [Phase Wu nigredo    1  96  temporal   temporal_plus0.15  mental_minus0.05  0.85]
+  [Phase Wu albedo    97 192  mental     mental_plus0.15    temporal_minus0.05 0.85]
+  [Phase Wu citrinitas 193 288 spatial   spatial_plus0.20   0.85]
+  [Phase Wu rubedo   289 384  temporal   temporal_plus0.15  spatial_minus0.05  0.85]
+  [Phase Wu vrwumane 385 385  none       all_plus0.15       0.60]   # all axes open on fold-day
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 5: Alchemy Calendar Context Derivation ───────────────────────────
+# get_alchemy_calendar_context(date) → AlchemyCalendarContext
+#
+# Pipeline:
+#   1. Determine season and peak_axis from day_of_year
+#   2. Compute anchor proximity (cosine falloff within 14 days of nearest anchor)
+#   3. Apply base axis bonuses for season
+#   4. Amplify peak axis by anchor_bonus = proximity × 0.10
+#   5. Alzedroswune: +0.10 spatial; +0.10 formula_approach_bonus
+#   6. Epiphany threshold: 0.85 − proximity × 0.15  (floor 0.60 on Vrwumane)
+#   7. Charge multiplier: 1.0 + proximity × 1.0     (3.0 on Vrwumane)
+#   8. Lock 0036_KLIT + 0038_KLIT outside Alzedroswune window and non-Vrwumane
+#
+# Phase (T27) → Wu (T2): descending. Declarative.
+
+LoAlchemyContext : Phase Wu {
+
+  # 1. SEASON LOOKUP
+  [Wu Ifa day_of_year LoSeason]
+  [Ep season_name peak_axis axis_bonus_base]
+
+  # 2. ANCHOR PROXIMITY — cosine falloff, 14-day window
+  #    prox = cos(dist / 14 × π/2)  where dist = min distance to any anchor
+  [Wu Ifa day_of_year LoAnchor]
+  [Ifa anchor_proximity]             # 0.0–1.0; 1.0 on anchor day
+
+  # 3. BASE AXIS BONUSES — from season table
+  [Ep axis_bonus axis_bonus_base]
+
+  # 4. PEAK AXIS AMPLIFICATION — anchor_bonus = proximity × 0.10
+  [Wu Ifa anchor_proximity 0.10]
+  [Ep anchor_bonus]
+  [Ro Ha peak_axis none Wu]
+  [Ifa axis_bonus peak_axis anchor_bonus]   # add to peak axis
+  [Ro Ga peak_axis none Wu]                 # vrwumane: apply to all three axes
+  [Ifa axis_bonus temporal anchor_bonus]
+  [Ifa axis_bonus mental   anchor_bonus]
+  [Ifa axis_bonus spatial  anchor_bonus]
+
+  # 5. ALZEDROSWUNE — days 65–288 (months 3–9)
+  [Ro Ha day_of_year 65 Wu]
+  [Ro Wu day_of_year 288]
+  [Ep alzedroswune 1]
+  [Ifa axis_bonus spatial 0.10]         # +0.10 spatial bonus during window
+  [Ep formula_approach_bonus 0.10]      # +0.10 formula lift for navigator effect
+
+  [Ep alzedroswune 0]
+  [Ep formula_approach_bonus 0.0]
+
+  # 6. EPIPHANY THRESHOLD — falls toward 0.60 near anchors; floor on Vrwumane
+  [Ro Ha day_of_year 385 Wu]
+  [Ep epiphany_threshold 0.60]          # Vrwumane: full fold-day reduction
+  [Wu Ifa 0.85 anchor_proximity 0.15]   # ordinary: 0.85 − prox × 0.15
+  [Ep epiphany_threshold]
+
+  # 7. CHARGE MULTIPLIER — up to 2.0 on anchors; 3.0 on Vrwumane
+  [Ro Ha day_of_year 385 Wu]
+  [Ep charge_multiplier 3.0]
+  [Wu Ifa 1.0 anchor_proximity 1.0]     # 1.0 + prox × 1.0
+  [Ep charge_multiplier]
+
+  # 8. LOCKED SUBJECTS — outside Alzedroswune window and non-Vrwumane
+  [Ro Ga alzedroswune Wu]
+  [Ro Ga day_of_year 385 Wu]
+  [Ep locked_subjects 0036_KLIT 0038_KLIT]   # desire crystal + angelic revival locked
+
+  [Wu Kysael Samos AlchemyContext season_name epiphany_threshold charge_multiplier]
+  [TaShyMa Gwev]
+}

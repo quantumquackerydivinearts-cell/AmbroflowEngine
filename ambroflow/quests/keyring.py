@@ -56,6 +56,14 @@ class KeyRing:
             for k in self._keys:
                 registry.validate(k)
 
+        from pathlib import Path as _P
+        from ..kobra import get_runtime as _get_rt
+        _ko = _P(__file__).parent / "quests.ko"
+        if _ko.exists():
+            _rt = _get_rt()
+            if "Quest" not in _rt.units():
+                _rt.load(_ko)
+
     # ── Core operations ───────────────────────────────────────────────────────
 
     def grant(self, key: str) -> bool:

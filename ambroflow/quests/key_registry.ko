@@ -1,0 +1,138 @@
+# key_registry.ko — YeigoLo Definition and KeyRegistry
+# ======================================================
+# Kobra-native specification for the Shygazun-native key registry.
+# Source: ambroflow/quests/key_registry.py
+# Python shim: loaded at module import in key_registry.py.
+#
+# Mood convention: DECLARATIVE throughout.
+#
+# A YeigoLo (Yei+Go+Lo — integrating blocker segmented by identity) is
+# the canonical definition of a key in the key-lock system. Its primary
+# identity is an Akinenwun — a Shygazun word whose phonological composition
+# enacts its meaning before the word is complete.
+#
+# Layer routing:
+#   L3  BOOLEAN   — dyne/anom/andyf flags (propagates/spoiler/reversible)
+#   L8  MOVEMENT  — Cannabis byte table symbols (shygazun_symbol)
+#   L10 NAMES     — Akinenwun as named key identifier (Seth/Mavo)
+#   L11 SCENE     — game_slug (kaelsuy) membership
+
+# ── SECTION 0: Registry System Identity ──────────────────────────────────────
+# Seth (T7 / L10 NAMES) → Wu (T2 / L12 FUNCTION): descending. Declarative.
+# The registry IS a name table: every key is an Akinenwun in the NAMES layer.
+
+LoKeyRegistry : Seth Wu {
+  [Mavo Lo KeyRegistry 7_KLGS]
+  [Mavo Sao ambroflow quests key_registry]
+  [Seth Wu Yl KeyRegistry]
+  [TaShyMa Soa]
+}
+
+# ── SECTION 1: YeigoLo Field Definitions ─────────────────────────────────────
+# Seven fields, derived from Shygazun phonological composition.
+#
+# yeigo:            Akinenwun — the key as structural primitive
+#   Yei(Component/Integrator) + Go(Plug/Blocker)
+# shakshi:          meaning — English gloss derived from phonological composition
+#   Shak(Fire,AppleBlossom) + Shi(Space·Fire,Lotus)
+# kaelsuy:          game_slug — e.g. "7_KLGS"
+#   Kael(Cluster/Fruit,Daisy) + Su(Loop time,Aster) + Y(Time+)
+# dyne:             propagates — broadcasts forward across games
+#   Dy(Hence/Heretofore,Sakura) + Ne(Network/System,Daisy)
+# anom:             spoiler — unconscious transmission / chiral awareness
+#   A(Mind+) + N(Seed,Daisy) + O(Mind−) + M(Water terminator)
+# andyf:            reversible — indeterminate forward reach via Va
+#   A(Mind+) + N(Seed) + Dy(Hence) + F(Air initiator,Lotus)
+# shygazun_symbol:  Cannabis byte table symbol (e.g. "At")
+# shygazun_address: byte address in the Cannabis tongue (184–213)
+#
+# Seth (T7 / L10 NAMES) → Mavo (T7 / L10 NAMES): same tongue. Declarative.
+
+LoYeigoLo : Seth Mavo {
+  [Seth Wu yeigo Oy Kokiel]             # L10 NAMES — Akinenwun identity
+  [Seth Wu shakshi Oy Kokiel]           # L10 NAMES — English meaning gloss
+  [Samos Wu kaelsuy Oy Aonkiel]         # L11 SCENE — game membership
+  [Mek Oy Ui dyne   Oy Ui]             # L3 BOOLEAN — propagates forward
+  [Mek Oy Ui anom   Oy Ui]             # L3 BOOLEAN — spoiler flag
+  [Mek Oy Ui andyf  Oy Ui]             # L3 BOOLEAN — reversible (Va-eligible)
+  [Cannabis Wu shygazun_symbol  Oy Shushy]   # L8 MOVEMENT — Cannabis symbol
+  [Rose     Wu shygazun_address Oy Ye]        # L2 DECIMAL — byte address
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 2: Registry Operations ───────────────────────────────────────────
+# register(defn): index by yeigo; also index shygazun_symbol if present.
+# validate(yeigo): return yeigo if declared; raise if not.
+# validate_shygazun(symbol): return yeigo for Cannabis symbol; raise if absent.
+# get(yeigo): lookup by Akinenwun → YeigoLo | None
+# get_by_symbol(symbol): lookup by Cannabis symbol → YeigoLo | None
+# keys_for_game(kaelsuy): filter by game_slug
+# propagating(): filter by dyne = True
+# reversible(): filter by andyf = True
+#
+# Wu (T2 / L12 FUNCTION) → Seth (T7 / L10 NAMES). Declarative.
+
+LoRegistryOps : Wu Seth {
+
+  # REGISTER — index by yeigo; duplicate → raise ValueError
+  [Ro Ha yeigo keys Wu]                 # guard: duplicate raises
+  [Wu Lo ValueError duplicate_akinenwun]
+  [Seth Wu yeigo defn keys]             # add to _keys index
+  [Ro Ha shygazun_symbol Wu]
+  [Seth Wu shygazun_symbol defn symbols] # add to _symbols index
+
+  # VALIDATE AKINENWUN — raises if not in _keys
+  [Ro Ha yeigo keys Wu]
+  [Ep validated yeigo]
+  [Wu Lo ValueError undeclared_akinenwun]
+
+  # VALIDATE SHYGAZUN — raises if symbol not in _symbols
+  [Ro Ha symbol symbols Wu]
+  [Ep defn symbols symbol]
+  [Ep validated defn yeigo]
+  [Wu Lo ValueError undeclared_symbol]
+
+  # FILTER QUERIES
+  [Ier keys Ha kaelsuy Wu]              # keys_for_game: filter by kaelsuy
+  [Ier keys Ha dyne Wu]                 # propagating: filter by dyne = True
+  [Ier keys Ha andyf Wu]                # reversible: filter by andyf = True
+
+  [Mek Oy Kokiel registry_ops]          # L10 NAMES — registry query result
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 3: JSON Loader ────────────────────────────────────────────────────
+# load_registry(keys_dir): glob **/*.json → parse arrays → register YeigoLo.
+# Files loaded in sorted order. Duplicate Akinenwun raises immediately.
+#
+# Lo (T4 / L5 OBJECT) → Wu (T2 / L12 FUNCTION). Declarative.
+
+LoRegistryLoader : Lo Wu {
+  [Lo Wu keys_dir path]
+  [Ier json_files sorted glob]          # sorted glob **/*.json
+  [Ier entries json_array]             # each file = JSON array
+  [Wu Ifa entry YeigoLo from_dict]     # YeigoLo.from_dict(entry)
+  [Wu register defn registry]          # registry.register(defn)
+  [Mek Oy Kiel registry_loaded]        # L5 OBJECT — registry object
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 4: Global Instance Pattern ────────────────────────────────────────
+# _REGISTRY: module-level singleton. None until init_registry() called.
+# global_registry() raises RuntimeError if not loaded.
+# init_registry(keys_dir) → load_registry(keys_dir) → install → return.
+#
+# Samos (T7 / L11 SCENE) → Wu (T2): descending. Declarative.
+# The global registry IS the game's scene-identity layer — all keys live here.
+
+LoGlobalRegistry : Samos Wu {
+  [Ro Ga _REGISTRY Wu]                  # global_registry: raise if None
+  [Wu Lo RuntimeError registry_not_loaded]
+  [Ep registry _REGISTRY]
+
+  [Wu Ifa keys_dir LoRegistryLoader]    # init_registry: load and install
+  [Ep _REGISTRY registry]               # set global singleton
+
+  [Mek Oy Aonkiel global_registry]      # L11 SCENE — singleton scope
+  [TaShyMa Gwev]
+}

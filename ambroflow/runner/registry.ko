@@ -1,0 +1,92 @@
+# registry.ko — KLGS Game Registry (All 31 Games)
+# ==================================================
+# Kobra-native specification for the Ko's Labyrinth game catalog.
+# Source: ambroflow/runner/registry.py
+# Python shim: loaded at module import in registry.py.
+#
+# Mood convention: DECLARATIVE throughout.
+#
+# The registry is the canonical list of all 31 games.
+# Each GameEntry carries: number, slug, title, subtitle, built flag.
+# Two lookup dicts are derived: GAME_BY_SLUG and GAME_BY_NUMBER.
+#
+# Layer routing:
+#   L10 NAMES  — game slug and title (Seth/Mavo)
+#   L11 SCENE  — each game is a Samos cluster (scene space for its era)
+#   L3  BOOLEAN — built flag (is this game playable in this build?)
+
+# ── SECTION 0: Registry System Identity ──────────────────────────────────────
+# Seth (T7 / L10 NAMES) → Samos (T7 / L11 SCENE). Same tongue. Declarative.
+
+LoGameRegistry : Seth Samos {
+  [Mavo Lo GameRegistry 7_KLGS]
+  [Mavo Sao ambroflow runner registry]
+  [TaShyMa Soa]
+}
+
+# ── SECTION 1: GameEntry Definition ──────────────────────────────────────────
+# number: integer position in the series (1–31)
+# slug:   "{number}_KLGS" — canonical game identifier
+# title:  display title
+# subtitle: short descriptor shown on tile selection screen (optional)
+# built:  True = playable in this build; False = not yet implemented
+#
+# Samos (T7 / L11 SCENE) → Seth (T7 / L10 NAMES). Same tongue. Declarative.
+
+LoGameEntry : Samos Seth {
+  [Rose Wu number Oy Ye]                   # L2 DECIMAL — series position
+  [Seth Wu slug title subtitle Oy Kokiel]  # L10 NAMES — identifiers
+  [Mek Oy Ui built Oy Ui]                 # L3 BOOLEAN — playable flag
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 2: Game Catalog (All 31 Games) ───────────────────────────────────
+# Full Ko's Labyrinth title list. Slug format: {number}_KLGS.
+# Samos (T7 / L11 SCENE) → Mavo (T7 / L10 NAMES). Same tongue. Declarative.
+
+LoGameCatalog : Samos Mavo {
+  [Mavo Samos 1_KLGS  Princess_of_Eclipses      Luminyx_timeline_split_5237_1728      built 0]
+  [Mavo Samos 2_KLGS  Knights_of_the_Veil       Thool_origins_Illuminati_nuclear      built 0]
+  [Mavo Samos 3_KLGS  Fullmetal_Forest          Forest_internet_Yokai_Vaults_nuclear  built 0]
+  [Mavo Samos 4_KLGS  Secrets_of_Neverland      Post_nuclear_chimeras_Sulphera        built 0]
+  [Mavo Samos 5_KLGS  Truth_Be_Told             Minerva_Moon_alchemy_as_survival      built 0]
+  [Mavo Samos 6_KLGS  As_Within_So_Without      33rd_century_Great_Obscenity_Zukoru   built 0]
+  [Mavo Samos 7_KLGS  An_Alchemists_Labor_of_Love Hypatia_apprentice_Saelith_born     built 1]
+  [Mavo Samos 8_KLGS  Reign_of_Nobody           built 0]
+  [Mavo Samos 9_KLGS  Rise_of_Alzedros          New_entity_Alzedros                   built 0]
+  [Mavo Samos 10_KLGS The_Voice_of_Ko           Ko_centered_arc                       built 0]
+  [Mavo Samos 11_KLGS Icons_of_Time             built 0]
+  [Mavo Samos 12_KLGS Students_of_Sha           Sha_Intellect_and_Embodied_Knowledge  built 0]
+  [Mavo Samos 13_KLGS Ghosts_of_Azoth           Azoth_BreathOfKo_formula_embodied     built 0]
+  [Mavo Samos 14_KLGS Chimeras_of_The_Archons   Gnostic_mythology_cellular_liberation built 0]
+  [Mavo Samos 15_KLGS Lost_Yokai                built 0]
+  [Mavo Samos 16_KLGS Battered_Stars            built 0]
+  [Mavo Samos 17_KLGS Saelith_Mercy             FaeDjinn_Elemental_Resistance_The_Test built 0]
+  [Mavo Samos 18_KLGS Mystic_Blood              KLGS_Mystic_Pines_YuYu_sanctioned_kill built 0]
+  [Mavo Samos 19_KLGS Tides_of_The_Cause        built 0]
+  [Mavo Samos 20_KLGS Daath_Most_Have_Seen      Daath_hidden_knowledge                built 0]
+  [Mavo Samos 21_KLGS Callsigns_of_Thool        Network_fascist_signal_structure      built 0]
+  [Mavo Samos 22_KLGS Horrors_of_The_Void       built 0]
+  [Mavo Samos 23_KLGS Requiem_of_PoElfan        PoElfan_demon_anxiety_nonlocal_death  built 0]
+  [Mavo Samos 24_KLGS Polar_Shift               built 0]
+  [Mavo Samos 25_KLGS Galactic_Hallows          built 0]
+  [Mavo Samos 26_KLGS Fires_of_Sha              Sha_end_purifying_fire_Ko_cycle       built 0]
+  [Mavo Samos 27_KLGS Gourds_of_Ash            built 0]
+  [Mavo Samos 28_KLGS Legacy_of_Luminyx         Luminyx_honored_spirit_after_1782     built 0]
+  [Mavo Samos 29_KLGS Barkeep_of_Broken_Dreams  built 0]
+  [Mavo Samos 30_KLGS Death_of_an_Empress       built 0]
+  [Mavo Samos 31_KLGS The_Great_Work            Series_conclusion_alchemical_Magnum_Opus built 0]
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 3: Lookup Indices ─────────────────────────────────────────────────
+# GAME_BY_SLUG:   dict[slug → GameEntry]
+# GAME_BY_NUMBER: dict[number → GameEntry]
+# Wu (T2 / L12 FUNCTION) → Samos (T7 / L11 SCENE). Declarative.
+
+LoGameLookup : Wu Samos {
+  [Ier LoGameCatalog Ha slug Wu]        # GAME_BY_SLUG: index by slug
+  [Ier LoGameCatalog Ha number Wu]      # GAME_BY_NUMBER: index by number
+  [Mek Oy Aonkiel game_lookup]          # L11 SCENE — lookup tables registered
+  [TaShyMa Gwev]
+}

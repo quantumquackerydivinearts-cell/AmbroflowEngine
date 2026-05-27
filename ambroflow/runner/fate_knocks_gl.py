@@ -251,6 +251,8 @@ class FateKnocksGLPlay:
 
     # Furniture slot_id → action_id for interaction dispatch
     _SLOT_ACTIONS: dict[str, str] = {
+        "bed_w":        "rest",
+        "bed_e":        "rest",
         "furnace_w":    "open_smelt_ui",
         "furnace_e":    "open_smelt_ui",
         "anvil":        "open_smelt_ui",
@@ -259,6 +261,7 @@ class FateKnocksGLPlay:
         "journal":      "lore_books",
         "journal_table":"lore_books",
         "desk":         "lore_books",
+        "workbench":    "open_alchemy_ui",
         "stairs_up":    "stairs_up",
         "stairs_down":  "stairs_down",
     }
@@ -395,8 +398,8 @@ class FateKnocksGLPlay:
                     self._free_roam    = True
             return
 
-        # Interaction during free roam — dispatch to furniture action
-        if ev == InputEvent.INTERACT and self._free_roam:
+        # Interaction — dispatch to furniture action (works in all phases)
+        if ev == InputEvent.INTERACT:
             slot = self._nearest_interactive_slot()
             if slot and self._on_interact is not None:
                 action_id = self._SLOT_ACTIONS.get(slot)
@@ -418,19 +421,21 @@ class FateKnocksGLPlay:
             return
 
         nx, nz = self._px + dx, self._py + dz
-        tile   = PLAYER_HOME_GROUND.tile_at(nx, nz)
+        zone   = self._FLOORS[self._floor_index][0]
+        tile   = zone.tile_at(nx, nz)
         blocked_by_furn = (nx, nz) in self._furn_blocked
 
         if is_passable(tile) and not blocked_by_furn:
             self._px, self._py = nx, nz
-            if self._free_roam:
-                # In free roam, stepping on the front door exits the scene
-                if (nx, nz) == self._scene.COURIER_TILE:
-                    self._done = True
-            else:
-                beat = self._scene.check_beat(nx, nz)
-                if beat:
-                    self._show_beat(beat)
+            if self._floor_index == 0:
+                if self._free_roam:
+                    # In free roam, stepping on the front door exits the scene
+                    if (nx, nz) == self._scene.COURIER_TILE:
+                        self._done = True
+                else:
+                    beat = self._scene.check_beat(nx, nz)
+                    if beat:
+                        self._show_beat(beat)
 
     def resize(self, width: int, height: int) -> None:
         self._W, self._H = width, height

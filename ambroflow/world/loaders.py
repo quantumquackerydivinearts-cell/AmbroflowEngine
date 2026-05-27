@@ -13,6 +13,17 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+try:
+    from pathlib import Path as _Path
+    from ..kobra import get_runtime as _kobra_get_rt
+    _loaders_ko = _Path(__file__).parent / "loaders.ko"
+    if _loaders_ko.exists():
+        _rt = _kobra_get_rt()
+        if "Loaders" not in _rt.units():
+            _rt.load(_loaders_ko)
+except ImportError:
+    pass
+
 _WITNESS_WITNESSED = "witnessed"
 
 

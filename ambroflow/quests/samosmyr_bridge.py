@@ -30,6 +30,17 @@ import re
 from dataclasses import dataclass, field
 from typing import Optional, TYPE_CHECKING
 
+try:
+    from pathlib import Path as _Path
+    from ..kobra import get_runtime as _kobra_get_rt
+    _samosmyr_ko = _Path(__file__).parent / "samosmyr.ko"
+    if _samosmyr_ko.exists():
+        _rt = _kobra_get_rt()
+        if "SamosMyr" not in _rt.units():
+            _rt.load(_samosmyr_ko)
+except ImportError:
+    pass
+
 if TYPE_CHECKING:
     from .key_registry import KeyRegistry
     from .schema import Lock

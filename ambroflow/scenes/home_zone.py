@@ -69,9 +69,10 @@ UPPER_SPAWN:  tuple[int, int] = (28, 7)    # arrive from stair up
 
 # Beat-trigger tiles for FateKnocksScene.
 # Counter at z=10; player approaches front door from z=11.
-KNOCK_TILES:  frozenset[tuple[int, int]] = frozenset({(22, 11), (23, 11), (24, 11)})
-COURIER_TILE: tuple[int, int] = (23, 12)   # front door
-BEDROOM_SPAWN: tuple[int, int] = (5, 3)    # player wakes here in opening sequence
+KNOCK_TILES:        frozenset[tuple[int, int]] = frozenset({(22, 11), (23, 11), (24, 11)})
+COURIER_TILE:       tuple[int, int] = (23, 12)   # front door
+BEDROOM_SPAWN:      tuple[int, int] = (5, 3)     # player wakes here in opening sequence
+GROUND_STAIR_LAND:  tuple[int, int] = (11, 3)   # arrival tile when descending from upper floor
 
 
 # ── Ground floor Kobra source ─────────────────────────────────────────────────
@@ -151,7 +152,7 @@ def _gen_upper_kobra() -> str:
             elif (x, y) == STAIR_DOWN:
                 lines.append(
                     f"{coord} : [Va Ha Ne south player_home_ground "
-                    f"{GROUND_SPAWN[0]} {GROUND_SPAWN[1]} stairs_down]"
+                    f"{GROUND_STAIR_LAND[0]} {GROUND_STAIR_LAND[1]} stairs_down]"
                 )
             else:
                 lines.append(f"{coord} : [Va Ha]")

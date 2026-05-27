@@ -8,6 +8,17 @@ The engine uses this for game selection, save state keying, and phase routing.
 from __future__ import annotations
 
 from dataclasses import dataclass
+
+try:
+    from pathlib import Path as _Path
+    from ..kobra import get_runtime as _kobra_get_rt
+    _registry_ko = _Path(__file__).parent / "registry.ko"
+    if _registry_ko.exists():
+        _rt = _kobra_get_rt()
+        if "GameRegistry" not in _rt.units():
+            _rt.load(_registry_ko)
+except ImportError:
+    pass
 from typing import Optional
 
 

@@ -41,6 +41,17 @@ import re
 from dataclasses import dataclass, field
 from typing import Optional
 
+try:
+    from pathlib import Path as _Path
+    from ..kobra import get_runtime as _kobra_get_rt
+    _kzl_ko = _Path(__file__).parent / "kobra_zone_loader.ko"
+    if _kzl_ko.exists():
+        _rt = _kobra_get_rt()
+        if "KobraZoneLoader" not in _rt.units():
+            _rt.load(_kzl_ko)
+except ImportError:
+    pass
+
 from .map import (
     Zone, Realm, WorldTileKind,
     ZoneExit, DungeonPortal, NPCSpawn, ItemSpawn,

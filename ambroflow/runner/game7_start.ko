@@ -1,0 +1,156 @@
+# game7_start.ko — Canonical Starting State for Game 7 (7_KLGS)
+# ==============================================================
+# Kobra-native specification for the Game 7 initial state factory.
+# Source: ambroflow/runner/game7_start.py
+# Python shim: loaded at module import in game7_start.py.
+#
+# Mood convention: DECLARATIVE throughout.
+#
+# All skill ranks begin at 1 (1–100 scale, base 5 without chargen).
+# The player's home is well-stocked before the first letter arrives.
+# Apparatus present in the home are in starting inventory — placement is
+# visual; inventory is functional (alchemy checks required_objects here).
+#
+# Layer routing:
+#   L2  DECIMAL   — quantities (Rose), skill ranks (Rose)
+#   L3  BOOLEAN   — perk flags (breathwork granted; all others locked)
+#   L5  OBJECT    — inventory items (KLOB IDs as Lo objects)
+#   L10 NAMES     — skill_id and perk_id strings (Seth)
+#   L11 SCENE     — game_id "7_KLGS" (Samos cluster identity)
+#   L12 FUNCTION  — game7_starting_state() output (Wu)
+
+# ── SECTION 0: Game 7 Start System Identity ──────────────────────────────────
+# Samos (T7 / L11 SCENE) → Lo (T4): descending. Declarative.
+
+LoGame7Start : Samos Lo {
+  [Mavo Lo Game7Start 7_KLGS]
+  [Mavo Sao ambroflow runner game7_start]
+  [TaShyMa Soa]
+}
+
+# ── SECTION 1: Starting Inventory ────────────────────────────────────────────
+# KLOB IDs → quantities. Apparatus items are environmental (never consumed);
+# alchemy system checks them as required_objects via inventory dict lookup.
+#
+# Lo (T4 / L5 OBJECT) → Rose (T2 / L2 DECIMAL). Declarative.
+
+LoStartInventory : Lo Rose {
+  # HOME APPARATUS — permanently installed; always present via inventory
+  [Lo Rose 8000_KLOB 1]   # Mortar          (Study workbench)
+  [Lo Rose 2000_KLOB 1]   # Pestle          (Study workbench)
+  [Lo Rose 0030_KLOB 1]   # Furnace         (Kitchen wall, built-in)
+  [Lo Rose 0007_KLOB 2]   # Crucible        (Kitchen cabinet)
+  [Lo Rose 0009_KLOB 3]   # Jar             (Kitchen cabinet)
+  [Lo Rose 0005_KLOB 4]   # Reagent Bottle  (Study shelf)
+  [Lo Rose 0003_KLOB 1]   # Retort          (Study bench)
+  [Lo Rose 0004_KLOB 1]   # Volume Flask    (Study bench)
+  [Lo Rose 0020_KLOB 2]   # Wooden Spoon    (Kitchen)
+  [Lo Rose 0021_KLOB 1]   # Copper Spoon    (Kitchen)
+  [Lo Rose 0001_KLOB 3]   # Rag             (Kitchen)
+  [Lo Rose 0002_KLOB 2]   # Stand           (Study)
+  [Lo Rose 0006_KLOB 1]   # Bellows         (Kitchen)
+
+  # BOTANICALS AND CONSUMABLES — covers all five starting alchemy subjects
+  [Lo Rose 0073_KLOB 8]   # Herb (Common)       — base for Basic Tincture
+  [Lo Rose 0074_KLOB 6]   # Herb (Restorative)  — base for Restorative Tincture
+  [Lo Rose 0075_KLOB 4]   # Binding Wax         — Infernal Salve cohesive
+  [Lo Rose 0040_KLOB 6]   # Water Flask         — universal solvent
+
+  # PROCESSING CHEMICALS
+  [Lo Rose 1007_KLOB 5]   # Sulphur             — Infernal Salve ingredient
+  [Lo Rose 1008_KLOB 4]   # Charcoal            — heat/reduction
+  [Lo Rose 1006_KLOB 3]   # Saltpeter           — oxidation reactions
+  [Lo Rose 1003_KLOB 3]   # Diatom Earth        — filtering
+  [Lo Rose 1004_KLOB 2]   # Glycerine           — carrier/binding agent
+  [Lo Rose 1015_KLOB 4]   # Water               — general solvent
+
+  # MINERALS
+  [Lo Rose 3005_KLOB 3]   # Quartz              — crystal work, receiver recipe
+  [Lo Rose 3003_KLOB 4]   # Chalk               — neutralising agent
+  [Lo Rose 3001_KLOB 2]   # Granite             — grinding substrate
+  [Lo Rose 3006_KLOB 2]   # Pumice              — abrasive/filtering
+
+  # CURRENCY
+  [Lo Rose 0050_KLIT 40]  # Copper Coins        — freely buy from shop
+  [Lo Rose 0051_KLIT 5]   # Silver Coins
+
+  [Mek Oy Kiel inventory_start]        # L5 OBJECT — inventory map registered
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 2: Starting Skill Ranks ──────────────────────────────────────────
+# Three-tier chargen rank system (1–100 scale).
+# Without chargen: all skills at base 5.
+# With chargen:
+#   VITRIOL score 1–4 → rank 10
+#   VITRIOL score 5–7 → rank 18
+#   VITRIOL score 8–10 → rank 25
+#   Manual tag picks → floor at rank 30 (regardless of derived rank)
+#
+# Seth (T7 / L10 NAMES) → Rose (T2 / L2 DECIMAL). Declarative.
+
+LoStartSkills : Seth Rose {
+  [Rose Wu base_rank 5 Oy Ye]          # L2 DECIMAL — base rank without chargen
+  [Rose Wu vitriol_low  10 Oy Ye]      # VITRIOL score 1–4
+  [Rose Wu vitriol_mid  18 Oy Ye]      # VITRIOL score 5–7
+  [Rose Wu vitriol_high 25 Oy Ye]      # VITRIOL score 8–10
+  [Rose Wu tag_rank     30 Oy Ye]      # manual tag pick floor
+
+  # CHARGEN PIPELINE
+  [Ro Ga chargen Wu]                   # no chargen → all skills = base_rank
+  [Ier GAME7_SKILLS]
+  [Ep skill_ranks skill_id base_rank]
+
+  [Ro Ha chargen Wu]
+  # Layer 1: VITRIOL-derived ranks
+  [Ier chargen vitriol_skill_ranks]
+  [Wu Ifa rank 1 Wu]   [Ep tier_rank vitriol_low]
+  [Wu Ifa rank 2 Wu]   [Ep tier_rank vitriol_mid]
+  [Ep tier_rank vitriol_high]
+  [Rose Wu skill_ranks skill_id max base_rank tier_rank]
+  # Layer 2: tag picks floor at tag_rank
+  [Ier chargen tag_picks]
+  [Rose Wu skill_ranks skill_id max base_rank tag_rank]
+
+  [Mek Oy Ye skill_ranks_start]        # L2 DECIMAL — skill rank map registered
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 3: Starting Meditation Perks ─────────────────────────────────────
+# Only Breathwork is available before any quest (no quest gate required).
+# All other meditation perks are quest-gated and start locked.
+#
+# Quest gates:
+#   breathwork_meditation  — no quest (available immediately)
+#   alchemical_meditation  — 0008_KLST (Bunsen For Hire)
+#   hypnotic_meditation    — 0007_KLST (Dream of Glass)
+#   infernal_meditation    — 0009_KLST (Demons and Diamonds) ← Sulphera access
+#   depth_meditation       — 0011_KLST (The Siren Sounds)
+#   transcendental_meditation — 0016_KLST (Transcendental)
+#   zen_meditation         — 0026_KLST (Good Grief)
+#
+# Protist (T16 / L3 BOOLEAN) → Seth (T7 / L10 NAMES). Declarative.
+
+LoStartPerks : Protist Seth {
+  [Mek Oy Ui breathwork_meditation]    # L3 BOOLEAN — granted at start
+  [Mek Oy Ui alchemical_meditation  0]  # locked until 0008_KLST
+  [Mek Oy Ui hypnotic_meditation    0]  # locked until 0007_KLST
+  [Mek Oy Ui infernal_meditation    0]  # locked until 0009_KLST (Sulphera gate)
+  [Mek Oy Ui depth_meditation       0]  # locked until 0011_KLST
+  [Mek Oy Ui transcendental_meditation 0] # locked until 0016_KLST
+  [Mek Oy Ui zen_meditation         0]  # locked until 0026_KLST
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 4: game7_starting_state() Bundle ──────────────────────────────────
+# Convenience: return all three subsystems in one dict.
+# Wu (T2 / L12 FUNCTION) → Samos (T7 / L11 SCENE). Declarative.
+
+LoGame7State : Wu Samos {
+  [Wu Ifa LoStartInventory]            # inventory: dict[KLOB_id → qty]
+  [Wu Ifa LoStartSkills]               # skill_ranks: dict[skill_id → rank]
+  [Wu Ifa LoStartPerks]                # active_perks: frozenset[str]
+  [Samos Wu game_id 7_KLGS Oy Aonkiel] # L11 SCENE — game identity
+  [Mek Oy Gaoh game7_state]            # L12 FUNCTION — full starting state
+  [TaShyMa Gwev]
+}

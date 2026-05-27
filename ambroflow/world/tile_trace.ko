@@ -1,0 +1,196 @@
+# tile_trace.ko — Lotus Tile Attestation and Void Wraith Routing
+# ================================================================
+# Kobra-native specification for the TileTracer system.
+# Source: ambroflow/world/tile_trace.py
+# Python shim: loaded at module import in tile_trace.py.
+#
+# Mood convention: DECLARATIVE throughout.
+#
+# The TileTracer records Lotus attestations per tile as the player moves.
+# Each tile accumulates counts per Lotus byte (0–23) — the full material
+# vocabulary of the Shygazun Lotus tongue.
+#
+# Three byte-pairs are canonical mode markers with Void Wraith routes.
+# They are identified by ontic separation, not byte-address adjacency:
+#
+#   Fy(4)  / Pu(5)   — Air Initiator / Air Terminator → Haldoro 2001_VDWR
+#   Ta(9)  / Zo(16)  — Active being  / Absence         → Negaya  2003_VDWR
+#   Sha(15)/ Ko(19)  — Intellect of spirit / Experience → Vios    2002_VDWR
+#
+# Layer routing:
+#   L1  BIT       — Lotus byte table (T1, all 24 bytes, gated)
+#   L4  COORDINATE — tile position (zone_id, x, y) + lotus_counts
+#   L6  ENTITY    — Void Wraiths as entities routed to by byte deposit
+#   L8  MOVEMENT  — wraith observation events (movement through wraith space)
+#   L11 SCENE     — Orrery event routing (tile.attested, void_wraith_observe)
+
+# ── SECTION 0: TileTracer System Identity ────────────────────────────────────
+# Sakura (T3 / L4 COORDINATE) → Lo (T4): descending. Declarative.
+# The TileTracer IS a coordinate accumulator — Sakura routes it.
+
+LoTileTracer : Sakura Lo {
+  [Mavo Lo TileTracer 7_KLGS]
+  [Mavo Sao ambroflow world tile_trace]
+  [TaShyMa Soa]
+}
+
+# ── SECTION 1: Lotus Byte Table (Bytes 0–23) ──────────────────────────────────
+# The full material vocabulary of Shygazun Tongue 1 (Lotus).
+# Each entry: byte_address, symbol, meaning.
+# These are the same 24 Lotus candidates from the byte table — gated in the
+# kernel (Lotus tongue = all lotus-gated). Here they serve as coordinate labels
+# for the tile attestation system.
+#
+# Lotus (T1) → Rose (T2 / L2 DECIMAL): descending. Declarative.
+# Byte addresses (decimal) index the coordinate space.
+
+LoLotusTable : Lotus Rose {
+  [Ty  Oy Ye 0  Earth Initiator material_beginning]
+  [Zu  Oy Ye 1  Earth Terminator empirical_closure]
+  [Ly  Oy Ye 2  Water Initiator  feeling_toward]
+  [Mu  Oy Ye 3  Water Terminator memory_from]
+  [Fy  Oy Ye 4  Air Initiator    thought_toward]
+  [Pu  Oy Ye 5  Air Terminator   stasis_stuck]
+  [Shy Oy Ye 6  Fire Initiator   pattern_toward]
+  [Ku  Oy Ye 7  Fire Terminator  death_end]
+  [Ti  Oy Ye 8  Here             near_presence]
+  [Ta  Oy Ye 9  Active_being     presence]
+  [Li  Oy Ye 10 New              odd]
+  [La  Oy Ye 11 Tense            excited]
+  [Fi  Oy Ye 12 Known            context_sensitive]
+  [Fa  Oy Ye 13 Complex          old]
+  [Shi Oy Ye 14 Related          clear]
+  [Sha Oy Ye 15 Intellect_of_spirit]
+  [Zo  Oy Ye 16 Absence          passive_non_being]
+  [Mo  Oy Ye 17 Relaxed          silent]
+  [Po  Oy Ye 18 Simple           new]
+  [Ko  Oy Ye 19 Experience       intuition]
+  [Ze  Oy Ye 20 There            far]
+  [Me  Oy Ye 21 Familiar         home]
+  [Pe  Oy Ye 22 Unknown          insensitive]
+  [Ke  Oy Ye 23 Incoherent       ill]
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 2: Void Wraith Routes ────────────────────────────────────────────
+# Three Void Wraiths observe through the mode-marker pairs.
+# Each pair (initiator + terminator) shares the same wraith route.
+# Archaea (T15 / L3 BOOLEAN — void wraith observation IS a boolean event)
+# → Ne (T4 / L6 ENTITY — Void Wraiths are entities). Declarative.
+
+LoWraithRoutes : Archaea Ne {
+  # Haldoro — Knower of Minds — silence
+  [Ne Wu 2001_VDWR silence Fy Pu]    # bytes 4+5 → Haldoro
+  [Mek Oy Yeshu haldoro_route]       # L6 ENTITY — void wraith entity
+
+  # Vios — Knower of Souls — omission
+  [Ne Wu 2002_VDWR omission Sha Ko]  # bytes 15+19 → Vios
+  [Mek Oy Yeshu vios_route]
+
+  # Negaya — Knower of Bodies — kill
+  [Ne Wu 2003_VDWR kill Ta Zo]       # bytes 9+16 → Negaya
+  [Mek Oy Yeshu negaya_route]
+
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 3: TileAttestation ────────────────────────────────────────────────
+# Per-tile accumulator: zone_id × (x, y) → lotus_counts dict.
+# Queries: count(byte), has(byte), attested_bytes, dominant(n), symbol(byte).
+# Persistence: as_dict() / from_dict() for Orrery workspace inclusion.
+#
+# Sakura (T3 / L4 COORDINATE) → Lotus (T1): descending. Declarative.
+
+LoTileAttestation : Sakura Lotus {
+  [Sakura Wu zone_id x y Oy Shu]         # L4 COORDINATE — tile address
+  [Rose Wu lotus_counts first_at Oy Ye]  # L2 DECIMAL — byte accumulation counts
+  [Rose Wu last_at Oy Ye]                # L2 DECIMAL — timestamp of last deposit
+
+  # QUERIES
+  [Ro Ha byte_addr lotus_counts Wu]      # count(byte): get count or 0
+  [Ro Wu lotus_counts byte_addr 0 Wu]    # has(byte): count > 0
+  [Ier lotus_counts Ha val 0 Wu]         # attested_bytes: frozenset of nonzero bytes
+  [Wu Ifa lotus_counts sort_desc Oy Ye]  # dominant(n): top-n by count
+
+  # PERSISTENCE
+  [Lo Wu lotus_counts Wu Sao]            # as_dict: str-keyed dict of counts
+  [Lo Wu data Oy Kiel]                   # from_dict: reconstruct from saved dict
+
+  [Mek Oy Shu tile_attestation]          # L4 COORDINATE — attestation record
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 4: Deposit Pipeline ───────────────────────────────────────────────
+# deposit(zone_id, x, y, *byte_addrs, context) → TileAttestation.
+# For each byte_addr:
+#   1. Validate against LOTUS_TABLE (0–23); raise if not found
+#   2. Increment lotus_counts[byte_addr]
+#   3. Record first_at if count was 0
+#   4. Fire Orrery: orrery.record("tile.attested", payload)
+#   5. If byte has wraith route: orrery.void_wraith_observe(obs_key, payload)
+#
+# Cannabis (T8 / gated metacognition) → Mio (T7 / L8 MOVEMENT). Declarative.
+# Deposit is a metacognitive witness event; Cannabis routes it. L8: movement
+# through both zone traversal AND wraith observation space.
+
+LoDeposit : Cannabis Mio {
+
+  [Ier byte_addrs]
+
+  # VALIDATE — byte must be in Lotus Table
+  [Ro Ha byte_addr LoLotusTable Wu]
+  [Wu Lo ValueError byte_not_in_lotus_table]
+
+  # ACCUMULATE — increment lotus_counts
+  [Ro Ha key zone_id x y tiles Wu]
+  [Ha Wu lotus_counts byte_addr]
+  [Ifa count prev 1]                     # count = prev + 1
+  [Ro Wu prev 0 Wu]
+  [Rose Wu first_at byte_addr now Oy Ye] # first_at[byte] = now (first deposit only)
+
+  # ORRERY GENERAL EVENT
+  [Ro Ha orrery Wu]
+  [Seth Wu payload zone_id x y byte symbol meaning count]
+  [Wu orrery record tile_attested payload]
+
+  # ORRERY WRAITH EVENT — only for the 6 routed bytes
+  [Ro Ha byte_addr LoWraithRoutes Wu]
+  [Ep wraith_id obs_key LoWraithRoutes byte_addr]
+  [Wu orrery void_wraith_observe obs_key payload wraith_id]
+
+  [Mek Oy Shushy deposit_done]           # L8 MOVEMENT — attestation movement recorded
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 5: TileTracer Queries and Kill Count ─────────────────────────────
+# attestation_at(zone_id, x, y) → TileAttestation | None
+# attested_bytes_at(zone_id, x, y) → frozenset[int]
+# attested_tiles(byte_addr) → list[(zone_id, x, y)]
+# wraith_context(zone_id, x, y) → mode-marker signature dict
+# kill_count(): total Zo (byte 16 / absence) deposits — each player kill deposits one Zo
+#
+# Wu (T2 / L12 FUNCTION) → Sakura (T3 / L4 COORDINATE). Declarative.
+
+LoTracerQueries : Wu Sakura {
+  [Ro Ha zone_id x y tiles Wu]             # attestation_at: lookup tile record
+  [Ep att tiles zone_id x y]
+
+  [Ier tiles Ha byte_addr Wu]              # attested_tiles: filter by byte
+  [Ier tiles]                              # all tiles if no byte filter
+
+  # WRAITH CONTEXT — mode-marker signature for dialogue selector
+  [Sakura Wu fy pu ta zo sha ko lotus dominant]
+  [Rose Wu fy  att count 4 Oy Ye]          # Fy  byte 4
+  [Rose Wu pu  att count 5 Oy Ye]          # Pu  byte 5
+  [Rose Wu ta  att count 9 Oy Ye]          # Ta  byte 9
+  [Rose Wu zo  att count 16 Oy Ye]         # Zo  byte 16
+  [Rose Wu sha att count 15 Oy Ye]         # Sha byte 15
+  [Rose Wu ko  att count 19 Oy Ye]         # Ko  byte 19
+
+  # KILL COUNT — sum of Zo deposits across all tiles
+  [Ier tiles Wu]
+  [Ifa kill_count sum lotus_counts 16]     # Zo = byte 16 = absence = each player kill
+
+  [Mek Oy Shu tracer_query]               # L4 COORDINATE — query result
+  [TaShyMa Gwev]
+}

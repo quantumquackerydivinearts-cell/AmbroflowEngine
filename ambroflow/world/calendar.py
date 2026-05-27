@@ -35,6 +35,17 @@ import math as _math
 from dataclasses import dataclass as _dc
 from enum import Enum
 
+try:
+    from pathlib import Path as _Path
+    from ..kobra import get_runtime as _kobra_get_rt
+    _calendar_ko = _Path(__file__).parent / "calendar.ko"
+    if _calendar_ko.exists():
+        _rt = _kobra_get_rt()
+        if "Calendar" not in _rt.units():
+            _rt.load(_calendar_ko)
+except ImportError:
+    pass
+
 
 # ── Month names (Rose numeral roots + wumane suffix) ──────────────────────────
 

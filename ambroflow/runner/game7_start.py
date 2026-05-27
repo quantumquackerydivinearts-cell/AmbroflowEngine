@@ -12,6 +12,17 @@ find them via the inventory dict — placement is visual; inventory is functiona
 
 from __future__ import annotations
 
+try:
+    from pathlib import Path as _Path
+    from ..kobra import get_runtime as _kobra_get_rt
+    _game7_start_ko = _Path(__file__).parent / "game7_start.ko"
+    if _game7_start_ko.exists():
+        _rt = _kobra_get_rt()
+        if "Game7Start" not in _rt.units():
+            _rt.load(_game7_start_ko)
+except ImportError:
+    pass
+
 
 # ── Starting inventory (KLOB IDs → quantity) ─────────────────────────────────
 #

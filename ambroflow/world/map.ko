@@ -1,0 +1,196 @@
+# map.ko — Zone, Realm, and World Tile Declarations
+# ====================================================
+# Kobra-native specification for the world map data structures.
+# Source: ambroflow/world/map.py
+# Python shim: loaded at module import in map.py.
+#
+# Mood convention: DECLARATIVE throughout.
+#
+# Layer routing:
+#   L3  BOOLEAN   — ZoneCondition (gate: witnessed/pending)
+#   L4  COORDINATE — tile coordinates, spawn points, tile kind space
+#   L5  OBJECT    — tile passability classification (Daisy Lo)
+#   L6  ENTITY    — NPC spawns, items, zone entities (Daisy Ne)
+#   L8  MOVEMENT  — ZoneExit transitions, NPC routes and schedules
+#   L11 SCENE     — Zone and WorldMap (scene cluster identity)
+
+# ── SECTION 0: World Map System Identity ─────────────────────────────────────
+# Samos (T7 / L11 SCENE) → Lo (T4): descending. Declarative.
+
+LoWorldMap : Samos Lo {
+  [Mavo Lo WorldMap 7_KLGS]
+  [Mavo Sao ambroflow world map]
+  [TaShyMa Soa]
+}
+
+# ── SECTION 1: Realm Declarations ────────────────────────────────────────────
+# Three Realms are Samos clusters — bounded sets of scene nodes.
+# ANMU entities: Spirits of the Realms.
+# Same realms as world_graph.ko LoRealm — orthogonal record.
+# Samos (T7 / L11 SCENE) → Ne (T4 / L6 ENTITY). Declarative.
+
+LoRealm : Samos Ne {
+  [Samos Wu lapidus  Oy Aonkiel]    # L11 — Overworld  (Azonithia, Wiltoll, surface)
+  [Samos Wu mercurie Oy Aonkiel]    # L11 — Faewilds   (courts, wild roads, liminal)
+  [Samos Wu sulphera Oy Aonkiel]    # L11 — Underworld (Rings 1–9, infernal arch)
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 2: WorldTileKind — Tile Classification ────────────────────────────
+# All tile kinds in the world coordinate space.
+# Passable = player can enter the tile.
+# Impassable = blocked (VOID, WALL, WATER, TREE, WALL_FACE, BED).
+# Transition tiles: DOOR, STAIRS_*, PORTAL, DUNGEON_ENTRANCE trigger events on entry.
+#
+# Sakura (T3 / L4 COORDINATE) → Lotus (T1): descending. Declarative.
+# Tile kinds ARE coordinates in the material vocabulary (Lotus tongue maps to tile materials).
+
+LoTileKind : Sakura Lotus {
+  # IMPASSABLE
+  [Ro Ga void             Oy Shu]  # out-of-zone / black
+  [Ro Ga wall             Oy Shu]  # solid block
+  [Ro Ga water            Oy Shu]  # surface water (lava in Sulphera)
+  [Ro Ga tree             Oy Shu]  # outdoor vegetation
+  [Ro Ga wall_face        Oy Shu]  # decorative back wall
+  [Ro Ga bed              Oy Shu]  # interactive (INTERACT → sleep); impassable to movement
+
+  # PASSABLE — generic
+  [Ha Wu floor            Oy Shu]  # passable interior
+  [Ha Wu grass            Oy Shu]  # passable exterior ground
+  [Ha Wu road             Oy Shu]  # passable paved/worn surface
+  [Ha Wu dirt             Oy Shu]  # passable dirt path
+  [Ha Wu stone            Oy Shu]  # passable stone exterior (courtyard, plaza)
+  [Ha Wu bridge           Oy Shu]  # passable — crosses water
+
+  # TRANSITION tiles — passable AND trigger movement events
+  [Ha Wu door             Oy Shushy]  # zone transition trigger     → L8 MOVEMENT
+  [Ha Wu stairs_up        Oy Shushy]  # floor/level up trigger      → L8 MOVEMENT
+  [Ha Wu stairs_down      Oy Shushy]  # floor/level down trigger    → L8 MOVEMENT
+  [Ha Wu portal           Oy Shushy]  # realm transition trigger    → L8 MOVEMENT
+  [Ha Wu dungeon_entrance Oy Shushy]  # DungeonRuntime session open → L8 MOVEMENT
+
+  # LAPIDUS surface materials — passable
+  [Ha Wu marble       Oy Shu]  # hard marble paving (Azoth Sprint)
+  [Ha Wu yellow_brick Oy Shu]  # warm brick (Hopefare St / slum)
+  [Ha Wu ceramic      Oy Shu]  # decorative tile (June St / market)
+  [Ha Wu slate        Oy Shu]  # serious stone (Goldshoot St / temple)
+  [Ha Wu silica       Oy Shu]  # extravagant surface (Youthspring Rd / nobles)
+
+  [Mek Oy Shu tile_kind]          # L4 COORDINATE — tile in coordinate space
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 3: ZoneCondition — Quest-State Gate ───────────────────────────────
+# A boolean gate on any zone entity.
+# mode="witnessed"  — entity active when key IS witnessed (post-quest)
+# mode="pending"    — entity active when key NOT yet witnessed (pre-/in-quest)
+#
+# Protist (T16 / L3 BOOLEAN type-edge) → Archaea (T15). Declarative.
+
+LoZoneCondition : Protist Archaea {
+  [Seth Wu key Oy Kokiel]            # L10 NAMES — quest entry_id to evaluate
+  [Mio Ne mode witnessed pending]    # mode: "witnessed" | "pending"
+  [Mek Oy Ui condition_gate]         # L3 BOOLEAN — gate result
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 4: Zone Entity Records ────────────────────────────────────────────
+# Five entity types that populate a Zone: exits, portals, NPC spawns, items,
+# and routes. All are L6 ENTITY (Daisy Ne) — self-sustaining world presences.
+# ZoneExit routes to L8 MOVEMENT (Mio) — the exit IS movement.
+#
+# Daisy (T4 / L6 ENTITY) → Mio (T7 / L8 MOVEMENT). Declarative.
+
+LoZoneEntities : Ne Mio {
+
+  # ZONE EXIT — directed tile → target zone + spawn
+  [Mio Wu x y direction Oy Shu]          # L4 COORDINATE — tile position + direction
+  [Mio Wu target_zone target_x target_y] # L8 MOVEMENT — destination + spawn
+  [Ro Ha condition LoZoneCondition Wu]   # conditional gate
+  [Mek Oy Shushy zone_exit]             # L8 MOVEMENT — exit registered
+
+  # DUNGEON PORTAL — tile → DungeonRuntime session
+  [Mio Wu x y dungeon_id Oy Shushy]
+  [Ro Ha condition LoZoneCondition Wu]
+  [Mek Oy Shushy dungeon_portal]
+
+  # NPC SPAWN — fixed character position
+  [Ne Wu x y character_id Oy Kiel]       # L5 OBJECT — NPC as identity, not quantity
+  [Ro Ha condition LoZoneCondition Wu]
+  [Mek Oy Yeshu npc_spawn]              # L6 ENTITY — NPC entity in world
+
+  # ITEM SPAWN — one-time pickup
+  [Ne Wu x y item_id qty Oy Kiel]
+  [Ro Ha condition LoZoneCondition Wu]
+  [Mek Oy Kiel item_spawn]              # L5 OBJECT — item at coordinate
+
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 5: NPC Route and Schedule ────────────────────────────────────────
+# NPC movement patterns. Routes to L8 MOVEMENT — NPC patrol IS movement.
+# Mio (T7 / L8 MOVEMENT) → Sakura (T3 / L4 COORDINATE). Declarative.
+
+LoNPCMovement : Mio Sakura {
+
+  # ROUTE — patrol waypoints
+  [Mio Wu character_id waypoints ticks_per_step]
+  [Mio Ne loop pingpong cycle]       # loop="pingpong" A→B→C→B→A; "cycle" A→B→C→A
+  [Ro Ha condition LoZoneCondition Wu]
+  [Mek Oy Shushy npc_route]
+
+  # SCHEDULE ENTRY — one time-block in daily schedule
+  [Mio Wu time_of_day x y activity]  # time_of_day: dawn/morning/afternoon/dusk/night
+  [Ro Ha condition LoZoneCondition Wu]
+  [Mio Ne zone_id Wu]                # zone_id non-empty → NPC absent from current zone
+  [Mek Oy Shushy schedule_entry]
+
+  # SCHEDULE — daily routine for a character; gates entire schedule
+  [Mio Wu character_id entries]      # entries: list[NPCScheduleEntry], first match wins
+  [Ro Ha condition LoZoneCondition Wu]
+  [Mek Oy Shushy npc_schedule]
+
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 6: Zone Declaration ───────────────────────────────────────────────
+# A Zone is a Samos cluster: a bounded tile grid in one Realm.
+# Tile lookup: tile_at(x, y) → WorldTileKind; VOID if out of bounds.
+# Entity lookups: exit_at, portal_at, npc_at, npc_by_char, items_at.
+#
+# Samos (T7 / L11 SCENE) → Sakura (T3 / L4 COORDINATE). Declarative.
+
+LoZone : Samos Sakura {
+  [Samos Wu zone_id realm_id name]
+  [Sakura Wu width height Oy Shu]    # L4 COORDINATE — tile grid dimensions
+  [Sakura Wu player_spawn Oy Shu]    # L4 COORDINATE — default spawn (x, y)
+  [Ier voxels LoTileKind]            # tile grid: (x,y) → WorldTileKind
+  [Ier exits LoZoneEntities]
+  [Ier npc_spawns LoZoneEntities]
+  [Ier portals LoZoneEntities]
+  [Ier item_spawns LoZoneEntities]
+  [Ier npc_routes LoNPCMovement]
+  [Ier npc_schedules LoNPCMovement]
+  [Mek Oy Aonkiel zone_registered]   # L11 SCENE — zone enters scene layer
+  [TaShyMa Gwev]
+}
+
+# ── SECTION 7: WorldMap and Zone Export Loader ────────────────────────────────
+# WorldMap: dict[zone_id → Zone] + starting_zone_id.
+# from_export_dict: JSON from Atelier "Export → Ambroflow" → Zone.
+# Samos (T7) → Lo (T4). Declarative.
+
+LoWorldMapLoader : Samos Lo {
+  [Samos Wu zones starting_zone_id]     # WorldMap structure
+  [Ro Ha zone_id zones Wu]              # zone(zone_id): O(1) lookup
+
+  # from_export_dict pipeline:
+  [Lo Wu data Oy Kiel]                  # input: dict from JSON
+  [Ier voxels data Wu]                  # parse "x,y"→kind string pairs
+  [Wu Ifa kind_str WorldTileKind]        # WorldTileKind(kind_str)
+  [Ier exits data LoZoneEntities]
+  [Ier npc_spawns data LoZoneEntities]
+  [Ier portals data LoZoneEntities]
+  [Mek Oy Aonkiel zone_from_export]     # L11 SCENE — loaded zone
+  [TaShyMa Gwev]
+}

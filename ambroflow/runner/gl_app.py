@@ -598,7 +598,7 @@ class GLApp:
             pass
 
     def _fate_gl_interact(self, action_id: str) -> None:
-        """Handle furniture interactions fired from FateKnocksGLPlay free roam."""
+        """Handle furniture interactions fired from FateKnocksGLPlay."""
         if self._fate_gl is None:
             return
         if action_id == "stairs_up":
@@ -606,6 +606,10 @@ class GLApp:
             return
         if action_id == "stairs_down":
             self._fate_gl.change_floor(-1)
+            return
+        # UI-mode actions (journal, alchemy, shop) only valid after the letter
+        # sequence — launching WORLD_PLAY mid-cinematic skips the narrative.
+        if not getattr(self._fate_gl, "_free_roam", False):
             return
         # For UI modes, transition FATE_GL → WORLD_PLAY then switch mode
         # (GLWorldPlay has the mode-aware render path)
